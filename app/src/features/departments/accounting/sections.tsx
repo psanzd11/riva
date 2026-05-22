@@ -11,15 +11,15 @@ import { KpiCard } from '../../../components/kpi/KpiCard'
 import { FilterTabs } from '../../../components/ui/FilterTabs'
 import { StackedBar } from '../../../components/charts/StackedBar'
 import { Donut } from '../../../components/charts/Donut'
-import { Waterfall } from '../../../components/charts/Waterfall'
 import { MultiLine } from '../../../components/charts/MultiLine'
 import { LineArea } from '../../../components/charts/LineArea'
-import { VBarChart } from '../../../components/charts/VBarChart'
 import { RatioGrid } from '../../../components/charts/RatioGrid'
 import { LbBar } from '../../../components/data-table/Leaderboard'
 import { Sparkline } from '../../../components/charts/Sparkline'
 import { money, moneyCompact, dateShort } from '../../../lib/format'
 import { DeptEquipo } from '../shared/DeptEquipo'
+import { IncomeStatement, BalanceSheet, CashFlowStatement } from './reports'
+import { FileText, Printer } from 'lucide-react'
 import type { Invoice } from '../../../data/schema'
 
 function AccHeader({ actions }: { actions?: React.ReactNode }) {
@@ -171,6 +171,40 @@ export function AccountingResumen() {
           />
         </Panel>
       </div>
+
+      {/* P&L resumen simplificado — vista compacta del Income Statement */}
+      <Panel title="P&L · mayo 2026 · vista resumida" action={<a className="link text-[11px] cursor-pointer">Ver completo</a>} className="mb-8">
+        <div className="p-6">
+          <table className="w-full text-[13px]">
+            <tbody>
+              <tr>
+                <td className="py-2 text-n-700">Ingresos</td>
+                <td className="py-2 text-right font-display text-[15px] text-success">€ 642k</td>
+              </tr>
+              <tr>
+                <td className="py-2 text-n-700">− Coste de ventas</td>
+                <td className="py-2 text-right font-display text-[15px] text-error">€ 380k</td>
+              </tr>
+              <tr className="border-t border-n-300">
+                <td className="py-2 font-medium text-n-900">Margen bruto</td>
+                <td className="py-2 text-right font-display text-[15px] font-medium text-success">€ 262k <span className="text-[11px] text-n-500">· 40,8%</span></td>
+              </tr>
+              <tr>
+                <td className="py-2 text-n-700">− Gastos operativos</td>
+                <td className="py-2 text-right font-display text-[15px] text-error">€ 74k</td>
+              </tr>
+              <tr>
+                <td className="py-2 text-n-700">− Impuestos</td>
+                <td className="py-2 text-right font-display text-[15px] text-error">€ 47k</td>
+              </tr>
+              <tr className="border-t-2 border-double border-n-700">
+                <td className="py-2.5 font-medium text-n-900">Net income</td>
+                <td className="py-2.5 text-right font-display text-[20px] font-medium text-success">€ 141k <span className="text-[11px] text-n-500">· 4,9%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Panel>
 
       <Panel title={`Aging de cobros · ${money(totalPending, 'EUR')} pendiente`}>
         <StackedBar
@@ -360,19 +394,38 @@ export function AccountingFacturas() {
 }
 
 // ====================================================================
-// AGING — buckets clicables
+// AGING — dividido en Depósitos (60%) y Restantes (40%)
 // ====================================================================
+const AGING_TABS = [
+  { value: 'deposit', label: 'Depósitos · 60%' },
+  { value: 'final', label: 'Restantes · 40%' },
+] as const
+
 export function AccountingAging() {
   const { currentUserId } = useRole()
-  const { invoices, pendingInvoices, buckets, totalPending } = useAccountingTotals()
+  const { invoices, pendingInvoices } = useAccountingTotals()
   const partners = useStore((s) => s.partners)
+  const [tab, setTab] = useState<(typeof AGING_TABS)[number]['value']>('deposit')
   const [bucketFilter, setBucketFilter] = useState<Invoice['agingBucket'] | 'all'>('all')
 
+  // Buckets calculados por kind
+  const kindBuckets = useMemo(() => {
+    const calc = (kind: Invoice['kind']) => {
+      const b: Record<Invoice['agingBucket'], number> = { current: 0, '0_30': 0, '31_60': 0, '61_90': 0, '90_plus': 0 }
+      for (const inv of pendingInvoices.filter((i) => i.kind === kind)) b[inv.agingBucket] += inv.amount
+      return b
+    }
+    return { deposit: calc('deposit'), final: calc('final') }
+  }, [pendingInvoices])
+
+  const activeBuckets = kindBuckets[tab]
+  const totalForTab = Object.values(activeBuckets).reduce((a, b) => a + b, 0)
+
   const rows = useMemo(() => {
-    let list = pendingInvoices
+    let list = pendingInvoices.filter((i) => i.kind === tab)
     if (bucketFilter !== 'all') list = list.filter((i) => i.agingBucket === bucketFilter)
     return list.sort((a, b) => a.dueAt.localeCompare(b.dueAt)).slice(0, 30)
-  }, [pendingInvoices, bucketFilter])
+  }, [pendingInvoices, tab, bucketFilter])
 
   const markPaid = (id: string) => {
     const inv = invoices.find((i) => i.id === id)
@@ -387,31 +440,78 @@ export function AccountingAging() {
   }
 
   const BUCKETS: { id: Invoice['agingBucket'] | 'all'; label: string; amount: number }[] = [
-    { id: 'all', label: 'Todas', amount: totalPending },
-    { id: '0_30', label: '0-30 d', amount: buckets['0_30'] },
-    { id: '31_60', label: '31-60 d', amount: buckets['31_60'] },
-    { id: '61_90', label: '61-90 d', amount: buckets['61_90'] },
-    { id: '90_plus', label: '90+ d', amount: buckets['90_plus'] },
+    { id: 'all', label: 'Todas', amount: totalForTab },
+    { id: '0_30', label: '0-30 d', amount: activeBuckets['0_30'] },
+    { id: '31_60', label: '31-60 d', amount: activeBuckets['31_60'] },
+    { id: '61_90', label: '61-90 d', amount: activeBuckets['61_90'] },
+    { id: '90_plus', label: '90+ d', amount: activeBuckets['90_plus'] },
   ]
+
+  const depositTotal = Object.values(kindBuckets.deposit).reduce((a, b) => a + b, 0)
+  const finalTotal = Object.values(kindBuckets.final).reduce((a, b) => a + b, 0)
 
   return (
     <>
       <AccHeader />
-      <Panel title={`Aging · ${money(totalPending, 'EUR')} pendiente`} className="mb-8">
-        <StackedBar
-          segments={[
-            { label: `${money(buckets['0_30'], 'EUR')} · 0-30 d`, value: buckets['0_30'], variant: 's0' },
-            { label: `${money(buckets['31_60'], 'EUR')} · 31-60 d`, value: buckets['31_60'], variant: 's1' },
-            { label: `${money(buckets['61_90'], 'EUR')} · 61-90 d`, value: buckets['61_90'], variant: 's2' },
-            { label: `${money(buckets['90_plus'], 'EUR')}`, value: buckets['90_plus'], variant: 's3' },
-          ]}
-          legend={[
-            { label: '0-30 d · al día', variant: 's0' },
-            { label: '31-60 d · recordatorio', variant: 's1' },
-            { label: '61-90 d · 2º aviso', variant: 's2' },
-            { label: '90+ d · postventa', variant: 's3' },
-          ]}
-        />
+
+      {/* Comparativa Depósitos vs Restantes */}
+      <p className="mb-4 text-[12px] text-n-500">
+        RIVA cobra en dos fases: <b>depósito 60%</b> al cerrar el deal, <b>restante 40%</b> antes de que el lote salga del almacén local.
+        El aging se gestiona de forma separada porque son riesgos distintos: un depósito atrasado bloquea el inicio del pedido; un
+        restante atrasado bloquea el envío.
+      </p>
+
+      <div className="mb-6 grid grid-cols-2 gap-px border border-n-300 bg-n-300">
+        <button
+          onClick={() => { setTab('deposit'); setBucketFilter('all') }}
+          className={`p-5 text-left transition ${tab === 'deposit' ? 'bg-riva-black text-riva-ivory' : 'bg-riva-white text-n-700'}`}
+        >
+          <div className={`text-[10px] uppercase tracking-[0.15em] ${tab === 'deposit' ? 'text-n-300' : 'text-n-500'}`}>
+            Aging depósitos · 60%
+          </div>
+          <div className="mt-1 font-display text-[26px] font-light">{money(depositTotal, 'EUR')}</div>
+          <div className={`mt-1 text-[11px] uppercase tracking-[0.08em] ${tab === 'deposit' ? 'text-oak-light' : 'text-n-500'}`}>
+            {pendingInvoices.filter((i) => i.kind === 'deposit').length} pendientes
+          </div>
+        </button>
+        <button
+          onClick={() => { setTab('final'); setBucketFilter('all') }}
+          className={`p-5 text-left transition ${tab === 'final' ? 'bg-riva-black text-riva-ivory' : 'bg-riva-white text-n-700'}`}
+        >
+          <div className={`text-[10px] uppercase tracking-[0.15em] ${tab === 'final' ? 'text-n-300' : 'text-n-500'}`}>
+            Aging restantes · 40%
+          </div>
+          <div className="mt-1 font-display text-[26px] font-light">{money(finalTotal, 'EUR')}</div>
+          <div className={`mt-1 text-[11px] uppercase tracking-[0.08em] ${tab === 'final' ? 'text-oak-light' : 'text-n-500'}`}>
+            {pendingInvoices.filter((i) => i.kind === 'final').length} pendientes
+          </div>
+        </button>
+      </div>
+
+      <Panel
+        title={`Aging ${tab === 'deposit' ? 'depósitos' : 'restantes'} · ${money(totalForTab, 'EUR')} pendiente`}
+        className="mb-8"
+      >
+        {totalForTab > 0 ? (
+          <StackedBar
+            segments={[
+              { label: `${money(activeBuckets['0_30'], 'EUR')} · 0-30 d`, value: activeBuckets['0_30'], variant: 's0' },
+              { label: `${money(activeBuckets['31_60'], 'EUR')} · 31-60 d`, value: activeBuckets['31_60'], variant: 's1' },
+              { label: `${money(activeBuckets['61_90'], 'EUR')} · 61-90 d`, value: activeBuckets['61_90'], variant: 's2' },
+              { label: `${money(activeBuckets['90_plus'], 'EUR')}`, value: activeBuckets['90_plus'], variant: 's3' },
+            ]}
+            legend={[
+              { label: '0-30 d · al día', variant: 's0' },
+              { label: '31-60 d · recordatorio', variant: 's1' },
+              { label: '61-90 d · 2º aviso', variant: 's2' },
+              { label: '90+ d · postventa', variant: 's3' },
+            ]}
+          />
+        ) : (
+          <div className="px-6 py-12 text-center text-[13px] text-n-500">
+            Nada pendiente en {tab === 'deposit' ? 'depósitos' : 'restantes'} ahora mismo.
+          </div>
+        )}
       </Panel>
 
       <div className="mb-4 flex flex-wrap gap-2">
@@ -431,7 +531,7 @@ export function AccountingAging() {
 
       <table className="data-table">
         <thead>
-          <tr><th>Factura</th><th>Partner</th><th>Tipo</th><th>Importe</th><th>Vence</th><th>Bucket</th><th></th></tr>
+          <tr><th>Factura</th><th>Partner</th><th>Pedido</th><th>Importe</th><th>Vence</th><th>Bucket</th><th></th></tr>
         </thead>
         <tbody>
           {rows.map((inv) => {
@@ -441,11 +541,7 @@ export function AccountingAging() {
               <tr key={inv.id}>
                 <td>#{inv.number}</td>
                 <td>{partner?.name ?? '—'}</td>
-                <td>
-                  <span className="text-[11px] uppercase tracking-[0.1em]" style={{ color: inv.kind === 'deposit' ? 'var(--cove)' : 'var(--oak-mid)' }}>
-                    {inv.kind === 'deposit' ? '60%' : '40%'}
-                  </span>
-                </td>
+                <td className="text-n-500">{money(inv.orderTotal, inv.currency)}</td>
                 <td>{money(inv.amount, inv.currency)}</td>
                 <td>{dateShort(inv.dueAt)}</td>
                 <td><Pill variant={variant}>{inv.agingBucket}</Pill></td>
@@ -465,32 +561,89 @@ export function AccountingAging() {
 }
 
 // ====================================================================
-// P&L — extendido
+// P&L — reports clásicos (Income Statement, Balance Sheet, Cash Flow)
 // ====================================================================
+const PL_TABS = [
+  { value: 'income', label: 'Income statement' },
+  { value: 'balance', label: 'Balance sheet' },
+  { value: 'cashflow', label: 'Cash flow' },
+] as const
+
+const PL_PERIODS = [
+  { value: 'month', label: 'Mayo 2026' },
+  { value: 'ytd', label: 'YTD 2026' },
+  { value: 'q1', label: 'Q1 2026' },
+] as const
+
 export function AccountingPL() {
+  const [tab, setTab] = useState<(typeof PL_TABS)[number]['value']>('income')
+  const [period, setPeriod] = useState<(typeof PL_PERIODS)[number]['value']>('month')
+
+  const periodLabel = PL_PERIODS.find((p) => p.value === period)?.label ?? 'Mayo 2026'
+  const comparisonLabel = period === 'month' ? 'abril 2026' : period === 'ytd' ? 'YTD 2025' : 'Q4 2025'
+
   return (
     <>
-      <AccHeader />
+      <AccHeader
+        actions={
+          <>
+            <button
+              onClick={() => window.print()}
+              className="btn btn-outline"
+              data-print-hide
+            >
+              <Printer size={14} strokeWidth={1.5} /> Exportar PDF
+            </button>
+            <Button>+ Línea contable</Button>
+          </>
+        }
+      />
 
       <KpiGrid cols={4}>
         <KpiCard eyebrow="Revenue mes" value="€ 642k" delta={{ type: 'up', label: '↑ 12,4%' }} />
-        <KpiCard eyebrow="Gross margin" value="55,4%" delta={{ type: 'up', label: '↑ 2 pp' }} />
-        <KpiCard eyebrow="OpEx" value="€ 142k" delta={{ type: 'neutral', label: '22% del revenue' }} />
-        <KpiCard eyebrow="Net margin" value="27,4%" delta={{ type: 'up', label: '↑ 1,2 pp' }} />
+        <KpiCard eyebrow="Gross margin" value="40,8%" delta={{ type: 'up', label: '↑ 2 pp' }} />
+        <KpiCard eyebrow="OpEx" value="€ 972k YTD" delta={{ type: 'neutral', label: '34% del revenue' }} />
+        <KpiCard eyebrow="Net margin" value="4,9%" delta={{ type: 'up', label: '↑ 1,2 pp' }} />
       </KpiGrid>
 
-      <Panel title="P&L mensual · cascada · mayo 2026" className="mb-8">
-        <Waterfall
-          cols={[
-            { label: 'Ingresos', sub: 'Total', value: '€ 642k', heightPct: 88, variant: 'start' },
-            { label: '−COGS', sub: 'Coste<br>producto', value: '−€ 286k', heightPct: 38, variant: 'neg' },
-            { label: 'Margen', sub: 'Bruto<br>55,4%', value: '€ 356k', heightPct: 50, variant: 'pos' },
-            { label: '−OpEx', sub: 'Nóminas<br>marketing', value: '−€ 142k', heightPct: 20, variant: 'neg' },
-            { label: '−Tax', sub: 'Impuestos', value: '−€ 38k', heightPct: 6, variant: 'neg' },
-            { label: 'Net', sub: 'Neto<br>27,4%', value: '€ 176k', heightPct: 25, variant: 'tot' },
-          ]}
-        />
-      </Panel>
+      {/* Tabs entre los tres reports */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4" data-print-hide>
+        <div className="flex border border-n-300 bg-riva-white">
+          {PL_TABS.map((t) => (
+            <button
+              key={t.value}
+              onClick={() => setTab(t.value)}
+              className={`flex items-center gap-2 px-5 py-2.5 text-[11px] uppercase tracking-[0.15em] transition ${
+                tab === t.value
+                  ? 'bg-riva-black text-riva-ivory'
+                  : 'text-n-700 hover:text-riva-black'
+              }`}
+            >
+              <FileText size={13} strokeWidth={1.5} />
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.15em] text-n-500">Período</div>
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value as typeof period)}
+            className="border border-n-300 bg-riva-white px-3 py-2 text-[12px] uppercase tracking-[0.08em] text-n-700 focus:border-riva-black focus:outline-none"
+          >
+            {PL_PERIODS.map((p) => (
+              <option key={p.value} value={p.value}>{p.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Report area — printable */}
+      <div className="mb-8 border border-n-300" data-print="report">
+        {tab === 'income' && <IncomeStatement period={periodLabel} comparison={comparisonLabel} />}
+        {tab === 'balance' && <BalanceSheet period={periodLabel} />}
+        {tab === 'cashflow' && <CashFlowStatement period={periodLabel} />}
+      </div>
 
       {/* Ingresos vs Gastos — comparación explícita verde / burdeos */}
       <Panel title="Ingresos vs Gastos · mayo 2026" className="mb-8">
@@ -513,10 +666,10 @@ export function AccountingPL() {
                 <span className="inline-block h-2.5 w-2.5 bg-error" />
                 <span className="text-[12px] uppercase tracking-[0.1em] text-n-700">Gastos · COGS + OpEx + Tax</span>
               </div>
-              <div className="font-display text-[18px] font-light text-n-900">€ 466k</div>
+              <div className="font-display text-[18px] font-light text-n-900">€ 501k</div>
             </div>
             <div className="h-6 bg-error-soft">
-              <div className="h-full bg-error" style={{ width: `${(466 / 642) * 100}%` }} />
+              <div className="h-full bg-error" style={{ width: `${(501 / 642) * 100}%` }} />
             </div>
           </div>
           <div className="border-t border-n-100 pt-4">
@@ -525,23 +678,14 @@ export function AccountingPL() {
                 <span className="inline-block h-2.5 w-2.5 bg-riva-black" />
                 <span className="text-[12px] uppercase tracking-[0.1em] text-n-700">Margen neto</span>
               </div>
-              <div className="font-display text-[26px] font-light text-success">€ 176k <span className="text-[14px] text-n-700">· 27,4%</span></div>
+              <div className="font-display text-[26px] font-light text-success">€ 141k <span className="text-[14px] text-n-700">· 4,9%</span></div>
             </div>
           </div>
         </div>
       </Panel>
 
-      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-        <Panel title="Revenue por origen · YTD">
-          <Donut
-            slices={[
-              { label: 'USA partners', value: 1180, color: 'var(--cove)', valueLabel: '€ 1,18M' },
-              { label: 'ES partners', value: 1080, color: 'var(--oak-mid)', valueLabel: '€ 1,08M' },
-              { label: 'Flagship Miami', value: 580, color: 'var(--sage)', valueLabel: '€ 580k' },
-            ]}
-          />
-        </Panel>
-        <Panel title="Revenue por brand">
+      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <Panel title="Revenue por brand · YTD">
           <Donut
             slices={[
               { label: 'RIVA Spain', value: 1380, color: 'var(--cove)', valueLabel: '€ 1,38M' },
@@ -550,31 +694,6 @@ export function AccountingPL() {
             ]}
           />
         </Panel>
-        <Panel title="Gastos por categoría">
-          <VBarChart
-            bars={[
-              { label: 'Nóminas', value: '€ 82k', heightPct: 90, variant: 'cove' },
-              { label: 'Producción', value: '€ 286k', heightPct: 100, variant: 'oak' },
-              { label: 'Marketing', value: '€ 32k', heightPct: 35, variant: 'sage' },
-              { label: 'Cloud / tech', value: '€ 7k', heightPct: 8, variant: 'mid' },
-              { label: 'Otros', value: '€ 21k', heightPct: 22, variant: 'dark' },
-            ]}
-            foot={{ left: 'Total · <b>€ 428k</b>', right: 'vs ingresos · 66,7%' }}
-          />
-        </Panel>
-      </div>
-
-      <div className="grid gap-8" style={{ gridTemplateColumns: '2fr 1fr' }}>
-        <Panel title="Cobros 12 meses · emitido vs cobrado">
-          <MultiLine
-            series={[
-              { name: 'Emitido', color: 'var(--cove)', points: [40, 46, 54, 60, 68, 76, 84, 92, 102, 112, 124, 134] },
-              { name: 'Cobrado', color: 'var(--oak-mid)', points: [32, 38, 46, 52, 60, 68, 76, 84, 94, 102, 112, 122] },
-            ]}
-            xLabels={['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May']}
-          />
-        </Panel>
-
         <Panel title="Margen por sede">
           <RatioGrid
             items={[
@@ -588,6 +707,16 @@ export function AccountingPL() {
           />
         </Panel>
       </div>
+
+      <Panel title="Cobros 12 meses · emitido vs cobrado">
+        <MultiLine
+          series={[
+            { name: 'Emitido', color: 'var(--cove)', points: [40, 46, 54, 60, 68, 76, 84, 92, 102, 112, 124, 134] },
+            { name: 'Cobrado', color: 'var(--success)', points: [32, 38, 46, 52, 60, 68, 76, 84, 94, 102, 112, 122] },
+          ]}
+          xLabels={['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May']}
+        />
+      </Panel>
 
       <h2 className="mt-12 mb-4 font-display text-[26px] font-light tracking-[0.04em]">Top partners · Revenue YTD</h2>
       <table className="data-table">

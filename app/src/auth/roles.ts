@@ -11,18 +11,82 @@ export const ROLES: { id: RoleId; label: string; description: string }[] = [
   { id: 'tech_lead', label: 'Tech Lead', description: 'Roadmap, integraciones, audit' },
 ]
 
+export interface NavSubItem {
+  id: string
+  label: string
+  to: string
+}
+
 export interface NavItem {
   id: string
   label: string
   to: string
   badge?: string
   flagship?: boolean
+  subItems?: NavSubItem[]
 }
 
 export interface NavSection {
   id: string
   label: string
   items: NavItem[]
+}
+
+// Subsecciones por departamento — orden importa, primera es la "Resumen"
+const DEPT_SUBNAV: Record<string, NavSubItem[]> = {
+  ventas: [
+    { id: 'ventas-resumen', label: 'Resumen', to: '/dept/ventas' },
+    { id: 'ventas-pipeline', label: 'Pipeline', to: '/dept/ventas/pipeline' },
+    { id: 'ventas-equipo', label: 'Equipo', to: '/dept/ventas/equipo' },
+    { id: 'ventas-forecast', label: 'Forecast', to: '/dept/ventas/forecast' },
+    { id: 'ventas-actividad', label: 'Actividad', to: '/dept/ventas/actividad' },
+  ],
+  accounting: [
+    { id: 'acc-resumen', label: 'Resumen', to: '/dept/accounting' },
+    { id: 'acc-facturas', label: 'Facturas', to: '/dept/accounting/facturas' },
+    { id: 'acc-aging', label: 'Aging & cobros', to: '/dept/accounting/aging' },
+    { id: 'acc-pl', label: 'P&L', to: '/dept/accounting/pl' },
+    { id: 'acc-cierre', label: 'Cierre mes', to: '/dept/accounting/cierre' },
+  ],
+  operations: [
+    { id: 'ops-resumen', label: 'Resumen', to: '/dept/operations' },
+    { id: 'ops-instalaciones', label: 'Instalaciones', to: '/dept/operations/instalaciones' },
+    { id: 'ops-equipos', label: 'Equipos', to: '/dept/operations/equipos' },
+    { id: 'ops-sla', label: 'SLA & capacidad', to: '/dept/operations/sla' },
+  ],
+  'supply-chain': [
+    { id: 'sc-resumen', label: 'Resumen', to: '/dept/supply-chain' },
+    { id: 'sc-inventario', label: 'Inventario', to: '/dept/supply-chain/inventario' },
+    { id: 'sc-oc', label: 'Pipeline OC', to: '/dept/supply-chain/oc' },
+    { id: 'sc-proveedores', label: 'Proveedores', to: '/dept/supply-chain/proveedores' },
+  ],
+  marketing: [
+    { id: 'mkt-resumen', label: 'Resumen', to: '/dept/marketing' },
+    { id: 'mkt-campanas', label: 'Campañas', to: '/dept/marketing/campanas' },
+    { id: 'mkt-leads', label: 'Leads', to: '/dept/marketing/leads' },
+    { id: 'mkt-embudo', label: 'Embudo & ratios', to: '/dept/marketing/embudo' },
+  ],
+  postventa: [
+    { id: 'pv-resumen', label: 'Resumen', to: '/dept/postventa' },
+    { id: 'pv-tickets', label: 'Tickets', to: '/dept/postventa/tickets' },
+    { id: 'pv-resenas', label: 'Reseñas', to: '/dept/postventa/resenas' },
+    { id: 'pv-nps', label: 'NPS & causas', to: '/dept/postventa/nps' },
+  ],
+  tecnologia: [
+    { id: 'tech-resumen', label: 'Resumen', to: '/dept/tecnologia' },
+    { id: 'tech-roadmap', label: 'Roadmap', to: '/dept/tecnologia/roadmap' },
+    { id: 'tech-integraciones', label: 'Integraciones', to: '/dept/tecnologia/integraciones' },
+    { id: 'tech-audit', label: 'Audit log', to: '/dept/tecnologia/audit' },
+  ],
+}
+
+function deptItem(id: string, label: string): NavItem {
+  return {
+    id,
+    label,
+    to: DEPT_SUBNAV[id][0].to,
+    subItems: DEPT_SUBNAV[id],
+  }
 }
 
 /** Returns sidebar sections filtered by role. */
@@ -48,13 +112,13 @@ export function navForRole(role: RoleId): NavSection[] {
     id: 'depts',
     label: 'Departamentos',
     items: [
-      { id: 'ventas', label: 'Ventas', to: '/dept/ventas' },
-      { id: 'accounting', label: 'Accounting', to: '/dept/accounting' },
-      { id: 'operations', label: 'Operations', to: '/dept/operations' },
-      { id: 'supply-chain', label: 'Supply Chain', to: '/dept/supply-chain' },
-      { id: 'marketing', label: 'Marketing', to: '/dept/marketing' },
-      { id: 'postventa', label: 'Postventa', to: '/dept/postventa' },
-      { id: 'tecnologia', label: 'Tecnología', to: '/dept/tecnologia' },
+      deptItem('ventas', 'Ventas'),
+      deptItem('accounting', 'Accounting'),
+      deptItem('operations', 'Operations'),
+      deptItem('supply-chain', 'Supply Chain'),
+      deptItem('marketing', 'Marketing'),
+      deptItem('postventa', 'Postventa'),
+      deptItem('tecnologia', 'Tecnología'),
     ],
   }
 
@@ -62,21 +126,11 @@ export function navForRole(role: RoleId): NavSection[] {
     case 'ceo':
       return [overview, partners, depts]
     case 'director_comercial':
-      return [
-        overview,
-        partners,
-        { ...depts, items: depts.items.filter((i) => i.id === 'ventas') },
-      ]
+      return [overview, partners, { ...depts, items: depts.items.filter((i) => i.id === 'ventas') }]
     case 'comercial':
-      return [
-        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
-        { ...partners, items: partners.items.filter((i) => i.id !== 'flagship' || true) },
-      ]
+      return [{ ...overview, items: overview.items.filter((i) => i.id === 'dashboard') }, partners]
     case 'director_accounting':
-      return [
-        overview,
-        { ...depts, items: depts.items.filter((i) => i.id === 'accounting') },
-      ]
+      return [overview, { ...depts, items: depts.items.filter((i) => i.id === 'accounting') }]
     case 'operations_manager':
       return [
         { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
@@ -97,4 +151,32 @@ export function navForRole(role: RoleId): NavSection[] {
     case 'tech_lead':
       return [overview, partners, depts]
   }
+}
+
+/** Map a route pathname to a human-friendly label for breadcrumbs / topbar. */
+export function labelForRoute(pathname: string): { dept?: string; section: string } {
+  // Look in all subnavs
+  for (const [deptId, subs] of Object.entries(DEPT_SUBNAV)) {
+    const exact = subs.find((s) => s.to === pathname)
+    if (exact) {
+      const deptLabel = ({
+        ventas: 'Ventas',
+        accounting: 'Accounting',
+        operations: 'Operations',
+        'supply-chain': 'Supply Chain',
+        marketing: 'Marketing',
+        postventa: 'Postventa',
+        tecnologia: 'Tecnología',
+      } as Record<string, string>)[deptId]
+      return { dept: deptLabel, section: exact.label }
+    }
+  }
+  const top: Record<string, string> = {
+    '/': 'Dashboard',
+    '/automations': 'Automatizaciones',
+    '/integrations': 'Integraciones',
+    '/partners': 'Partners',
+    '/flagship': 'Flagship Miami',
+  }
+  return { section: top[pathname] ?? 'Dashboard' }
 }

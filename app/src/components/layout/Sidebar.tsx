@@ -1,8 +1,9 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useRole } from '../../auth/RoleContext'
-import { navForRole } from '../../auth/roles'
+import { navForRole, type NavItem } from '../../auth/roles'
 import { initials } from '../../lib/format'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 
 type SedeFilter = 'all' | 'es' | 'us'
 
@@ -10,9 +11,31 @@ export function Sidebar() {
   const { role, currentUserName } = useRole()
   const sections = navForRole(role)
   const [sede, setSede] = useState<SedeFilter>('all')
+  const { pathname } = useLocation()
+
+  // Track which dept (with subItems) is expanded
+  const [openDept, setOpenDept] = useState<string | null>(null)
+
+  // Auto-expand the dept whose section is active
+  useEffect(() => {
+    for (const section of sections) {
+      for (const item of section.items) {
+        if (item.subItems) {
+          const match = item.subItems.find((s) => s.to === pathname)
+          if (match) {
+            setOpenDept(item.id)
+            return
+          }
+        }
+      }
+    }
+  }, [pathname, sections])
 
   return (
-    <aside className="sticky top-0 flex h-screen flex-col overflow-y-auto bg-riva-black text-riva-ivory" style={{ width: 'var(--sidebar-w)' }}>
+    <aside
+      className="sticky top-0 flex h-screen flex-col overflow-y-auto bg-riva-black text-riva-ivory"
+      style={{ width: 'var(--sidebar-w)' }}
+    >
       <div className="border-b border-white/10 px-6 pb-7 pt-6">
         <div className="font-display text-[11px] font-extralight tracking-[0.35em] text-n-300">THE</div>
         <div className="font-display text-[28px] font-light leading-none tracking-[0.18em]">RIVA</div>
@@ -42,33 +65,43 @@ export function Sidebar() {
             <div className="px-6 pb-1.5 pt-3 font-bold text-[9.5px] uppercase tracking-[0.18em] text-n-500">
               {section.label}
             </div>
-            {section.items.map((item) => (
-              <NavLink
-                key={item.id}
-                to={item.to}
-                end={item.to === '/'}
-                className={({ isActive }) =>
-                  `flex items-center justify-between border-l-2 px-6 py-2 text-[13px] tracking-[0.04em] transition ${
-                    isActive
-                      ? 'border-l-oak-mid bg-white/5 text-riva-ivory'
-                      : 'border-l-transparent text-n-300 hover:bg-white/[0.03] hover:text-riva-ivory'
-                  }`
-                }
-              >
-                <span>{item.label}</span>
-                {item.badge && (
-                  <span
-                    className={`px-[7px] py-[1px] text-[10px] tracking-[0.08em] ${
-                      item.flagship
-                        ? 'bg-oak-mid font-semibold text-riva-black'
-                        : 'bg-white/[0.08] text-n-300'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </NavLink>
-            ))}
+            {section.items.map((item) =>
+              item.subItems ? (
+                <ExpandableItem
+                  key={item.id}
+                  item={item}
+                  pathname={pathname}
+                  open={openDept === item.id}
+                  onToggle={() => setOpenDept(openDept === item.id ? null : item.id)}
+                />
+              ) : (
+                <NavLink
+                  key={item.id}
+                  to={item.to}
+                  end={item.to === '/'}
+                  className={({ isActive }) =>
+                    `flex items-center justify-between border-l-2 px-6 py-2 text-[13px] tracking-[0.04em] transition ${
+                      isActive
+                        ? 'border-l-oak-mid bg-white/5 text-riva-ivory'
+                        : 'border-l-transparent text-n-300 hover:bg-white/[0.03] hover:text-riva-ivory'
+                    }`
+                  }
+                >
+                  <span>{item.label}</span>
+                  {item.badge && (
+                    <span
+                      className={`px-[7px] py-[1px] text-[10px] tracking-[0.08em] ${
+                        item.flagship
+                          ? 'bg-oak-mid font-semibold text-riva-black'
+                          : 'bg-white/[0.08] text-n-300'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </NavLink>
+              ),
+            )}
           </div>
         ))}
       </nav>
@@ -85,5 +118,60 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+  )
+}
+
+function ExpandableItem({
+  item,
+  pathname,
+  open,
+  onToggle,
+}: {
+  item: NavItem
+  pathname: string
+  open: boolean
+  onToggle: () => void
+}) {
+  // A dept entry is "active" if any of its subItems matches the current path
+  const isActive = item.subItems?.some((s) => s.to === pathname) ?? false
+
+  return (
+    <div>
+      <button
+        onClick={onToggle}
+        className={`flex w-full items-center justify-between border-l-2 px-6 py-2 text-left text-[13px] tracking-[0.04em] transition ${
+          isActive
+            ? 'border-l-oak-mid bg-white/5 text-riva-ivory'
+            : 'border-l-transparent text-n-300 hover:bg-white/[0.03] hover:text-riva-ivory'
+        }`}
+      >
+        <span>{item.label}</span>
+        <ChevronDown
+          size={14}
+          className={`transition-transform ${open ? 'rotate-180' : ''}`}
+          strokeWidth={1.5}
+        />
+      </button>
+      {open && item.subItems && (
+        <div className="bg-black/30">
+          {item.subItems.map((s) => (
+            <NavLink
+              key={s.id}
+              to={s.to}
+              end
+              className={({ isActive: subActive }) =>
+                `block border-l-2 py-[7px] pl-12 pr-6 text-[12px] tracking-[0.04em] transition ${
+                  subActive
+                    ? 'border-l-oak-mid bg-white/[0.04] text-riva-ivory'
+                    : 'border-l-transparent text-n-500 hover:text-n-300'
+                }`
+              }
+            >
+              {s.label}
+            </NavLink>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

@@ -6,25 +6,11 @@ import { useRole } from '../../auth/RoleContext'
 import { RoleSwitcher } from '../../auth/RoleSwitcher'
 import { dateRelative } from '../../lib/format'
 import { SearchCommand } from '../../features/search/SearchCommand'
-
-const ROUTE_LABELS: Record<string, string> = {
-  '/': 'Dashboard',
-  '/automations': 'Automatizaciones',
-  '/integrations': 'Integraciones',
-  '/partners': 'Partners',
-  '/flagship': 'Flagship Miami',
-  '/dept/ventas': 'Ventas',
-  '/dept/accounting': 'Accounting',
-  '/dept/operations': 'Operations',
-  '/dept/supply-chain': 'Supply Chain',
-  '/dept/marketing': 'Marketing',
-  '/dept/postventa': 'Postventa',
-  '/dept/tecnologia': 'Tecnología',
-}
+import { labelForRoute } from '../../auth/roles'
 
 export function Topbar() {
   const { pathname } = useLocation()
-  const label = ROUTE_LABELS[pathname] ?? 'Dashboard'
+  const crumb = labelForRoute(pathname)
   const { role } = useRole()
   const notifications = useStore((s) => s.notifications)
   const apply = useStore((s) => s.apply)
@@ -70,7 +56,15 @@ export function Topbar() {
       style={{ height: 'var(--topbar-h)' }}
     >
       <div className="text-[12px] uppercase tracking-[0.12em] text-n-700">
-        Holding · <b className="font-semibold text-n-900">{label}</b>
+        {crumb.dept ? (
+          <>
+            Holding · {crumb.dept} · <b className="font-semibold text-n-900">{crumb.section}</b>
+          </>
+        ) : (
+          <>
+            Holding · <b className="font-semibold text-n-900">{crumb.section}</b>
+          </>
+        )}
       </div>
       <div className="flex items-center gap-5">
         <button

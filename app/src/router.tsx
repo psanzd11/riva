@@ -9,6 +9,7 @@ import { AutomationsPage } from './features/automations/AutomationsPage'
 import {
   VentasResumen,
   VentasPipeline,
+  VentasLeads,
   VentasEquipo,
   VentasForecast,
   VentasActividad,
@@ -19,36 +20,42 @@ import {
   AccountingAging,
   AccountingPL,
   AccountingCierre,
+  AccountingEquipo,
 } from './features/departments/accounting/sections'
 import {
   OperationsResumen,
   OperationsInstalaciones,
   OperationsEquipos,
   OperationsSla,
+  OperationsEquipo,
 } from './features/departments/operations/sections'
 import {
   ScResumen,
   ScInventario,
   ScOc,
   ScProveedores,
+  ScEquipo,
 } from './features/departments/supply-chain/sections'
 import {
   MktResumen,
   MktCampanas,
-  MktLeads,
   MktEmbudo,
+  MktEquipo,
 } from './features/departments/marketing/sections'
 import {
   PvResumen,
   PvTickets,
   PvResenas,
   PvNps,
+  PvEquipo,
 } from './features/departments/postventa/sections'
 import {
   TechResumen,
   TechRoadmap,
   TechIntegraciones,
+  TechInternal,
   TechAudit,
+  TechEquipo,
 } from './features/departments/tecnologia/sections'
 
 export const router = createBrowserRouter([
@@ -64,6 +71,7 @@ export const router = createBrowserRouter([
 
       { path: 'dept/ventas', element: <VentasResumen /> },
       { path: 'dept/ventas/pipeline', element: <VentasPipeline /> },
+      { path: 'dept/ventas/leads', element: <VentasLeads /> },
       { path: 'dept/ventas/equipo', element: <VentasEquipo /> },
       { path: 'dept/ventas/forecast', element: <VentasForecast /> },
       { path: 'dept/ventas/actividad', element: <VentasActividad /> },
@@ -73,31 +81,37 @@ export const router = createBrowserRouter([
       { path: 'dept/accounting/aging', element: <AccountingAging /> },
       { path: 'dept/accounting/pl', element: <AccountingPL /> },
       { path: 'dept/accounting/cierre', element: <AccountingCierre /> },
+      { path: 'dept/accounting/equipo', element: <AccountingEquipo /> },
 
       { path: 'dept/operations', element: <OperationsResumen /> },
       { path: 'dept/operations/instalaciones', element: <OperationsInstalaciones /> },
       { path: 'dept/operations/equipos', element: <OperationsEquipos /> },
       { path: 'dept/operations/sla', element: <OperationsSla /> },
+      { path: 'dept/operations/equipo', element: <OperationsEquipo /> },
 
       { path: 'dept/supply-chain', element: <ScResumen /> },
       { path: 'dept/supply-chain/inventario', element: <ScInventario /> },
       { path: 'dept/supply-chain/oc', element: <ScOc /> },
       { path: 'dept/supply-chain/proveedores', element: <ScProveedores /> },
+      { path: 'dept/supply-chain/equipo', element: <ScEquipo /> },
 
       { path: 'dept/marketing', element: <MktResumen /> },
       { path: 'dept/marketing/campanas', element: <MktCampanas /> },
-      { path: 'dept/marketing/leads', element: <MktLeads /> },
       { path: 'dept/marketing/embudo', element: <MktEmbudo /> },
+      { path: 'dept/marketing/equipo', element: <MktEquipo /> },
 
       { path: 'dept/postventa', element: <PvResumen /> },
       { path: 'dept/postventa/tickets', element: <PvTickets /> },
       { path: 'dept/postventa/resenas', element: <PvResenas /> },
       { path: 'dept/postventa/nps', element: <PvNps /> },
+      { path: 'dept/postventa/equipo', element: <PvEquipo /> },
 
       { path: 'dept/tecnologia', element: <TechResumen /> },
       { path: 'dept/tecnologia/roadmap', element: <TechRoadmap /> },
       { path: 'dept/tecnologia/integraciones', element: <TechIntegraciones /> },
+      { path: 'dept/tecnologia/internal', element: <TechInternal /> },
       { path: 'dept/tecnologia/audit', element: <TechAudit /> },
+      { path: 'dept/tecnologia/equipo', element: <TechEquipo /> },
 
       { path: '*', element: <Navigate to="/" replace /> },
     ],

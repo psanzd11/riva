@@ -1,45 +1,72 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useStore } from '../../../data/store'
-import { campaignsRepo, leadsRepo } from '../../../data/repo'
+import { campaignsRepo } from '../../../data/repo'
 import { useRole } from '../../../auth/RoleContext'
 import { PageHead } from '../../../components/layout/PageHead'
 import { Button } from '../../../components/ui/Button'
 import { Panel } from '../../../components/ui/Panel'
 import { Pill } from '../../../components/ui/Pill'
 import { Modal } from '../../../components/ui/Modal'
+import { Drawer } from '../../../components/ui/Drawer'
 import { Field, Input, Select } from '../../../components/ui/Field'
 import { KpiGrid } from '../../../components/kpi/KpiGrid'
 import { KpiCard } from '../../../components/kpi/KpiCard'
 import { ConversionBar } from '../../../components/charts/ConversionBar'
 import { VBarChart } from '../../../components/charts/VBarChart'
 import { MultiLine } from '../../../components/charts/MultiLine'
+import { LineArea } from '../../../components/charts/LineArea'
 import { RatioGrid } from '../../../components/charts/RatioGrid'
 import { LbBar } from '../../../components/data-table/Leaderboard'
-import { money, dateShort } from '../../../lib/format'
-import type { Campaign, Lead } from '../../../data/schema'
+import { money, moneyCompact, dateShort } from '../../../lib/format'
+import { DeptEquipo } from '../shared/DeptEquipo'
+import type { Campaign } from '../../../data/schema'
 
 function MktHeader({ actions }: { actions?: React.ReactNode }) {
   return (
     <PageHead
       eyebrow="Departamento"
       title="Marketing"
-      description="Campañas, generación de leads, contenido. Email marketing aún en HubSpot — pendiente migrar al Hub."
+      description="Campañas, contenido, brand. Genera demanda que pasa a Ventas como leads. Email marketing aún en HubSpot — pendiente migrar al Hub."
       actions={actions}
     />
   )
 }
 
+// ====================================================================
+// RESUMEN — rico
+// ====================================================================
 export function MktResumen() {
   const campaigns = useStore((s) => s.campaigns)
   const leads = useStore((s) => s.leads)
+  const activeCampaigns = campaigns.filter((c) => c.status === 'active')
+  const totalSpend = campaigns.reduce((a, c) => a + c.spend, 0)
+  const totalLeadsByCmp = campaigns.reduce((a, c) => a + c.leadsCount, 0)
+  const avgCpl = totalLeadsByCmp > 0 ? Math.round(totalSpend / totalLeadsByCmp) : 0
+
+  // Funnel-like quick stats
+  const promotion = [184, 88, 44, 21, 8]
+  const promotionLabels = ['Impresiones (k)', 'Sesiones web', 'Leads', 'MQL', 'Won-attributed']
+
   return (
     <>
-      <MktHeader actions={<><Button variant="outline">Calendario</Button><Button>+ Campaña</Button></>} />
-      <KpiGrid>
-        <KpiCard eyebrow="Campañas activas" value={String(campaigns.filter((c) => c.status === 'active').length)} sub="2 ES · 2 USA" />
+      <MktHeader
+        actions={
+          <>
+            <Button variant="outline">Calendario</Button>
+            <Button>+ Campaña</Button>
+          </>
+        }
+      />
+
+      <KpiGrid cols={8}>
+        <KpiCard eyebrow="Campañas activas" value={String(activeCampaigns.length)} sub="2 ES · 2 USA" />
         <KpiCard eyebrow="Leads mes" value={String(leads.length)} delta={{ type: 'up', label: '↑ 24% vs abril' }} />
-        <KpiCard eyebrow="CPL medio" value="€ 28" delta={{ type: 'up', label: '−€ 4 vs Q1' }} />
+        <KpiCard eyebrow="Spend total" value={moneyCompact(totalSpend, 'EUR')} sub="campañas activas" />
+        <KpiCard eyebrow="CPL medio" value={`€ ${avgCpl}`} delta={{ type: 'up', label: '−€ 4 vs Q1' }} />
         <KpiCard eyebrow="Open rate email" value="38%" delta={{ type: 'up', label: '↑ 6 pp' }} />
+        <KpiCard eyebrow="CTR email" value="12,4%" delta={{ type: 'up', label: '↑ 2,1 pp' }} />
+        <KpiCard eyebrow="ROAS paid" value="3,8x" delta={{ type: 'up', label: '↑ 0,4x' }} />
+        <KpiCard eyebrow="Web sessions" value="42k" delta={{ type: 'up', label: '↑ 18%' }} />
       </KpiGrid>
 
       <Panel title="Embudo Lead → Cliente" className="mb-8">
@@ -54,22 +81,104 @@ export function MktResumen() {
         />
       </Panel>
 
-      <p className="text-[13px] text-n-700 max-w-prose">
-        Subsecciones: <b>Campañas</b> (CRUD + métricas), <b>Leads</b> (tabla + import CSV),
-        <b> Embudo & ratios</b> (canales + ratios).
-      </p>
+      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1.4fr 1fr' }}>
+        <Panel title="Leads 12 meses · por canal">
+          <MultiLine
+            series={[
+              { name: 'Orgánico', color: 'var(--cove)', points: [148, 142, 138, 124, 116, 98, 86, 74, 68, 58, 46, 38, 30] },
+              { name: 'Paid', color: 'var(--oak-mid)', points: [168, 162, 158, 150, 142, 130, 118, 108, 98, 86, 76, 68, 60] },
+              { name: 'Partners', color: 'var(--sage)', points: [178, 170, 166, 158, 148, 140, 128, 118, 108, 98, 90, 84, 78] },
+            ]}
+            xLabels={['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', '']}
+          />
+        </Panel>
+
+        <Panel title="Funnel marketing-to-revenue">
+          <div className="px-6 py-5">
+            {promotion.map((v, i) => (
+              <div key={i} className="mb-3 last:mb-0">
+                <div className="mb-1 flex justify-between text-[12px]">
+                  <span className="text-n-900">{promotionLabels[i]}</span>
+                  <span className="font-display text-[14px] text-n-700">{v}{i === 0 ? 'k' : ''}</span>
+                </div>
+                <div className="h-[6px] bg-n-100">
+                  <div className="h-full" style={{ width: `${(v / promotion[0]) * 100}%`, background: ['#2a1a0e', '#3f2616', 'var(--cove)', '#7a5230', 'var(--sage)'][i] }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
+
+      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <Panel title="Ratios marketing">
+          <RatioGrid
+            items={[
+              { label: 'Lead → cliente', value: '4,2%', delta: { type: 'up', label: '↑ 1,1 pp' } },
+              { label: 'CAC', value: '€ 680', delta: { type: 'up', label: '−€ 90' } },
+              { label: 'LTV / CAC', value: '4,8x', delta: { type: 'up', label: '↑ 0,4x' } },
+              { label: 'Payback', value: '6 m', delta: { type: 'up', label: '−1 m' } },
+              { label: 'Brand search', value: '+34%', delta: { type: 'up', label: 'vs 12m' } },
+              { label: 'Eventos asistencia', value: '162', delta: { type: 'up', label: '↑ 18%' } },
+            ]}
+          />
+        </Panel>
+
+        <Panel title="Top campañas activas">
+          <table className="data-table border-0">
+            <thead><tr><th>Campaña</th><th>Spend</th><th>Leads</th><th>CPL</th></tr></thead>
+            <tbody>
+              {activeCampaigns.map((c) => {
+                const cpl = c.leadsCount > 0 ? Math.round(c.spend / c.leadsCount) : 0
+                return (
+                  <tr key={c.id}>
+                    <td>
+                      <div className="font-medium">{c.name}</div>
+                      <div className="text-[11px] text-n-500">{c.channel}</div>
+                    </td>
+                    <td>{money(c.spend, c.currency)}</td>
+                    <td>{c.leadsCount}</td>
+                    <td>{money(cpl, c.currency)}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </Panel>
+      </div>
+
+      <Panel title="Web sessions · 12m">
+        <LineArea
+          points={[28, 30, 32, 34, 33, 35, 37, 38, 40, 39, 41, 42]}
+          xLabels={['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May']}
+          totals={{ left: 'Sessions · <b>42k</b>', right: '<b>↑ 18% YoY</b>' }}
+        />
+      </Panel>
     </>
   )
 }
 
+// ====================================================================
+// CAMPAÑAS — clicables → drawer
+// ====================================================================
 export function MktCampanas() {
   const { currentUserId } = useRole()
   const campaigns = useStore((s) => s.campaigns)
   const [open, setOpen] = useState(false)
+  const [drawerId, setDrawerId] = useState<string | null>(null)
+
   return (
     <>
-      <MktHeader actions={<><Button variant="outline">Exportar</Button><Button onClick={() => setOpen(true)}>+ Campaña</Button></>} />
+      <MktHeader
+        actions={
+          <>
+            <Button variant="outline">Exportar</Button>
+            <Button onClick={() => setOpen(true)}>+ Campaña</Button>
+          </>
+        }
+      />
       <h2 className="mb-4 font-display text-[26px] font-light tracking-[0.04em]">Campañas activas</h2>
+      <p className="mb-4 text-[12px] text-n-500">Click sobre una fila para ver detalle de la campaña.</p>
       <table className="data-table">
         <thead>
           <tr><th>Campaña</th><th>Canal</th><th>Periodo</th><th>Spend</th><th>Leads</th><th>CPL</th><th>Conv.</th><th>Estado</th></tr>
@@ -78,7 +187,7 @@ export function MktCampanas() {
           {campaigns.map((c) => {
             const cpl = c.leadsCount > 0 ? Math.round(c.spend / c.leadsCount) : 0
             return (
-              <tr key={c.id}>
+              <tr key={c.id} onClick={() => setDrawerId(c.id)}>
                 <td>
                   <div className="font-medium">{c.name}</div>
                   <div className="text-[11px] text-n-500">{c.channel}</div>
@@ -96,40 +205,163 @@ export function MktCampanas() {
         </tbody>
       </table>
       <NewCampaignModal open={open} onClose={() => setOpen(false)} userId={currentUserId} />
+      <CampaignDrawer campaignId={drawerId} onClose={() => setDrawerId(null)} />
     </>
   )
 }
 
-export function MktLeads() {
-  const { currentUserId } = useRole()
+interface CampaignDrawerProps {
+  campaignId: string | null
+  onClose: () => void
+}
+
+function CampaignDrawer({ campaignId, onClose }: CampaignDrawerProps) {
+  const campaigns = useStore((s) => s.campaigns)
   const leads = useStore((s) => s.leads)
-  const [importOpen, setImportOpen] = useState(false)
+  const c = campaigns.find((x) => x.id === campaignId)
+  if (!c) return null
+
+  const cpl = c.leadsCount > 0 ? Math.round(c.spend / c.leadsCount) : 0
+  // Synthetic attribution: assume 30% of leads in c.channel
+  const attributedLeads = leads.filter((l) => l.channel.toLowerCase().includes(c.channel.split(' ')[0].toLowerCase())).slice(0, 10)
+  const customers = Math.round(c.leadsCount * c.conversionRate * 0.01)
+  const avgDealValue = 18000
+  const revenue = customers * avgDealValue
+  const roi = c.spend > 0 ? (revenue / c.spend).toFixed(1) : '—'
+
+  // Content / asset list (mock)
+  const assets = [
+    { kind: 'Hero', name: 'Imagen hero TIERRA · campo' },
+    { kind: 'Email', name: 'Welcome · día 0' },
+    { kind: 'Email', name: 'Storytelling · día 4' },
+    { kind: 'Email', name: 'Showroom invitation · día 14' },
+    { kind: 'Social', name: 'Carousel IG · 6 frames' },
+    { kind: 'Landing', name: 'Landing /tierra-cove' },
+  ]
+
   return (
-    <>
-      <MktHeader actions={<><Button variant="outline" onClick={() => setImportOpen(true)}>Importar CSV</Button><Button>+ Lead</Button></>} />
-      <h2 className="mb-4 font-display text-[26px] font-light tracking-[0.04em]">Leads recientes</h2>
-      <table className="data-table">
-        <thead>
-          <tr><th>Lead</th><th>Email</th><th>Canal</th><th>Sede</th><th>Score</th><th>Stage</th></tr>
-        </thead>
-        <tbody>
-          {leads.slice(0, 30).map((l) => (
-            <tr key={l.id}>
-              <td>{l.name}</td>
-              <td className="text-n-500">{l.email}</td>
-              <td>{l.channel}</td>
-              <td>{l.sede.toUpperCase()}</td>
-              <td><LbBar pct={l.score} value={String(l.score)} /></td>
-              <td><Pill variant={l.score >= 75 ? 'ok' : l.score >= 50 ? 'warn' : 'default'}>{l.stage}</Pill></td>
-            </tr>
+    <Drawer open={!!campaignId} onClose={onClose} title={c.name} subtitle={c.channel} width={620}>
+      <div className="px-6 py-5">
+        <div className="mb-5 grid grid-cols-2 gap-px bg-n-300">
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">Periodo</div>
+            <div className="text-[13px] font-medium">{dateShort(c.periodStart)} — {dateShort(c.periodEnd)}</div>
+          </div>
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">Estado</div>
+            <Pill variant={c.status === 'active' ? 'ok' : 'default'}>{c.status === 'active' ? 'En curso' : c.status}</Pill>
+          </div>
+        </div>
+
+        <h4 className="mb-3 font-display text-[14px] uppercase tracking-[0.08em]">Spend & resultados</h4>
+        <div className="mb-6 grid grid-cols-2 gap-px bg-n-300">
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">Spend</div>
+            <div className="font-display text-[22px] font-light">{money(c.spend, c.currency)}</div>
+          </div>
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">Leads</div>
+            <div className="font-display text-[22px] font-light">{c.leadsCount}</div>
+          </div>
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">CPL</div>
+            <div className="font-display text-[22px] font-light">{money(cpl, c.currency)}</div>
+          </div>
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">Conversion</div>
+            <div className="font-display text-[22px] font-light">{c.conversionRate.toFixed(1)}%</div>
+          </div>
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">Clientes</div>
+            <div className="font-display text-[22px] font-light">{customers}</div>
+          </div>
+          <div className="bg-riva-white p-4">
+            <div className="eyebrow !mb-1.5 !text-[10px]">ROAS estimado</div>
+            <div className="font-display text-[22px] font-light">{roi}x</div>
+          </div>
+        </div>
+
+        <h4 className="mb-3 font-display text-[14px] uppercase tracking-[0.08em]">Assets</h4>
+        <div className="mb-6 border border-n-300">
+          {assets.map((a, i) => (
+            <div key={i} className="flex items-center justify-between border-b border-n-100 px-4 py-2.5 last:border-b-0">
+              <div className="text-[13px]">{a.name}</div>
+              <span className="text-[10px] uppercase tracking-[0.12em] text-n-500">{a.kind}</span>
+            </div>
           ))}
-        </tbody>
-      </table>
-      <ImportLeadsModal open={importOpen} onClose={() => setImportOpen(false)} userId={currentUserId} />
-    </>
+        </div>
+
+        <h4 className="mb-3 font-display text-[14px] uppercase tracking-[0.08em]">Leads atribuidos</h4>
+        <div className="border border-n-300">
+          {attributedLeads.length === 0 && (
+            <div className="px-4 py-6 text-center text-[12px] text-n-500">No hay leads atribuidos todavía.</div>
+          )}
+          {attributedLeads.map((l) => (
+            <div key={l.id} className="flex items-center justify-between border-b border-n-100 px-4 py-2.5 last:border-b-0">
+              <div>
+                <div className="text-[13px] font-medium">{l.name}</div>
+                <div className="text-[11px] text-n-500">{l.email}</div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-[11px] uppercase tracking-[0.08em] text-n-500">{l.stage}</div>
+                <LbBar pct={l.score} value={String(l.score)} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>Cerrar</Button>
+          <Button>Editar campaña</Button>
+        </div>
+      </div>
+    </Drawer>
   )
 }
 
+function NewCampaignModal({ open, onClose, userId }: { open: boolean; onClose: () => void; userId: string }) {
+  const [name, setName] = useState('')
+  const [channel, setChannel] = useState('Paid')
+  const [spend, setSpend] = useState(10000)
+
+  const submit = () => {
+    if (!name.trim()) return
+    const c: Omit<Campaign, 'id'> = {
+      name: name.trim(),
+      channel,
+      periodStart: new Date().toISOString(),
+      periodEnd: new Date(Date.now() + 60 * 86400000).toISOString(),
+      spend,
+      currency: 'EUR',
+      leadsCount: 0,
+      conversionRate: 0,
+      status: 'active',
+    }
+    campaignsRepo.create(c, userId)
+    setName('')
+    onClose()
+  }
+
+  return (
+    <Modal open={open} onClose={onClose} title="Nueva campaña">
+      <Field label="Nombre"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
+      <Field label="Canal">
+        <Select value={channel} onChange={(e) => setChannel(e.target.value)}>
+          {['Paid', 'Eventos', 'Email', 'PR', 'Partners'].map((c) => <option key={c} value={c}>{c}</option>)}
+        </Select>
+      </Field>
+      <Field label="Spend (€)"><Input type="number" value={spend} onChange={(e) => setSpend(Number(e.target.value))} /></Field>
+      <div className="mt-4 flex justify-end gap-2">
+        <Button variant="outline" onClick={onClose}>Cancelar</Button>
+        <Button onClick={submit}>Crear campaña</Button>
+      </div>
+    </Modal>
+  )
+}
+
+// ====================================================================
+// EMBUDO & RATIOS
+// ====================================================================
 export function MktEmbudo() {
   const leads = useStore((s) => s.leads)
   const byChannel = leads.reduce<Record<string, number>>((acc, l) => {
@@ -177,117 +409,22 @@ export function MktEmbudo() {
           />
         </Panel>
       </div>
-      <Panel title="Leads 12 meses por canal" className="mt-8">
-        <MultiLine
-          series={[
-            { name: 'Orgánico', color: 'var(--cove)', points: [148, 142, 138, 124, 116, 98, 86, 74, 68, 58, 46, 38, 30] },
-            { name: 'Paid', color: 'var(--oak-mid)', points: [168, 162, 158, 150, 142, 130, 118, 108, 98, 86, 76, 68, 60] },
-            { name: 'Partners', color: 'var(--sage)', points: [178, 170, 166, 158, 148, 140, 128, 118, 108, 98, 90, 84, 78] },
-          ]}
-          xLabels={['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', '']}
-        />
-      </Panel>
     </>
   )
 }
 
-function ImportLeadsModal({ open, onClose, userId }: { open: boolean; onClose: () => void; userId: string }) {
-  const [text, setText] = useState('')
-  const fileRef = useRef<HTMLInputElement>(null)
-  void fileRef
-
-  const parsePreview = (raw: string): Omit<Lead, 'id'>[] => {
-    const lines = raw.trim().split(/\r?\n/).filter(Boolean)
-    return lines.slice(0, 50).map((line) => {
-      const [name, email, channel, sede] = line.split(',').map((s) => s.trim())
-      return {
-        name: name ?? 'Lead',
-        email: email ?? 'lead@example.com',
-        sede: (sede as 'es' | 'us') ?? 'es',
-        channel: channel ?? 'Manual',
-        score: 50,
-        stage: 'new' as const,
-        ownerId: userId,
-        createdAt: new Date().toISOString(),
-      } satisfies Omit<Lead, 'id'>
-    })
-  }
-
-  const previews = parsePreview(text)
-  const doImport = () => {
-    previews.forEach((l) => leadsRepo.create(l, userId))
-    setText('')
-    onClose()
-  }
-
+// ====================================================================
+// EQUIPO
+// ====================================================================
+export function MktEquipo() {
   return (
-    <Modal open={open} onClose={onClose} title="Importar leads CSV">
-      <p className="mb-4 text-[13px] text-n-700">Formato: <code className="text-cove">name,email,channel,sede</code></p>
-      <div className="mb-4">
-        <input
-          type="file"
-          accept=".csv,text/csv"
-          onChange={async (e) => {
-            const f = e.target.files?.[0]
-            if (f) setText(await f.text())
-          }}
-          className="text-[12px]"
-        />
-      </div>
-      <Field label="O pega CSV">
-        <textarea
-          rows={6}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="w-full border border-n-300 bg-transparent p-3 text-[13px] focus:border-riva-black focus:outline-none"
-          placeholder="Casa Mendel,info@casamendel.es,Partners,es"
-        />
-      </Field>
-      <div className="mb-4 text-[12px] text-n-500">{previews.length} leads detectados.</div>
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={onClose}>Cancelar</Button>
-        <Button onClick={doImport} disabled={previews.length === 0}>Importar {previews.length}</Button>
-      </div>
-    </Modal>
-  )
-}
-
-function NewCampaignModal({ open, onClose, userId }: { open: boolean; onClose: () => void; userId: string }) {
-  const [name, setName] = useState('')
-  const [channel, setChannel] = useState('Paid')
-  const [spend, setSpend] = useState(10000)
-
-  const submit = () => {
-    if (!name.trim()) return
-    const c: Omit<Campaign, 'id'> = {
-      name: name.trim(),
-      channel,
-      periodStart: new Date().toISOString(),
-      periodEnd: new Date(Date.now() + 60 * 86400000).toISOString(),
-      spend,
-      currency: 'EUR',
-      leadsCount: 0,
-      conversionRate: 0,
-      status: 'active',
-    }
-    campaignsRepo.create(c, userId)
-    setName('')
-    onClose()
-  }
-
-  return (
-    <Modal open={open} onClose={onClose} title="Nueva campaña">
-      <Field label="Nombre"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
-      <Field label="Canal">
-        <Select value={channel} onChange={(e) => setChannel(e.target.value)}>
-          {['Paid', 'Eventos', 'Email', 'PR', 'Partners'].map((c) => <option key={c} value={c}>{c}</option>)}
-        </Select>
-      </Field>
-      <Field label="Spend (€)"><Input type="number" value={spend} onChange={(e) => setSpend(Number(e.target.value))} /></Field>
-      <div className="mt-4 flex justify-end gap-2">
-        <Button variant="outline" onClick={onClose}>Cancelar</Button>
-        <Button onClick={submit}>Crear campaña</Button>
-      </div>
-    </Modal>
+    <>
+      <MktHeader />
+      <DeptEquipo
+        dept="marketing"
+        title="Equipo de Marketing"
+        description="Content + paid media + PR/partnerships. Producen las campañas que se convierten en leads para Ventas."
+      />
+    </>
   )
 }

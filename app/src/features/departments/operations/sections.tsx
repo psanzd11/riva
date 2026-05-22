@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useStore } from '../../../data/store'
 import { installationsRepo, ticketsRepo } from '../../../data/repo'
 import { useRole } from '../../../auth/RoleContext'
@@ -13,8 +13,12 @@ import { Donut } from '../../../components/charts/Donut'
 import { Heatmap } from '../../../components/charts/Heatmap'
 import { RatioGrid } from '../../../components/charts/RatioGrid'
 import { Timeline } from '../../../components/charts/Timeline'
+import { VBarChart } from '../../../components/charts/VBarChart'
+import { MultiLine } from '../../../components/charts/MultiLine'
 import { LbBar, LbAvatar, LbRank } from '../../../components/data-table/Leaderboard'
+import { Sparkline } from '../../../components/charts/Sparkline'
 import { dateShort } from '../../../lib/format'
+import { DeptEquipo } from '../shared/DeptEquipo'
 
 const WINDOWS = [
   { value: '14d', label: '14 días' },
@@ -23,6 +27,15 @@ const WINDOWS = [
 ] as const
 
 const HEAT_CELLS: (0 | 1 | 2 | 3 | 4 | -1)[] = [1, 2, 1, 3, 4, 2, 0, 1, 3, 2, 3, 3, 4, 0, 2, 2, 3, 4, 3, 2, 1, 1, 2, 4, 3, 2, 1, 0, 0, 1, 2, 2, -1, 1, 0]
+
+// 5 crews × 4 weeks heatmap for capacity
+const CAPACITY_HEAT: (0 | 1 | 2 | 3 | 4 | -1)[] = [
+  3, 4, 3, 2,  // Madrid A
+  4, 3, 4, 3,  // Madrid B
+  2, 3, 3, 2,  // Barcelona
+  4, 4, 3, 3,  // NY East
+  2, 2, 3, 3,  // Miami
+]
 
 function OpsHeader({ actions }: { actions?: React.ReactNode }) {
   return (
@@ -35,30 +48,90 @@ function OpsHeader({ actions }: { actions?: React.ReactNode }) {
   )
 }
 
+// ====================================================================
+// RESUMEN — rico
+// ====================================================================
 export function OperationsResumen() {
   const installations = useStore((s) => s.installations)
+  const crews = useStore((s) => s.crews)
+  const totalCapacity = crews.reduce((a, c) => a + c.capacity, 0)
+  const inUse = installations.length
+  const utilization = Math.round((inUse / Math.max(1, totalCapacity)) * 100)
+
   return (
     <>
-      <OpsHeader actions={<><Button variant="outline">Procesos</Button><Button>+ Tarea</Button></>} />
-      <KpiGrid>
+      <OpsHeader
+        actions={
+          <>
+            <Button variant="outline">Procesos</Button>
+            <Button>+ Tarea</Button>
+          </>
+        }
+      />
+
+      <KpiGrid cols={8}>
         <KpiCard eyebrow="Pedidos abiertos" value="34" delta={{ type: 'up', label: '↑ 6 vs sem. ant.' }} />
-        <KpiCard eyebrow="Instalaciones semana" value={String(installations.length)} sub="8 ES · 4 USA" />
+        <KpiCard eyebrow="Instalaciones programadas" value={String(installations.length)} sub="próximos 30 días" />
         <KpiCard eyebrow="SLA cumplido" value="98%" delta={{ type: 'up', label: '↑ 1,2 pp' }} />
         <KpiCard eyebrow="Tiempo medio entrega" value="11 d" delta={{ type: 'up', label: '−2 d vs Q1' }} />
+        <KpiCard eyebrow="Crews activos" value={String(crews.length)} sub={`${crews.filter((c) => c.sede === 'es').length} ES · ${crews.filter((c) => c.sede === 'us').length} USA`} />
+        <KpiCard eyebrow="Capacity uso" value={`${utilization}%`} delta={{ type: 'neutral', label: `${inUse}/${totalCapacity} slots` }} />
+        <KpiCard eyebrow="Damage rate" value="0,4%" delta={{ type: 'up', label: '−0,2 pp' }} />
+        <KpiCard eyebrow="NPS instalación" value="+74" delta={{ type: 'up', label: '↑ 5' }} />
       </KpiGrid>
 
-      <Panel title="Heatmap instalaciones · 5 semanas" className="mb-8">
-        <Heatmap cells={HEAT_CELLS} cols={7} legendLeft="L · M · X · J · V · S · D" />
-      </Panel>
+      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+        <Panel title="Mix de proyectos · YTD">
+          <Donut
+            slices={[
+              { label: 'Residencial alto', value: 48, color: '#2a1a0e' },
+              { label: 'Residencial', value: 32, color: 'var(--cove)' },
+              { label: 'Hospitality', value: 14, color: 'var(--oak-mid)' },
+              { label: 'Comercial / oficinas', value: 6, color: 'var(--sage)' },
+            ]}
+          />
+        </Panel>
 
-      <p className="text-[13px] text-n-700 max-w-prose">
-        Subsecciones: <b>Instalaciones</b> (timeline + asignación crew), <b>Equipos</b> (leaderboard),
-        <b> SLA & capacidad</b> (mix proyectos + ratios).
-      </p>
+        <Panel title="Heatmap instalaciones · 5 semanas">
+          <Heatmap cells={HEAT_CELLS} cols={7} legendLeft="L · M · X · J · V · S · D" />
+        </Panel>
+
+        <Panel title="Ratios operacionales">
+          <RatioGrid
+            items={[
+              { label: 'ES on-time', value: '98,4%', spark: <Sparkline points={[96, 97, 97, 98, 98, 98, 98]} /> },
+              { label: 'USA on-time', value: '96,1%', spark: <Sparkline points={[93, 94, 94, 95, 95, 96, 96]} /> },
+              { label: 'Damage rate', value: '0,4%', delta: { type: 'up', label: '−0,2 pp' } },
+              { label: 'Re-install', value: '2', delta: { type: 'neutral', label: 'vs 3 ant.' } },
+            ]}
+          />
+        </Panel>
+      </div>
+
+      <Panel title="Instalaciones programadas · próximos 14 días">
+        <table className="data-table border-0">
+          <thead><tr><th>Proyecto</th><th>Sede</th><th>m²</th><th>Crew</th><th>Inicio</th><th>Estado</th></tr></thead>
+          <tbody>
+            {installations.slice(0, 6).map((ins) => (
+              <tr key={ins.id}>
+                <td>{ins.project}</td>
+                <td>{ins.sede.toUpperCase()}</td>
+                <td>{ins.m2}</td>
+                <td>{crews.find((c) => c.id === ins.crewId)?.name ?? '—'}</td>
+                <td>{dateShort(ins.startAt)}</td>
+                <td><Pill variant={ins.status === 'incident' ? 'err' : ins.status === 'done' ? 'ok' : 'warn'}>{ins.status}</Pill></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Panel>
     </>
   )
 }
 
+// ====================================================================
+// INSTALACIONES
+// ====================================================================
 export function OperationsInstalaciones() {
   const { currentUserId } = useRole()
   const installations = useStore((s) => s.installations)
@@ -86,6 +159,7 @@ export function OperationsInstalaciones() {
       slaHours: 24,
       createdAt: new Date().toISOString(),
       dealId: target.dealId,
+      category: 'customer',
     }, currentUserId)
     useStore.getState().emitAutomation('damageReport.submitted', { installationId: target.id })
   }
@@ -102,7 +176,15 @@ export function OperationsInstalaciones() {
 
   return (
     <>
-      <OpsHeader actions={<><Button variant="outline" onClick={damageReport}>Damage report</Button><Button>+ Instalación</Button></>} />
+      <OpsHeader
+        actions={
+          <>
+            <Button variant="outline" onClick={damageReport}>Damage report</Button>
+            <Button>+ Instalación</Button>
+          </>
+        }
+      />
+
       <div className="mb-4 flex items-baseline justify-between">
         <h2 className="font-display text-[26px] font-light tracking-[0.04em]">Próximas instalaciones</h2>
         <FilterTabs options={WINDOWS} value={windowFilter} onChange={setWindowFilter} />
@@ -147,6 +229,9 @@ export function OperationsInstalaciones() {
   )
 }
 
+// ====================================================================
+// CREWS (equipos de instalación, no del dept entero)
+// ====================================================================
 export function OperationsEquipos() {
   const installations = useStore((s) => s.installations)
   const crews = useStore((s) => s.crews)
@@ -160,7 +245,10 @@ export function OperationsEquipos() {
   return (
     <>
       <OpsHeader />
-      <h2 className="mb-4 font-display text-[26px] font-light tracking-[0.04em]">Equipos de instalación</h2>
+      <h2 className="mb-4 font-display text-[26px] font-light tracking-[0.04em]">Crews de instalación</h2>
+      <p className="mb-4 text-[12px] text-n-500">
+        Equipos físicos de instalación con capacidad y especialidad. Distintos del equipo orgánico del dept (ver subsección Equipo).
+      </p>
       <table className="data-table">
         <thead>
           <tr><th></th><th>Equipo</th><th>Sede</th><th>Proyectos mes</th><th>SLA</th><th>Damage rate</th><th>NPS</th></tr>
@@ -185,19 +273,31 @@ export function OperationsEquipos() {
               <td><LbBar variant="sage" pct={80 - idx * 6} value={`+${74 - idx * 3}`} /></td>
             </tr>
           ))}
-          {leaderboard.length === 0 && <tr><td colSpan={7} className="text-center text-n-500">Sin equipos.</td></tr>}
+          {leaderboard.length === 0 && <tr><td colSpan={7} className="text-center text-n-500">Sin crews.</td></tr>}
         </tbody>
       </table>
     </>
   )
 }
 
+// ====================================================================
+// SLA & CAPACIDAD — rico
+// ====================================================================
 export function OperationsSla() {
+  const crews = useStore((s) => s.crews)
   return (
     <>
       <OpsHeader />
-      <div className="grid gap-8" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <Panel title="Mix de proyectos" action={<a className="link text-[11px] cursor-pointer">YTD</a>}>
+
+      <KpiGrid cols={4}>
+        <KpiCard eyebrow="SLA global" value="98%" delta={{ type: 'up', label: '↑ 1,2 pp' }} />
+        <KpiCard eyebrow="SLA ES" value="98,4%" delta={{ type: 'up', label: '↑ 0,8 pp' }} />
+        <KpiCard eyebrow="SLA USA" value="96,1%" delta={{ type: 'up', label: '↑ 2,1 pp' }} />
+        <KpiCard eyebrow="Capacity uso" value="82%" delta={{ type: 'neutral', label: 'objetivo 85%' }} />
+      </KpiGrid>
+
+      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <Panel title="Mix de proyectos · YTD">
           <Donut
             slices={[
               { label: 'Residencial alto', value: 48, color: '#2a1a0e' },
@@ -207,7 +307,7 @@ export function OperationsSla() {
             ]}
           />
         </Panel>
-        <Panel title="SLA por sede" action={<a className="link text-[11px] cursor-pointer">Detalle</a>}>
+        <Panel title="SLA detallado">
           <RatioGrid
             items={[
               { label: 'ES · on-time', value: '98,4%', delta: { type: 'up', label: '↑ 0,8 pp' } },
@@ -220,6 +320,87 @@ export function OperationsSla() {
           />
         </Panel>
       </div>
+
+      <Panel title="Capacity heatmap · próximas 4 semanas × crew" className="mb-8">
+        <div className="px-6 py-5">
+          <div className="grid items-center gap-2" style={{ gridTemplateColumns: '160px repeat(4, 1fr)' }}>
+            <div className="text-[10px] uppercase tracking-[0.12em] text-n-500">Crew</div>
+            <div className="text-center text-[10px] uppercase tracking-[0.12em] text-n-500">Sem 1</div>
+            <div className="text-center text-[10px] uppercase tracking-[0.12em] text-n-500">Sem 2</div>
+            <div className="text-center text-[10px] uppercase tracking-[0.12em] text-n-500">Sem 3</div>
+            <div className="text-center text-[10px] uppercase tracking-[0.12em] text-n-500">Sem 4</div>
+            {crews.map((c, ci) => (
+              <Fragment key={c.id}>
+                <div className="text-[12px] text-n-900">{c.name}</div>
+                {[0, 1, 2, 3].map((wi) => {
+                  const lvl = CAPACITY_HEAT[ci * 4 + wi] ?? 0
+                  const bg = lvl === 4 ? 'var(--sage-dark)' : lvl === 3 ? 'var(--sage)' : lvl === 2 ? 'var(--sage-light)' : 'var(--sage-soft)'
+                  const pct = lvl * 25
+                  return (
+                    <div
+                      key={wi}
+                      className="flex h-10 items-center justify-center text-[11px] font-medium text-riva-black"
+                      style={{ background: bg }}
+                    >
+                      {pct}%
+                    </div>
+                  )
+                })}
+              </Fragment>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center justify-between text-[10px] uppercase tracking-[0.08em] text-n-500">
+            <span>Capacity uso semanal por crew</span>
+            <div className="flex items-center gap-1">
+              <span>baja</span>
+              <i className="h-3 w-3" style={{ background: 'var(--sage-soft)' }} />
+              <i className="h-3 w-3" style={{ background: 'var(--sage-light)' }} />
+              <i className="h-3 w-3" style={{ background: 'var(--sage)' }} />
+              <i className="h-3 w-3" style={{ background: 'var(--sage-dark)' }} />
+              <span>saturada</span>
+            </div>
+          </div>
+        </div>
+      </Panel>
+
+      <div className="grid gap-8" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <Panel title="Tiempo medio entrega por tipo">
+          <VBarChart
+            bars={[
+              { label: 'Residencial', value: '9 d', heightPct: 60, variant: 'sage' },
+              { label: 'Resid. alto', value: '11 d', heightPct: 73, variant: 'cove' },
+              { label: 'Hospitality', value: '18 d', heightPct: 100, variant: 'oak' },
+              { label: 'Comercial', value: '14 d', heightPct: 88, variant: 'mid' },
+            ]}
+            foot={{ left: 'Objetivo · 12 d', right: 'Media · 11 d' }}
+          />
+        </Panel>
+        <Panel title="SLA evolución 12 meses">
+          <MultiLine
+            series={[
+              { name: 'ES', color: 'var(--cove)', points: [180, 170, 160, 150, 140, 130, 120, 110, 100, 90, 80, 70, 60] },
+              { name: 'USA', color: 'var(--oak-mid)', points: [185, 180, 170, 160, 150, 140, 132, 122, 112, 102, 92, 84, 76] },
+            ]}
+            xLabels={['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', '']}
+          />
+        </Panel>
+      </div>
+    </>
+  )
+}
+
+// ====================================================================
+// EQUIPO
+// ====================================================================
+export function OperationsEquipo() {
+  return (
+    <>
+      <OpsHeader />
+      <DeptEquipo
+        dept="operations"
+        title="Equipo de Operations"
+        description="Operations Manager + logística + coordinación de instalaciones + quality assurance. Los crews físicos de instalación se ven en la subsección Crews."
+      />
     </>
   )
 }

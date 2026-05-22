@@ -25,6 +25,12 @@ export const userSchema = z.object({
   sede,
   avatarColor: z.string(),
   active: z.boolean(),
+  /** Department membership for "Equipo" sub-views. */
+  dept: z.enum([
+    'ventas', 'accounting', 'operations', 'supply-chain', 'marketing', 'postventa', 'tecnologia', 'leadership',
+  ]),
+  /** Free-form title for dept Equipo display, e.g. "Accountant ES". */
+  deptRole: z.string().optional(),
 })
 export type User = z.infer<typeof userSchema>
 
@@ -84,6 +90,12 @@ export const invoiceSchema = z.object({
   agingBucket: z.enum(['current', '0_30', '31_60', '61_90', '90_plus']),
   paymentLink: z.string().optional(),
   qbExternalId: z.string().optional(),
+  /** RIVA payment flow: deposit 60% on order, final 40% before warehouse ship. */
+  kind: z.enum(['deposit', 'final', 'full']),
+  /** For 'final' kind, references the deposit invoice. */
+  parentInvoiceId: z.string().optional(),
+  /** Total order value (deposit + final amounts equal this). */
+  orderTotal: z.number(),
 })
 export type Invoice = z.infer<typeof invoiceSchema>
 
@@ -134,6 +146,10 @@ export const ticketSchema = z.object({
   slaHours: z.number(),
   createdAt: isoDate,
   closedAt: isoDate.optional(),
+  /** 'customer' = postventa-facing, 'internal' = Hub/CRM/IT issues from employees. */
+  category: z.enum(['customer', 'internal']),
+  /** For internal tickets: requester is a user. */
+  requesterId: z.string().optional(),
 })
 export type Ticket = z.infer<typeof ticketSchema>
 
@@ -159,6 +175,12 @@ export const skuSchema = z.object({
   supplierId: z.string(),
   leadTimeDays: z.number(),
   demandLast90: z.number(),
+  /** RIVA wood grade: premium = top-tier (Cove, Vedetta) · regular = standard line. */
+  grade: z.enum(['premium', 'regular']),
+  /** Wood type / species (oak, ash, walnut...) - distinct from collection. */
+  woodType: z.string(),
+  /** Price per m² in EUR. Premium ~30% above regular. */
+  pricePerM2: z.number(),
 })
 export type Sku = z.infer<typeof skuSchema>
 

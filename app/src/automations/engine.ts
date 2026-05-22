@@ -78,12 +78,15 @@ function executeAction(
     }
     case 'create_invoice': {
       const dealId = (payload.id as string) ?? (payload.dealId as string) ?? ''
-      const amount = (payload.amount as number) ?? 0
+      const total = (payload.amount as number) ?? 0
       const currency = ((payload.currency as Invoice['currency']) ?? 'EUR')
       const partnerId = (payload.partnerId as string) ?? ''
       const today = new Date()
       const due = new Date(today)
       due.setDate(due.getDate() + 30)
+      const kind = (params.kind as Invoice['kind']) ?? 'deposit'
+      const factor = kind === 'deposit' ? 0.6 : kind === 'final' ? 0.4 : 1
+      const amount = Math.round(total * factor)
       const next: Invoice = {
         id: makeId('inv'),
         number: `2026-${String(500 + Math.floor(Math.random() * 99)).padStart(4, '0')}`,
@@ -95,6 +98,9 @@ function executeAction(
         dueAt: due.toISOString(),
         status: (params.status as Invoice['status']) ?? 'draft',
         agingBucket: 'current',
+        kind,
+        orderTotal: total,
+        parentInvoiceId: (payload.parentInvoiceId as string | undefined) ?? undefined,
       }
       const list = useStore.getState().invoices
       useStore.setState({ invoices: [next, ...list] })
@@ -112,6 +118,7 @@ function executeAction(
         slaHours: (params.slaHours as number) ?? 48,
         createdAt: new Date().toISOString(),
         partnerId: payload.partnerId as string | undefined,
+        category: (params.category as Ticket['category']) ?? 'customer',
       }
       const list = useStore.getState().tickets
       useStore.setState({ tickets: [next, ...list] })

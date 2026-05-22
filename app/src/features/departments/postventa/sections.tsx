@@ -12,9 +12,13 @@ import { FilterTabs } from '../../../components/ui/FilterTabs'
 import { Gauge } from '../../../components/charts/Gauge'
 import { VBarChart } from '../../../components/charts/VBarChart'
 import { MultiLine } from '../../../components/charts/MultiLine'
+import { LineArea } from '../../../components/charts/LineArea'
+import { RatioGrid } from '../../../components/charts/RatioGrid'
 import { LbBar } from '../../../components/data-table/Leaderboard'
+import { Sparkline } from '../../../components/charts/Sparkline'
 import { dateRelative } from '../../../lib/format'
 import { TicketDrawer } from './TicketDrawer'
+import { DeptEquipo } from '../shared/DeptEquipo'
 
 const FILTERS = [
   { value: 'all', label: 'Todos' },
@@ -27,7 +31,7 @@ function PvHeader({ actions }: { actions?: React.ReactNode }) {
     <PageHead
       eyebrow="Departamento"
       title="Postventa"
-      description="Tickets, reseñas, NPS, garantías y mantenimiento. Una reseña ≤3★ abre ticket automático y asigna a equipo."
+      description="Tickets de clientes, reseñas, NPS, garantías y mantenimiento. Una reseña ≤3★ abre ticket automático."
       actions={actions}
     />
   )
@@ -37,38 +41,118 @@ function useNps() {
   const reviews = useStore((s) => s.reviews)
   const promoters = reviews.filter((r) => r.score >= 4).length
   const detractors = reviews.filter((r) => r.score <= 2).length
+  const passives = reviews.length - promoters - detractors
   const nps = reviews.length > 0 ? Math.round(((promoters - detractors) / reviews.length) * 100) : 0
-  return { reviews, promoters, detractors, nps }
+  return { reviews, promoters, detractors, passives, nps }
 }
 
+// ====================================================================
+// RESUMEN — rico
+// ====================================================================
 export function PvResumen() {
-  const tickets = useStore((s) => s.tickets)
-  const { reviews, nps } = useNps()
+  const tickets = useStore((s) => s.tickets).filter((t) => t.category === 'customer')
+  const { reviews, nps, promoters, detractors, passives } = useNps()
   const open = tickets.filter((t) => t.status !== 'closed')
+  const high = open.filter((t) => t.priority === 'high')
+  const avgScore = reviews.length > 0 ? (reviews.reduce((a, r) => a + r.score, 0) / reviews.length).toFixed(1) : '—'
+
   return (
     <>
-      <PvHeader actions={<><Button variant="outline">Encuestas</Button><Button>+ Ticket</Button></>} />
-      <KpiGrid>
+      <PvHeader
+        actions={
+          <>
+            <Button variant="outline">Encuestas</Button>
+            <Button>+ Ticket</Button>
+          </>
+        }
+      />
+
+      <KpiGrid cols={8}>
         <KpiCard eyebrow="Tickets abiertos" value={String(open.length)} delta={{ type: 'up', label: '−3 vs sem. ant.' }} />
+        <KpiCard eyebrow="Tickets urgentes" value={String(high.length)} delta={{ type: 'down', label: high.length > 0 ? 'requieren atención' : 'sin urgentes' }} />
         <KpiCard eyebrow="NPS 30d" value={`+${nps}`} delta={{ type: 'up', label: '↑ 4 pts' }} />
+        <KpiCard eyebrow="Reseñas mes" value={String(reviews.length)} sub={`${avgScore}★ promedio`} />
         <KpiCard eyebrow="Tiempo respuesta" value="3,2 h" delta={{ type: 'up', label: '−0,8 h' }} />
-        <KpiCard eyebrow="Reseñas mes" value={String(reviews.length)} sub="4,7★ promedio" />
+        <KpiCard eyebrow="Resolución media" value="1,8 d" delta={{ type: 'up', label: '−0,3 d' }} />
+        <KpiCard eyebrow="CSAT cierre" value="92%" delta={{ type: 'up', label: '↑ 3 pp' }} />
+        <KpiCard eyebrow="Reopen rate" value="2,1%" delta={{ type: 'up', label: '−0,4 pp' }} />
       </KpiGrid>
 
-      <Panel title="Net Promoter Score" className="mb-8">
-        <Gauge score={nps} />
-      </Panel>
+      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+        <Panel title="Net Promoter Score">
+          <Gauge score={nps} />
+        </Panel>
+        <Panel title="Distribución reseñas">
+          <VBarChart
+            bars={[
+              { label: '5★', value: String(reviews.filter((r) => r.score === 5).length), heightPct: 95, variant: 'sage' },
+              { label: '4★', value: String(reviews.filter((r) => r.score === 4).length), heightPct: 20, variant: 'cove' },
+              { label: '3★', value: String(reviews.filter((r) => r.score === 3).length), heightPct: 6, variant: 'oak' },
+              { label: '2★', value: String(reviews.filter((r) => r.score === 2).length), heightPct: 6, variant: 'mid' },
+              { label: '1★', value: String(reviews.filter((r) => r.score === 1).length), heightPct: 1, variant: 'error' },
+            ]}
+            foot={{ left: `Promotores · ${promoters}`, right: `Detractores · ${detractors}` }}
+          />
+        </Panel>
+        <Panel title="Ratios soporte">
+          <RatioGrid
+            items={[
+              { label: 'NPS', value: `+${nps}`, spark: <Sparkline points={[42, 48, 52, 56, 58, 60, nps]} /> },
+              { label: 'Promotores', value: `${Math.round((promoters / reviews.length) * 100)}%`, delta: { type: 'up', label: 'creciendo' } },
+              { label: 'Pasivos', value: `${Math.round((passives / Math.max(1, reviews.length)) * 100)}%`, delta: { type: 'neutral', label: 'estable' } },
+              { label: 'Resp. < 4h', value: '87%', delta: { type: 'up', label: '↑ 6 pp' } },
+            ]}
+          />
+        </Panel>
+      </div>
 
-      <p className="text-[13px] text-n-700 max-w-prose">
-        Subsecciones: <b>Tickets</b> (lista + drawer), <b>Reseñas</b> (distribución + simular 2★),
-        <b> NPS & causas</b> (gauge + evolución 12m + top causas).
-      </p>
+      <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '2fr 1fr' }}>
+        <Panel title="Volumen tickets · 12 meses">
+          <LineArea
+            points={[16, 14, 18, 15, 12, 14, 13, 11, 12, 10, 8, 11]}
+            xLabels={['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May']}
+            totals={{ left: 'Total 12m · <b>154 tickets</b>', right: '<b>↓ 12% YoY</b>' }}
+          />
+        </Panel>
+        <Panel title="Top causas">
+          <table className="data-table border-0">
+            <thead><tr><th>Causa</th><th>%</th></tr></thead>
+            <tbody>
+              <tr><td>Defecto acabado</td><td><LbBar pct={28} value="28%" /></td></tr>
+              <tr><td>Mantenimiento</td><td><LbBar variant="sage" pct={24} value="24%" /></td></tr>
+              <tr><td>Pedido incompleto</td><td><LbBar variant="oak" pct={18} value="18%" /></td></tr>
+              <tr><td>Garantía</td><td><LbBar pct={16} value="16%" /></td></tr>
+              <tr><td>Otros</td><td><LbBar pct={14} value="14%" /></td></tr>
+            </tbody>
+          </table>
+        </Panel>
+      </div>
+
+      <h2 className="mb-4 font-display text-[26px] font-light tracking-[0.04em]">Tickets abiertos · urgentes</h2>
+      <table className="data-table">
+        <thead><tr><th>Ticket</th><th>Cliente</th><th>Tipo</th><th>Tiempo abierto</th><th>Prioridad</th></tr></thead>
+        <tbody>
+          {high.slice(0, 5).map((t) => (
+            <tr key={t.id}>
+              <td>#{t.id.replace('tkt_', '')}</td>
+              <td>{t.clientName}</td>
+              <td>{t.type}</td>
+              <td>{dateRelative(t.createdAt)}</td>
+              <td><Pill variant="err">{t.priority}</Pill></td>
+            </tr>
+          ))}
+          {high.length === 0 && <tr><td colSpan={5} className="text-center text-n-500">Sin tickets urgentes ahora mismo.</td></tr>}
+        </tbody>
+      </table>
     </>
   )
 }
 
+// ====================================================================
+// TICKETS
+// ====================================================================
 export function PvTickets() {
-  const tickets = useStore((s) => s.tickets)
+  const tickets = useStore((s) => s.tickets).filter((t) => t.category === 'customer')
   const users = useStore((s) => s.users)
   const [filter, setFilter] = useState<(typeof FILTERS)[number]['value']>('all')
   const [drawerId, setDrawerId] = useState<string | null>(null)
@@ -84,7 +168,7 @@ export function PvTickets() {
     <>
       <PvHeader actions={<><Button variant="outline">Encuestas</Button><Button>+ Ticket</Button></>} />
       <div className="mb-4 flex items-baseline justify-between">
-        <h2 className="font-display text-[26px] font-light tracking-[0.04em]">Tickets abiertos</h2>
+        <h2 className="font-display text-[26px] font-light tracking-[0.04em]">Tickets abiertos · clientes</h2>
         <FilterTabs options={FILTERS} value={filter} onChange={setFilter} />
       </div>
       <table className="data-table">
@@ -110,11 +194,15 @@ export function PvTickets() {
   )
 }
 
+// ====================================================================
+// RESEÑAS
+// ====================================================================
 export function PvResenas() {
   const { currentUserId } = useRole()
   const partners = useStore((s) => s.partners)
   const reviews = useStore((s) => s.reviews)
   const byScore = [5, 4, 3, 2, 1].map((s) => reviews.filter((r) => r.score === s).length)
+
   const reviewBars = [
     { label: '5★', value: String(byScore[0]), heightPct: Math.min(95, byScore[0] * 4), variant: 'sage' as const },
     { label: '4★', value: String(byScore[1]), heightPct: Math.min(95, byScore[1] * 4), variant: 'cove' as const },
@@ -142,7 +230,7 @@ export function PvResenas() {
     <>
       <PvHeader actions={<><Button variant="outline" onClick={seedTwoStarReview}>Simular reseña 2★</Button><Button>Ver públicas</Button></>} />
       <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 2fr' }}>
-        <Panel title="Distribución reseñas · mes" action={<a className="link text-[11px] cursor-pointer">{reviews.length} totales</a>}>
+        <Panel title="Distribución reseñas · mes">
           <VBarChart bars={reviewBars} foot={{ left: 'Promedio · 4,7★', right: `Tickets auto · ${byScore[3] + byScore[4]}` }} />
         </Panel>
         <Panel title="Últimas reseñas">
@@ -171,13 +259,16 @@ export function PvResenas() {
   )
 }
 
+// ====================================================================
+// NPS & CAUSAS
+// ====================================================================
 export function PvNps() {
   const { nps } = useNps()
   return (
     <>
       <PvHeader />
       <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 2fr' }}>
-        <Panel title="Net Promoter Score" action={<a className="link text-[11px] cursor-pointer">30 días</a>}>
+        <Panel title="Net Promoter Score">
           <Gauge score={nps} />
         </Panel>
         <Panel title="NPS evolución 12 meses">
@@ -205,6 +296,22 @@ export function PvNps() {
           <tr><td>Otros</td><td>7</td><td><LbBar pct={22} value="14%" /></td><td>1,2 d</td><td><Pill>—</Pill></td></tr>
         </tbody>
       </table>
+    </>
+  )
+}
+
+// ====================================================================
+// EQUIPO
+// ====================================================================
+export function PvEquipo() {
+  return (
+    <>
+      <PvHeader />
+      <DeptEquipo
+        dept="postventa"
+        title="Equipo de Postventa"
+        description="Agentes de Customer Success ES + USA + warranty specialist. Atienden tickets, hacen seguimiento de NPS y gestionan garantías."
+      />
     </>
   )
 }

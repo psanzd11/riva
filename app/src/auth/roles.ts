@@ -37,6 +37,7 @@ const DEPT_SUBNAV: Record<string, NavSubItem[]> = {
   ventas: [
     { id: 'ventas-resumen', label: 'Resumen', to: '/dept/ventas' },
     { id: 'ventas-pipeline', label: 'Pipeline', to: '/dept/ventas/pipeline' },
+    { id: 'ventas-leads', label: 'Leads', to: '/dept/ventas/leads' },
     { id: 'ventas-equipo', label: 'Equipo', to: '/dept/ventas/equipo' },
     { id: 'ventas-forecast', label: 'Forecast', to: '/dept/ventas/forecast' },
     { id: 'ventas-actividad', label: 'Actividad', to: '/dept/ventas/actividad' },
@@ -47,36 +48,42 @@ const DEPT_SUBNAV: Record<string, NavSubItem[]> = {
     { id: 'acc-aging', label: 'Aging & cobros', to: '/dept/accounting/aging' },
     { id: 'acc-pl', label: 'P&L', to: '/dept/accounting/pl' },
     { id: 'acc-cierre', label: 'Cierre mes', to: '/dept/accounting/cierre' },
+    { id: 'acc-equipo', label: 'Equipo', to: '/dept/accounting/equipo' },
   ],
   operations: [
     { id: 'ops-resumen', label: 'Resumen', to: '/dept/operations' },
     { id: 'ops-instalaciones', label: 'Instalaciones', to: '/dept/operations/instalaciones' },
-    { id: 'ops-equipos', label: 'Equipos', to: '/dept/operations/equipos' },
+    { id: 'ops-equipos', label: 'Crews', to: '/dept/operations/equipos' },
     { id: 'ops-sla', label: 'SLA & capacidad', to: '/dept/operations/sla' },
+    { id: 'ops-equipo', label: 'Equipo', to: '/dept/operations/equipo' },
   ],
   'supply-chain': [
     { id: 'sc-resumen', label: 'Resumen', to: '/dept/supply-chain' },
     { id: 'sc-inventario', label: 'Inventario', to: '/dept/supply-chain/inventario' },
     { id: 'sc-oc', label: 'Pipeline OC', to: '/dept/supply-chain/oc' },
     { id: 'sc-proveedores', label: 'Proveedores', to: '/dept/supply-chain/proveedores' },
+    { id: 'sc-equipo', label: 'Equipo', to: '/dept/supply-chain/equipo' },
   ],
   marketing: [
     { id: 'mkt-resumen', label: 'Resumen', to: '/dept/marketing' },
     { id: 'mkt-campanas', label: 'Campañas', to: '/dept/marketing/campanas' },
-    { id: 'mkt-leads', label: 'Leads', to: '/dept/marketing/leads' },
     { id: 'mkt-embudo', label: 'Embudo & ratios', to: '/dept/marketing/embudo' },
+    { id: 'mkt-equipo', label: 'Equipo', to: '/dept/marketing/equipo' },
   ],
   postventa: [
     { id: 'pv-resumen', label: 'Resumen', to: '/dept/postventa' },
     { id: 'pv-tickets', label: 'Tickets', to: '/dept/postventa/tickets' },
     { id: 'pv-resenas', label: 'Reseñas', to: '/dept/postventa/resenas' },
     { id: 'pv-nps', label: 'NPS & causas', to: '/dept/postventa/nps' },
+    { id: 'pv-equipo', label: 'Equipo', to: '/dept/postventa/equipo' },
   ],
   tecnologia: [
     { id: 'tech-resumen', label: 'Resumen', to: '/dept/tecnologia' },
     { id: 'tech-roadmap', label: 'Roadmap', to: '/dept/tecnologia/roadmap' },
     { id: 'tech-integraciones', label: 'Integraciones', to: '/dept/tecnologia/integraciones' },
+    { id: 'tech-internal', label: 'Tickets internos', to: '/dept/tecnologia/internal' },
     { id: 'tech-audit', label: 'Audit log', to: '/dept/tecnologia/audit' },
+    { id: 'tech-equipo', label: 'Equipo', to: '/dept/tecnologia/equipo' },
   ],
 }
 

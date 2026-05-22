@@ -4,7 +4,7 @@ import type { SeedShape, AuditLog } from './schema'
 import seedData from './seed.json'
 import { id as makeId } from '../lib/id'
 
-const STORAGE_KEY = 'riva-hub-store-v1'
+const STORAGE_KEY = 'riva-hub-store-v2'
 
 interface StoreActions {
   ingest<T extends keyof SeedShape>(key: T, value: SeedShape[T]): void
@@ -66,7 +66,7 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => {
         const {

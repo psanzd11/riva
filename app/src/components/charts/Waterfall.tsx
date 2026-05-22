@@ -14,7 +14,7 @@ interface WaterfallProps {
 const VARIANT_BG: Record<WaterfallCol['variant'], string> = {
   start: 'var(--cove)',
   neg: 'var(--error)',
-  pos: 'var(--sage)',
+  pos: 'var(--success)',
   tot: 'var(--riva-black)',
 }
 
@@ -22,7 +22,7 @@ export function Waterfall({ cols }: WaterfallProps) {
   return (
     <div className="flex h-[240px] items-end gap-1.5 border-b border-n-100 px-6 pb-6 pt-6">
       {cols.map((c) => {
-        const textColor = c.variant === 'pos' ? 'var(--riva-black)' : 'var(--riva-ivory)'
+        const textColor = 'var(--riva-ivory)'
         return (
           <div key={c.label} className="flex flex-1 flex-col items-center gap-1.5">
             <div className="font-display text-[12px] font-normal text-n-900">{c.value}</div>

@@ -85,8 +85,8 @@ export function PvResumen() {
         <Panel title="Distribución reseñas">
           <VBarChart
             bars={[
-              { label: '5★', value: String(reviews.filter((r) => r.score === 5).length), heightPct: 95, variant: 'sage' },
-              { label: '4★', value: String(reviews.filter((r) => r.score === 4).length), heightPct: 20, variant: 'cove' },
+              { label: '5★', value: String(reviews.filter((r) => r.score === 5).length), heightPct: 95, variant: 'success' },
+              { label: '4★', value: String(reviews.filter((r) => r.score === 4).length), heightPct: 20, variant: 'sage' },
               { label: '3★', value: String(reviews.filter((r) => r.score === 3).length), heightPct: 6, variant: 'oak' },
               { label: '2★', value: String(reviews.filter((r) => r.score === 2).length), heightPct: 6, variant: 'mid' },
               { label: '1★', value: String(reviews.filter((r) => r.score === 1).length), heightPct: 1, variant: 'error' },
@@ -204,8 +204,8 @@ export function PvResenas() {
   const byScore = [5, 4, 3, 2, 1].map((s) => reviews.filter((r) => r.score === s).length)
 
   const reviewBars = [
-    { label: '5★', value: String(byScore[0]), heightPct: Math.min(95, byScore[0] * 4), variant: 'sage' as const },
-    { label: '4★', value: String(byScore[1]), heightPct: Math.min(95, byScore[1] * 4), variant: 'cove' as const },
+    { label: '5★', value: String(byScore[0]), heightPct: Math.min(95, byScore[0] * 4), variant: 'success' as const },
+    { label: '4★', value: String(byScore[1]), heightPct: Math.min(95, byScore[1] * 4), variant: 'sage' as const },
     { label: '3★', value: String(byScore[2]), heightPct: Math.min(95, byScore[2] * 4), variant: 'oak' as const },
     { label: '2★', value: String(byScore[3]), heightPct: Math.min(95, byScore[3] * 4), variant: 'mid' as const },
     { label: '1★', value: String(byScore[4]), heightPct: Math.min(95, byScore[4] * 4), variant: 'error' as const },
@@ -245,7 +245,7 @@ export function PvResenas() {
                       {dateRelative(r.at)} · {r.source}
                     </div>
                   </div>
-                  <div className="text-[14px]" style={{ color: r.score >= 4 ? 'var(--sage)' : r.score <= 2 ? 'var(--error)' : 'var(--warning)' }}>
+                  <div className="text-[14px]" style={{ color: r.score >= 4 ? 'var(--success)' : r.score <= 2 ? 'var(--error)' : 'var(--warning)' }}>
                     {'★'.repeat(r.score)}{'☆'.repeat(5 - r.score)}
                   </div>
                 </div>

@@ -214,7 +214,7 @@ export function TechIntegraciones() {
                   <td>{i.name}</td>
                   <td>{i.latencyMs > 0 ? `${i.latencyMs} ms` : '—'}</td>
                   <td>{dateRelative(i.lastSync)}</td>
-                  <td><Pill variant={i.status === 'connected' ? 'ok' : i.status === 'warn' ? 'warn' : 'default'}>
+                  <td><Pill variant={i.status === 'connected' ? 'ok' : i.status === 'warn' ? 'warn' : 'err'}>
                     {i.status === 'connected' ? 'OK' : i.status === 'warn' ? 'Warn' : 'Off'}
                   </Pill></td>
                 </tr>

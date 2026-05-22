@@ -304,7 +304,7 @@ export function ScInventario() {
                 <td>{s.stockM2} m²</td>
                 <td>{s.thresholdM2} m²</td>
                 <td>
-                  <LbBar pct={Math.min(100, ratio * 100)} fillColor={fillColor} variant={variant === 'ok' ? 'sage' : 'cove'} value={`${coverDays} d`} />
+                  <LbBar pct={Math.min(100, ratio * 100)} fillColor={fillColor} variant={variant === 'ok' ? 'success' : 'cove'} value={`${coverDays} d`} />
                 </td>
                 <td>€ {s.pricePerM2}</td>
                 <td>{sugQty}</td>

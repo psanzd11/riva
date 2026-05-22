@@ -20,7 +20,7 @@ export function Gauge({ score, min = -100, max = 100, label = 'Excelente' }: Gau
     <div className="flex flex-col items-center px-6 py-6">
       <svg viewBox="0 0 200 110" className="block h-[120px] w-[200px]">
         <path d="M 15 100 A 85 85 0 0 1 185 100" fill="none" stroke="var(--n-100)" strokeWidth="14" />
-        {fgPath && <path d={fgPath} fill="none" stroke="var(--sage)" strokeWidth="14" strokeLinecap="butt" />}
+        {fgPath && <path d={fgPath} fill="none" stroke="var(--success)" strokeWidth="14" strokeLinecap="butt" />}
       </svg>
       <div className="-mt-[30px] font-display text-[38px] font-light tracking-[0.02em] text-n-900">
         {score > 0 ? `+${score}` : score}

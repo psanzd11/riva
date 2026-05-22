@@ -491,7 +491,7 @@ export function VentasEquipo() {
               <td>{row.won} / {row.deals}</td>
               <td><LbBar pct={row.closingRate} value={`${row.closingRate}%`} /></td>
               <td><LbBar variant="oak" pct={(row.pipeAmount / maxPipe) * 100} value={money(row.pipeAmount, 'EUR')} /></td>
-              <td><LbBar variant="sage" pct={(row.wonAmount / maxWon) * 100} value={money(row.wonAmount, 'EUR')} /></td>
+              <td><LbBar variant="success" pct={(row.wonAmount / maxWon) * 100} value={money(row.wonAmount, 'EUR')} /></td>
             </tr>
           ))}
           {sorted.length === 0 && <tr><td colSpan={8} className="text-center text-n-500">Sin comerciales activos en este periodo.</td></tr>}

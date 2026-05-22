@@ -15,15 +15,20 @@ export function IntegrationsPage() {
       <div className="mb-12 grid grid-cols-2 gap-px border border-n-300 bg-n-300 md:grid-cols-3 lg:grid-cols-6">
         {integrations.map((i) => {
           const stClass =
-            i.status === 'connected' ? 'text-success' : i.status === 'warn' ? 'text-warning' : 'text-n-500'
+            i.status === 'connected' ? 'text-success' : i.status === 'warn' ? 'text-warning' : 'text-error'
+          // Strip the leading bullet from statusLabel so we can render our own colored dot.
+          const cleanLabel = i.statusLabel.replace(/^[●○]\s*/, '')
+          const dotChar = i.status === 'connected' ? '●' : i.status === 'warn' ? '●' : '○'
           return (
-            <div key={i.id} className="bg-riva-white px-4.5 py-5 text-center" style={{ padding: '22px 18px' }}>
+            <div key={i.id} className="bg-riva-white text-center" style={{ padding: '22px 18px' }}>
               <div className="mb-2 font-display text-[14px] font-normal tracking-[0.06em]">{i.name}</div>
-              <div className={`text-[10px] uppercase tracking-[0.15em] ${stClass}`}>{i.statusLabel}</div>
+              <div className={`text-[10px] uppercase tracking-[0.15em] ${stClass}`}>
+                <span className="mr-1">{dotChar}</span>{cleanLabel}
+              </div>
             </div>
           )
         })}
-        <div className="bg-riva-white px-4.5 py-5 text-center" style={{ padding: '22px 18px' }}>
+        <div className="bg-riva-white text-center" style={{ padding: '22px 18px' }}>
           <div className="mb-2 font-display text-[14px] font-normal tracking-[0.06em]">+ Añadir</div>
           <div className="text-[10px] uppercase tracking-[0.15em] text-n-500">Catálogo</div>
         </div>

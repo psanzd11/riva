@@ -492,6 +492,45 @@ export function AccountingPL() {
         />
       </Panel>
 
+      {/* Ingresos vs Gastos — comparación explícita verde / burdeos */}
+      <Panel title="Ingresos vs Gastos · mayo 2026" className="mb-8">
+        <div className="p-6">
+          <div className="mb-5">
+            <div className="mb-2 flex items-baseline justify-between">
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2.5 w-2.5 bg-success" />
+                <span className="text-[12px] uppercase tracking-[0.1em] text-n-700">Ingresos</span>
+              </div>
+              <div className="font-display text-[18px] font-light text-n-900">€ 642k</div>
+            </div>
+            <div className="h-6 bg-success-soft">
+              <div className="h-full bg-success" style={{ width: '100%' }} />
+            </div>
+          </div>
+          <div className="mb-5">
+            <div className="mb-2 flex items-baseline justify-between">
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2.5 w-2.5 bg-error" />
+                <span className="text-[12px] uppercase tracking-[0.1em] text-n-700">Gastos · COGS + OpEx + Tax</span>
+              </div>
+              <div className="font-display text-[18px] font-light text-n-900">€ 466k</div>
+            </div>
+            <div className="h-6 bg-error-soft">
+              <div className="h-full bg-error" style={{ width: `${(466 / 642) * 100}%` }} />
+            </div>
+          </div>
+          <div className="border-t border-n-100 pt-4">
+            <div className="flex items-baseline justify-between">
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2.5 w-2.5 bg-riva-black" />
+                <span className="text-[12px] uppercase tracking-[0.1em] text-n-700">Margen neto</span>
+              </div>
+              <div className="font-display text-[26px] font-light text-success">€ 176k <span className="text-[14px] text-n-700">· 27,4%</span></div>
+            </div>
+          </div>
+        </div>
+      </Panel>
+
       <div className="mb-8 grid gap-8" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
         <Panel title="Revenue por origen · YTD">
           <Donut

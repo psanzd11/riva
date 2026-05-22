@@ -1,6 +1,6 @@
 interface LbBarProps {
   pct: number
-  variant?: 'cove' | 'sage' | 'oak'
+  variant?: 'cove' | 'sage' | 'oak' | 'success' | 'error'
   value: string
   /** Color override for the fill */
   fillColor?: string
@@ -10,6 +10,8 @@ const VARIANT_BG: Record<NonNullable<LbBarProps['variant']>, string> = {
   cove: 'var(--cove)',
   sage: 'var(--sage)',
   oak: 'var(--oak-mid)',
+  success: 'var(--success)',
+  error: 'var(--error)',
 }
 
 export function LbBar({ pct, variant = 'cove', value, fillColor }: LbBarProps) {

@@ -2,7 +2,7 @@ interface VBar {
   label: string
   value: string
   heightPct: number
-  variant?: 'cove' | 'oak' | 'sage' | 'dark' | 'mid' | 'error'
+  variant?: 'cove' | 'oak' | 'sage' | 'dark' | 'mid' | 'error' | 'success'
 }
 
 interface VBarChartProps {
@@ -17,6 +17,7 @@ const VARIANT_BG: Record<NonNullable<VBar['variant']>, string> = {
   dark: '#2a1a0e',
   mid: '#7a5230',
   error: 'var(--error)',
+  success: 'var(--success)',
 }
 
 export function VBarChart({ bars, foot }: VBarChartProps) {

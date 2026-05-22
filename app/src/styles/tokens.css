@@ -18,9 +18,12 @@
   --sage-light: #aebd9c;
   --sage-soft: #dfe8d6;
   --stone: #c9c2b8;
-  --success: #5a7a4f;
+  --success: #3f7a3a;
+  --success-soft: #dceadb;
   --warning: #b07a2c;
-  --error: #8c3a2e;
+  --warning-soft: #efe1cc;
+  --error: #7a1f28;
+  --error-soft: #ecd6d9;
   --sidebar-w: 260px;
   --topbar-h: 64px;
 }

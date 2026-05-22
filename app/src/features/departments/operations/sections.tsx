@@ -270,7 +270,7 @@ export function OperationsEquipos() {
               <td>{row.projects}</td>
               <td><LbBar pct={92 + idx * 2} value={`${94 + idx}%`} /></td>
               <td>{(0.4 + idx * 0.15).toFixed(1)}%</td>
-              <td><LbBar variant="sage" pct={80 - idx * 6} value={`+${74 - idx * 3}`} /></td>
+              <td><LbBar variant="success" pct={80 - idx * 6} value={`+${74 - idx * 3}`} /></td>
             </tr>
           ))}
           {leaderboard.length === 0 && <tr><td colSpan={7} className="text-center text-n-500">Sin crews.</td></tr>}

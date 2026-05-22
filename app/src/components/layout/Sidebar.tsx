@@ -1,8 +1,8 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useRole } from '../../auth/RoleContext'
 import { navForRole, type NavItem } from '../../auth/roles'
 import { initials } from '../../lib/format'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 type SedeFilter = 'all' | 'es' | 'us'
@@ -12,24 +12,6 @@ export function Sidebar() {
   const sections = navForRole(role)
   const [sede, setSede] = useState<SedeFilter>('all')
   const { pathname } = useLocation()
-
-  // Track which dept (with subItems) is expanded
-  const [openDept, setOpenDept] = useState<string | null>(null)
-
-  // Auto-expand the dept whose section is active
-  useEffect(() => {
-    for (const section of sections) {
-      for (const item of section.items) {
-        if (item.subItems) {
-          const match = item.subItems.find((s) => s.to === pathname)
-          if (match) {
-            setOpenDept(item.id)
-            return
-          }
-        }
-      }
-    }
-  }, [pathname, sections])
 
   return (
     <aside
@@ -67,13 +49,7 @@ export function Sidebar() {
             </div>
             {section.items.map((item) =>
               item.subItems ? (
-                <ExpandableItem
-                  key={item.id}
-                  item={item}
-                  pathname={pathname}
-                  open={openDept === item.id}
-                  onToggle={() => setOpenDept(openDept === item.id ? null : item.id)}
-                />
+                <ExpandableItem key={item.id} item={item} pathname={pathname} />
               ) : (
                 <NavLink
                   key={item.id}
@@ -121,24 +97,20 @@ export function Sidebar() {
   )
 }
 
-function ExpandableItem({
-  item,
-  pathname,
-  open,
-  onToggle,
-}: {
-  item: NavItem
-  pathname: string
-  open: boolean
-  onToggle: () => void
-}) {
-  // A dept entry is "active" if any of its subItems matches the current path
+/**
+ * Dept item with sub-items. The accordion is open whenever the current pathname
+ * is one of the dept's subItems (no separate openDept state — derives from URL).
+ * Clicking the dept header navigates to its Resumen (first subItem), which makes
+ * the dept active and opens the accordion via the same derived rule.
+ */
+function ExpandableItem({ item, pathname }: { item: NavItem; pathname: string }) {
+  const navigate = useNavigate()
   const isActive = item.subItems?.some((s) => s.to === pathname) ?? false
 
   return (
     <div>
       <button
-        onClick={onToggle}
+        onClick={() => navigate(item.to)}
         className={`flex w-full items-center justify-between border-l-2 px-6 py-2 text-left text-[13px] tracking-[0.04em] transition ${
           isActive
             ? 'border-l-oak-mid bg-white/5 text-riva-ivory'
@@ -148,11 +120,11 @@ function ExpandableItem({
         <span>{item.label}</span>
         <ChevronDown
           size={14}
-          className={`transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`transition-transform ${isActive ? 'rotate-180' : ''}`}
           strokeWidth={1.5}
         />
       </button>
-      {open && item.subItems && (
+      {isActive && item.subItems && (
         <div className="bg-black/30">
           {item.subItems.map((s) => (
             <NavLink

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../data/store'
 import { PageHead } from '../../components/layout/PageHead'
 import { Button } from '../../components/ui/Button'
@@ -7,6 +8,7 @@ import { KpiGrid } from '../../components/kpi/KpiGrid'
 import { KpiCard } from '../../components/kpi/KpiCard'
 
 export function AutomationsPage() {
+  const navigate = useNavigate()
   const rules = useStore((s) => s.automationRules)
   const active = rules.filter((r) => r.active).length
 
@@ -19,6 +21,9 @@ export function AutomationsPage() {
         actions={
           <>
             <Button variant="outline">Logs</Button>
+            <Button variant="outline" onClick={() => navigate('/automations/request')}>
+              Solicitar automatización
+            </Button>
             <Button>+ Crear flujo</Button>
           </>
         }
@@ -54,6 +59,19 @@ export function AutomationsPage() {
           ))}
         </div>
       </Panel>
+
+      <div className="mt-8 border border-n-300 bg-riva-white px-6 py-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="font-display text-[16px] font-light uppercase tracking-[0.08em]">¿Echas algo en falta?</div>
+            <p className="mt-1 max-w-[480px] text-[13px] text-n-700">
+              Cuéntanos qué flujo te gustaría tener automatizado. Tecnología lo recoge como solicitud
+              y lo prioriza junto con el roadmap.
+            </p>
+          </div>
+          <Button onClick={() => navigate('/automations/request')}>Solicitar automatización</Button>
+        </div>
+      </div>
     </>
   )
 }

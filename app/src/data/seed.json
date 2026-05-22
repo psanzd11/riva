@@ -12610,7 +12610,7 @@
     },
     {
       "id": "ar_lead_nurture",
-      "name": "Lead → secuencia email (sustituye HubSpot)",
+      "name": "Lead → secuencia email automática",
       "icon": "M",
       "description": "Nuevo lead web · 4 emails en 21 días · score actualizado",
       "trigger": {
@@ -12797,16 +12797,6 @@
       "status": "connected",
       "statusLabel": "● Conectado",
       "latencyMs": 42,
-      "lastSync": "2026-05-22T00:00:00.000Z",
-      "config": {}
-    },
-    {
-      "id": "itg_hubspot",
-      "name": "HubSpot",
-      "type": "marketing",
-      "status": "warn",
-      "statusLabel": "● Solo email",
-      "latencyMs": 220,
       "lastSync": "2026-05-22T00:00:00.000Z",
       "config": {}
     },

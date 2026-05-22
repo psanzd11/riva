@@ -5,6 +5,7 @@ import { PartnersPage } from './features/partners/PartnersPage'
 import { FlagshipPage } from './features/flagship/FlagshipPage'
 import { IntegrationsPage } from './features/integrations/IntegrationsPage'
 import { AutomationsPage } from './features/automations/AutomationsPage'
+import { RequestAutomationPage } from './features/automations/RequestAutomationPage'
 
 import {
   VentasResumen,
@@ -68,6 +69,7 @@ export const router = createBrowserRouter([
       { path: 'flagship', element: <FlagshipPage /> },
       { path: 'integrations', element: <IntegrationsPage /> },
       { path: 'automations', element: <AutomationsPage /> },
+      { path: 'automations/request', element: <RequestAutomationPage /> },
 
       { path: 'dept/ventas', element: <VentasResumen /> },
       { path: 'dept/ventas/pipeline', element: <VentasPipeline /> },

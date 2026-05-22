@@ -38,7 +38,7 @@ const DEPT_CARDS = [
   { id: 'accounting', label: 'Accounting', title: 'Cobros', rows: [['Facturas emitidas', '184'], ['Pendientes', '€ 142k'], ['DSO', '34 d']] },
   { id: 'supply-chain', label: 'Supply Chain', title: 'Inventario', rows: [['SKUs activos', '142'], ['Stock crítico', '3'], ['Lead time', '28 d']] },
   { id: 'postventa', label: 'Postventa', title: 'Tickets', rows: [['Abiertos', '11'], ['NPS últim. 30d', '+62'], ['Tiempo resp.', '3,2 h']] },
-  { id: 'tecnologia', label: 'Tecnología', title: 'Plataforma', rows: [['CRM interno', 'v2.4.1'], ['Uptime 30d', '99,97%'], ['HubSpot', 'email only']] },
+  { id: 'tecnologia', label: 'Tecnología', title: 'Plataforma', rows: [['CRM interno', 'v2.4.1'], ['Uptime 30d', '99,97%'], ['Integraciones', '10 conectadas']] },
 ]
 
 export function DashboardPage() {

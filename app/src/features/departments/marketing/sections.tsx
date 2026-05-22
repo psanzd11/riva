@@ -26,7 +26,7 @@ function MktHeader({ actions }: { actions?: React.ReactNode }) {
     <PageHead
       eyebrow="Departamento"
       title="Marketing"
-      description="Campañas, contenido, brand. Genera demanda que pasa a Ventas como leads. Email marketing aún en HubSpot — pendiente migrar al Hub."
+      description="Campañas, contenido, brand. Genera demanda que pasa a Ventas como leads. Email automation, paid media y partnerships gestionados desde el Hub."
       actions={actions}
     />
   )

@@ -181,6 +181,7 @@ export function labelForRoute(pathname: string): { dept?: string; section: strin
   const top: Record<string, string> = {
     '/': 'Dashboard',
     '/automations': 'Automatizaciones',
+    '/automations/request': 'Solicitar automatización',
     '/integrations': 'Integraciones',
     '/partners': 'Partners',
     '/flagship': 'Flagship Miami',

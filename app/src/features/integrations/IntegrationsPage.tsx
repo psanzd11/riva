@@ -1,7 +1,5 @@
 import { useStore } from '../../data/store'
 import { PageHead } from '../../components/layout/PageHead'
-import { Panel } from '../../components/ui/Panel'
-import { Button } from '../../components/ui/Button'
 
 export function IntegrationsPage() {
   const integrations = useStore((s) => s.integrations)
@@ -11,7 +9,7 @@ export function IntegrationsPage() {
       <PageHead
         eyebrow="Stack conectado al Hub"
         title="Integraciones"
-        description="El Hub conecta QuickBooks, Stripe, el CRM interno y otros sistemas. HubSpot queda relegado a email marketing — se evalúa sustituirlo por una alternativa más barata."
+        description="Sistemas externos conectados al Hub: facturación, pagos, CRM interno, productividad. Cada integración se monitoriza en tiempo real desde Tecnología."
       />
 
       <div className="mb-12 grid grid-cols-2 gap-px border border-n-300 bg-n-300 md:grid-cols-3 lg:grid-cols-6">
@@ -30,23 +28,6 @@ export function IntegrationsPage() {
           <div className="text-[10px] uppercase tracking-[0.15em] text-n-500">Catálogo</div>
         </div>
       </div>
-
-      <Panel title="Recomendación · HubSpot">
-        <div className="p-6">
-          <p className="mb-3.5 text-[13px]">
-            Actualmente HubSpot se usa exclusivamente para envíos masivos de email marketing y cuesta una suscripción
-            completa que no se está aprovechando.
-          </p>
-          <p className="mb-3.5 text-[13px]">
-            <b>Alternativas:</b> migrar a un proveedor de email (Mailchimp, Brevo, Resend) integrado vía API al CRM
-            interno. Ahorro estimado: 70-85% del coste actual de HubSpot.
-          </p>
-          <div className="flex gap-2.5">
-            <Button variant="outline">Ver comparativa</Button>
-            <Button>Plan de migración</Button>
-          </div>
-        </div>
-      </Panel>
     </>
   )
 }

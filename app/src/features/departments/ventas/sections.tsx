@@ -72,7 +72,7 @@ function VentasHeader({ actions }: { actions?: React.ReactNode }) {
     <PageHead
       eyebrow="Departamento"
       title="Ventas"
-      description="Pipeline cross-sede, equipo comercial por sede + partners. Sustituye el uso comercial de HubSpot."
+      description="Pipeline cross-sede, equipo comercial por sede + partners. CRM interno construido a medida."
       actions={actions}
     />
   )

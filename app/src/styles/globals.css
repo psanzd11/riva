@@ -1,0 +1,214 @@
+@import './tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--riva-ivory);
+    color: var(--n-900);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@layer components {
+  .display {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+  .label-bebas {
+    font-family: 'Bebas Neue', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--n-500);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 26px;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--riva-black);
+    color: var(--riva-ivory);
+  }
+  .btn-primary:hover {
+    background: var(--cove);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--riva-black);
+    border-color: var(--riva-black);
+  }
+  .btn-outline:hover {
+    background: var(--riva-black);
+    color: var(--riva-ivory);
+  }
+
+  /* Panel */
+  .panel {
+    background: var(--riva-white);
+    border: 1px solid var(--n-300);
+  }
+  .panel-head {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--n-300);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .panel-head h3 {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .panel-head .link {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--n-700);
+    border-bottom: 1px solid var(--n-700);
+    padding-bottom: 2px;
+    cursor: pointer;
+  }
+
+  /* Pills */
+  .pill {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border: 1px solid var(--n-300);
+    color: var(--n-700);
+    background: transparent;
+    display: inline-block;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .pill-ok {
+    border-color: var(--success);
+    color: var(--success);
+  }
+  .pill-warn {
+    border-color: var(--warning);
+    color: var(--warning);
+  }
+  .pill-err {
+    border-color: var(--error);
+    color: var(--error);
+  }
+
+  /* Time / filter tabs */
+  .time-tabs {
+    display: inline-flex;
+    border: 1px solid var(--n-300);
+  }
+  .time-tabs button {
+    padding: 5px 13px;
+    font-size: 10.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--n-700);
+    background: var(--riva-white);
+    font-weight: 500;
+    border-right: 1px solid var(--n-300);
+  }
+  .time-tabs button:last-child {
+    border-right: none;
+  }
+  .time-tabs button.active {
+    background: var(--riva-black);
+    color: var(--riva-ivory);
+  }
+  .filter-btn {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--n-300);
+    color: var(--n-700);
+    background: var(--riva-white);
+  }
+  .filter-btn.active {
+    background: var(--riva-black);
+    color: var(--riva-ivory);
+    border-color: var(--riva-black);
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--riva-white);
+    border: 1px solid var(--n-300);
+  }
+  .data-table thead th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--n-500);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--n-300);
+    font-weight: 600;
+  }
+  .data-table tbody td {
+    padding: 18px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--n-100);
+    color: var(--n-900);
+    vertical-align: middle;
+  }
+  .data-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .data-table tbody tr:hover {
+    background: var(--n-100);
+    cursor: pointer;
+  }
+}

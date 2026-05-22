@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The RIVA Company · Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --riva-black:#0A0A0A; --riva-ivory:#F4F1EC; --riva-white:#FFFFFF;
+    --n-900:#1A1A1A; --n-700:#4A4A4A; --n-500:#8C8780; --n-300:#D8D4CD; --n-100:#EDEAE4;
+    --oak-light:#D9C4A3; --oak-mid:#B08A5C; --cove:#5C3A20; --sage:#9AA08A; --stone:#C9C2B8;
+    --success:#5A7A4F; --warning:#B07A2C; --error:#8C3A2E;
+    --sidebar-w:260px; --topbar-h:64px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--riva-ivory);color:var(--n-900);
+    font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Jost',sans-serif;font-weight:300;letter-spacing:0.04em}
+  .label{font-family:'Bebas Neue',sans-serif;text-transform:uppercase;letter-spacing:0.12em}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--n-500)}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+  /* ============ LAYOUT ============ */
+  .app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh}
+
+  /* ============ SIDEBAR ============ */
+  aside{
+    background:var(--riva-black);color:var(--riva-ivory);
+    padding:24px 0;display:flex;flex-direction:column;
+    position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
+  .logo{padding:0 24px 28px;border-bottom:1px solid rgba(255,255,255,0.08)}
+  .logo-mark{font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:0.35em;color:var(--n-300);margin-bottom:2px}
+  .logo-name{font-family:'Jost',sans-serif;font-weight:300;font-size:28px;letter-spacing:0.18em;line-height:1}
+  .logo-sub{font-family:'Jost',sans-serif;font-weight:200;font-size:9px;letter-spacing:0.4em;color:var(--n-500);margin-top:6px}
+
+  .sede-switch{padding:18px 24px;border-bottom:1px solid rgba(255,255,255,0.08)}
+  .sede-switch .eyebrow{color:var(--n-500);font-size:10px;margin-bottom:10px}
+  .sede-tabs{display:flex;gap:0;border:1px solid rgba(255,255,255,0.15)}
+  .sede-tabs button{
+    flex:1;padding:8px 0;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+    color:var(--n-300);background:transparent;font-weight:500;
+    transition:all .2s;
+  }
+  .sede-tabs button.active{background:var(--riva-ivory);color:var(--riva-black)}
+
+  nav{padding:18px 0;flex:1}
+  .nav-section{margin-bottom:6px}
+  .nav-section .eyebrow{padding:12px 24px 6px;font-size:9.5px;color:var(--n-500)}
+  nav a{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 24px;color:var(--n-300);text-decoration:none;
+    font-size:13px;letter-spacing:0.04em;
+    border-left:2px solid transparent;
+    transition:all .15s;
+  }
+  nav a:hover{background:rgba(255,255,255,0.03);color:var(--riva-ivory)}
+  nav a.active{background:rgba(255,255,255,0.05);color:var(--riva-ivory);border-left-color:var(--oak-mid)}
+  nav a .badge{
+    font-size:10px;background:rgba(255,255,255,0.08);color:var(--n-300);
+    padding:1px 7px;letter-spacing:0.08em;
+  }
+  nav a.flag .badge{background:var(--oak-mid);color:var(--riva-black);font-weight:600}
+
+  .sidebar-footer{padding:20px 24px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:var(--n-500)}
+  .sidebar-footer .user{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .avatar{width:30px;height:30px;background:var(--oak-mid);color:var(--riva-black);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;letter-spacing:0.1em}
+
+  /* ============ MAIN ============ */
+  main{display:flex;flex-direction:column}
+  .topbar{
+    height:var(--topbar-h);
+    background:var(--riva-ivory);border-bottom:1px solid var(--n-300);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 40px;position:sticky;top:0;z-index:10;
+  }
+  .crumb{font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--n-700)}
+  .crumb b{color:var(--n-900);font-weight:600}
+  .topbar-right{display:flex;align-items:center;gap:20px}
+  .search{
+    display:flex;align-items:center;gap:10px;padding:7px 14px;
+    border:1px solid var(--n-300);background:var(--riva-white);
+    font-size:12px;color:var(--n-500);min-width:280px;
+  }
+  .search .kbd{margin-left:auto;font-size:10px;border:1px solid var(--n-300);padding:1px 6px;color:var(--n-700)}
+  .bell{position:relative;padding:6px}
+  .bell .dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--error)}
+  .esc-out{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--n-500);border:1px solid var(--n-300);padding:6px 12px}
+
+  .content{padding:40px 48px 80px;max-width:1480px}
+
+  /* ============ PAGE HEAD ============ */
+  .page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px;gap:32px}
+  .page-head h1{font-family:'Jost',sans-serif;font-weight:300;font-size:44px;letter-spacing:0.04em;line-height:1.1;margin-bottom:8px}
+  .page-head p{color:var(--n-700);font-size:14px;max-width:560px}
+  .page-actions{display:flex;gap:10px;flex-shrink:0}
+  .btn{padding:13px 26px;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--riva-black);color:var(--riva-ivory)}
+  .btn-primary:hover{background:var(--cove)}
+  .btn-outline{background:transparent;color:var(--riva-black);border:1px solid var(--riva-black)}
+  .btn-outline:hover{background:var(--riva-black);color:var(--riva-ivory)}
+
+  /* ============ KPI GRID ============ */
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--n-300);border:1px solid var(--n-300);margin-bottom:48px}
+  .kpi{background:var(--riva-white);padding:24px 26px}
+  .kpi .eyebrow{margin-bottom:14px;font-size:10px}
+  .kpi .v{font-family:'Jost',sans-serif;font-weight:300;font-size:34px;letter-spacing:0.02em;color:var(--n-900);line-height:1}
+  .kpi .delta{font-size:11px;margin-top:10px;letter-spacing:0.08em;text-transform:uppercase}
+  .kpi .delta.up{color:var(--success)}
+  .kpi .delta.down{color:var(--error)}
+  .kpi .sub{font-size:11px;color:var(--n-500);margin-top:6px}
+
+  /* ============ TWO-COL ============ */
+  .grid-2{display:grid;grid-template-columns:2fr 1fr;gap:32px;margin-bottom:48px}
+  .panel{background:var(--riva-white);border:1px solid var(--n-300)}
+  .panel-head{padding:18px 24px;border-bottom:1px solid var(--n-300);display:flex;justify-content:space-between;align-items:center}
+  .panel-head h3{font-family:'Jost',sans-serif;font-weight:400;font-size:16px;letter-spacing:0.08em;text-transform:uppercase}
+  .panel-head .link{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--n-700);border-bottom:1px solid var(--n-700);padding-bottom:2px}
+  .panel-body{padding:0}
+
+  /* ============ AUTOMATIONS ============ */
+  .auto-list .auto-row{
+    display:grid;grid-template-columns:36px 1fr auto auto;gap:18px;align-items:center;
+    padding:18px 24px;border-bottom:1px solid var(--n-100);
+  }
+  .auto-list .auto-row:last-child{border-bottom:none}
+  .auto-icon{width:36px;height:36px;background:var(--riva-ivory);display:flex;align-items:center;justify-content:center;color:var(--cove);font-family:'Jost',sans-serif;font-weight:400;font-size:14px}
+  .auto-flow{font-size:13px;color:var(--n-900);line-height:1.4}
+  .auto-flow .step{color:var(--n-500)}
+  .auto-flow .arr{color:var(--oak-mid);margin:0 6px;font-weight:500}
+  .auto-meta{font-size:11px;color:var(--n-500);letter-spacing:0.08em;text-transform:uppercase;text-align:right}
+  .pill{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border:1px solid var(--n-300);color:var(--n-700)}
+  .pill.ok{border-color:var(--success);color:var(--success)}
+  .pill.warn{border-color:var(--warning);color:var(--warning)}
+  .pill.err{border-color:var(--error);color:var(--error)}
+
+  /* ============ NOTIFICATIONS ============ */
+  .notif-list .notif{padding:16px 24px;border-bottom:1px solid var(--n-100);display:flex;gap:14px}
+  .notif-list .notif:last-child{border-bottom:none}
+  .notif-dot{width:6px;height:6px;background:var(--oak-mid);margin-top:7px;flex-shrink:0}
+  .notif.read .notif-dot{background:var(--n-300)}
+  .notif-body{flex:1;font-size:13px}
+  .notif-body .who{font-weight:500}
+  .notif-body .time{font-size:11px;color:var(--n-500);margin-top:4px;letter-spacing:0.06em;text-transform:uppercase}
+
+  /* ============ DEPARTMENTS ============ */
+  .dept-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--n-300);border:1px solid var(--n-300);margin-bottom:48px}
+  .dept{background:var(--riva-white);padding:22px 22px 18px;cursor:pointer;transition:background .2s}
+  .dept:hover{background:var(--n-100)}
+  .dept .eyebrow{font-size:10px}
+  .dept h4{font-family:'Jost',sans-serif;font-weight:400;font-size:18px;margin:8px 0 14px;letter-spacing:0.03em}
+  .dept .row{display:flex;justify-content:space-between;font-size:12px;color:var(--n-700);padding:5px 0;border-top:1px solid var(--n-100)}
+  .dept .row:first-of-type{border-top:none}
+  .dept .row b{color:var(--n-900);font-weight:500}
+
+  /* ============ PARTNERS TABLE ============ */
+  .partners-section{margin-bottom:48px}
+  .ps-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+  .ps-head h2{font-family:'Jost',sans-serif;font-weight:300;font-size:26px;letter-spacing:0.04em}
+  .ps-head .filters{display:flex;gap:8px}
+  .filter{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 14px;border:1px solid var(--n-300);color:var(--n-700);background:var(--riva-white)}
+  .filter.active{background:var(--riva-black);color:var(--riva-ivory);border-color:var(--riva-black)}
+
+  table{width:100%;border-collapse:collapse;background:var(--riva-white);border:1px solid var(--n-300)}
+  thead th{
+    text-align:left;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;
+    color:var(--n-500);padding:14px 20px;border-bottom:1px solid var(--n-300);font-weight:600;
+  }
+  tbody td{padding:18px 20px;font-size:13px;border-bottom:1px solid var(--n-100);color:var(--n-900)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.flagship{background:#fcfaf6}
+  tbody tr.flagship td:first-child{border-left:3px solid var(--oak-mid)}
+  .tag-own{font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--oak-mid);font-weight:700;margin-left:8px}
+  tbody tr:hover{background:var(--n-100);cursor:pointer}
+  td .name{font-weight:500;font-size:14px}
+  td .meta{font-size:11px;color:var(--n-500);margin-top:2px;letter-spacing:0.04em}
+
+  /* ============ FLAGSHIP DETAIL ============ */
+  .flagship-card{background:var(--riva-black);color:var(--riva-ivory);padding:36px 40px;margin-bottom:48px;display:grid;grid-template-columns:1.4fr 1fr;gap:48px}
+  .flagship-card .eyebrow{color:var(--oak-light)}
+  .flagship-card h2{font-family:'Jost',sans-serif;font-weight:300;font-size:34px;letter-spacing:0.04em;margin:10px 0 14px}
+  .flagship-card p{color:var(--n-300);font-size:13px;max-width:480px;line-height:1.65}
+  .flag-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.08);align-self:start}
+  .flag-stat{background:var(--riva-black);padding:20px 22px}
+  .flag-stat .lbl{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--n-500)}
+  .flag-stat .num{font-family:'Jost',sans-serif;font-weight:300;font-size:28px;color:var(--riva-ivory);margin-top:8px}
+  .flag-stat .ch{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--oak-light);margin-top:6px}
+  .flagship-card .actions{margin-top:20px;display:flex;gap:10px}
+  .flagship-card .btn-outline{color:var(--riva-ivory);border-color:var(--riva-ivory)}
+  .flagship-card .btn-outline:hover{background:var(--riva-ivory);color:var(--riva-black)}
+
+  /* ============ INTEGRATIONS ============ */
+  .integ-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--n-300);border:1px solid var(--n-300);margin-bottom:48px}
+  .integ{background:var(--riva-white);padding:22px 18px;text-align:center}
+  .integ .nm{font-family:'Jost',sans-serif;font-weight:400;font-size:14px;letter-spacing:0.06em;margin-bottom:8px}
+  .integ .st{font-size:10px;letter-spacing:0.15em;text-transform:uppercase}
+  .integ .st.on{color:var(--success)}
+  .integ .st.off{color:var(--n-500)}
+  .integ .st.warn{color:var(--warning)}
+
+  /* ============ FOOTER ============ */
+  footer{padding:24px 48px;border-top:1px solid var(--n-300);font-size:11px;color:var(--n-500);letter-spacing:0.1em;text-transform:uppercase;display:flex;justify-content:space-between;margin-top:auto}
+
+  /* ============ VIEW SWITCH ============ */
+  .view{display:none}
+  .view.active{display:block}
+
+  /* ============ PIPELINE CHARTS ============ */
+  .grid-3{display:grid;grid-template-columns:1.1fr 1.4fr 1fr;gap:32px;margin-bottom:48px}
+
+  /* Conversion stacked bar */
+  .conv-bar{display:flex;height:46px;margin:0}
+  .conv-seg{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--riva-ivory);border-right:1px solid rgba(255,255,255,0.18)}
+  .conv-seg:last-child{border-right:none}
+  .conv-seg .pct{font-family:'Jost',sans-serif;font-weight:400;font-size:14px;letter-spacing:0.04em}
+  .conv-seg .stg{font-size:9.5px;letter-spacing:0.15em;text-transform:uppercase;opacity:0.85;margin-top:3px}
+  .conv-seg:nth-child(1){background:#2a1a0e}
+  .conv-seg:nth-child(2){background:#3f2616}
+  .conv-seg:nth-child(3){background:var(--cove)}
+  .conv-seg:nth-child(4){background:#7a5230}
+  .conv-seg:nth-child(5){background:var(--sage);color:var(--riva-black)}
+
+  /* Funnel */
+  .funnel{padding:22px 24px}
+  .funnel-row{display:grid;grid-template-columns:72px 1fr 44px;gap:14px;align-items:center;margin-bottom:11px}
+  .funnel-stage{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--n-700);font-weight:600}
+  .funnel-bar{height:30px;display:flex;align-items:center;padding:0 12px;font-size:11px;color:var(--riva-ivory);letter-spacing:0.04em;font-weight:500;white-space:nowrap;overflow:hidden}
+  .funnel-meta{font-size:11px;color:var(--n-500);text-align:right;letter-spacing:0.06em;font-weight:600}
+
+  /* Line chart */
+  .line-chart{padding:20px 24px 16px}
+  .line-chart .svg-wrap{position:relative}
+  .line-chart svg{width:100%;height:180px;display:block}
+  .line-chart .grid line{stroke:var(--n-100);stroke-width:1}
+  .line-chart .line{fill:none;stroke:var(--cove);stroke-width:1.8}
+  .line-chart .area{fill:var(--cove);opacity:0.08}
+  .line-chart .dot{fill:var(--cove)}
+  .line-chart .x-labels{display:flex;justify-content:space-between;font-size:9.5px;color:var(--n-500);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase}
+  .line-chart .totals{margin-top:14px;padding-top:14px;border-top:1px solid var(--n-100);display:flex;justify-content:space-between;font-size:12px;color:var(--n-700)}
+  .line-chart .totals b{color:var(--n-900);font-weight:500;font-family:'Jost',sans-serif}
+
+  /* Ratios grid */
+  .ratio-grid{padding:0;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--n-300)}
+  .ratio{background:var(--riva-white);padding:18px 18px}
+  .ratio .lbl{font-size:9.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--n-500);font-weight:600}
+  .ratio .num{font-family:'Jost',sans-serif;font-weight:300;font-size:26px;margin-top:6px;letter-spacing:0.02em}
+  .ratio .spark{margin-top:10px;height:22px}
+  .ratio .spark svg{width:100%;height:100%}
+  .ratio .spark .ln{fill:none;stroke:var(--oak-mid);stroke-width:1.5}
+  .ratio .delta{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;margin-top:8px}
+  .ratio .delta.up{color:var(--success)}
+  .ratio .delta.down{color:var(--error)}
+  .ratio .delta.neutral{color:var(--n-500)}
+
+  /* Time filter chips */
+  .time-tabs{display:inline-flex;border:1px solid var(--n-300)}
+  .time-tabs button{padding:5px 13px;font-size:10.5px;letter-spacing:0.13em;text-transform:uppercase;color:var(--n-700);background:var(--riva-white);font-weight:500;border-right:1px solid var(--n-300)}
+  .time-tabs button:last-child{border-right:none}
+  .time-tabs button.active{background:var(--riva-black);color:var(--riva-ivory)}
+
+  /* Kanban */
+  .kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--n-300);border:1px solid var(--n-300);margin-bottom:48px}
+  .kan-col{background:var(--riva-white);min-height:320px;display:flex;flex-direction:column}
+  .kan-head{padding:14px 16px;border-bottom:1px solid var(--n-100);display:flex;justify-content:space-between;align-items:baseline}
+  .kan-stage{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--n-900);font-weight:700}
+  .kan-stage::before{content:'';display:inline-block;width:7px;height:7px;background:var(--cove);margin-right:8px;vertical-align:middle}
+  .kan-col[data-stage="propuesta"] .kan-stage::before{background:#7a5230}
+  .kan-col[data-stage="negociacion"] .kan-stage::before{background:var(--oak-mid)}
+  .kan-col[data-stage="cierre"] .kan-stage::before{background:var(--sage)}
+  .kan-col[data-stage="perdido"] .kan-stage::before{background:var(--error)}
+  .kan-meta{font-size:10px;color:var(--n-500);letter-spacing:0.08em}
+  .kan-card{padding:11px 16px;border-bottom:1px solid var(--n-100);cursor:pointer;transition:background .15s}
+  .kan-card:hover{background:var(--n-100)}
+  .kan-card:last-child{border-bottom:none}
+  .kan-card .nm{font-weight:500;color:var(--n-900);font-size:12px}
+  .kan-card .pt{color:var(--n-500);font-size:10.5px;margin-top:2px;letter-spacing:0.04em}
+  .kan-card .am{font-family:'Jost',sans-serif;font-weight:400;font-size:14px;margin-top:6px;color:var(--cove)}
+  .kan-foot{margin-top:auto;padding:10px 16px;border-top:1px solid var(--n-100);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--n-500);display:flex;justify-content:space-between}
+
+  /* Leaderboard table inline bars */
+  .lb-cell{display:flex;align-items:center;gap:10px}
+  .lb-bar{flex:1;height:5px;background:var(--n-100);position:relative;min-width:60px;max-width:120px}
+  .lb-bar-fill{position:absolute;top:0;left:0;height:100%;background:var(--cove)}
+  .lb-bar-fill.sage{background:var(--sage)}
+  .lb-bar-fill.oak{background:var(--oak-mid)}
+  .lb-val{font-size:12px;color:var(--n-900);min-width:64px;text-align:right;letter-spacing:0.02em;font-family:'Jost',sans-serif;font-weight:400}
+  .lb-rank{font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:var(--n-500);width:18px}
+  .lb-name{display:flex;align-items:center;gap:12px}
+  .lb-avatar{width:30px;height:30px;background:var(--cove);color:var(--riva-ivory);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;letter-spacing:0.08em;flex-shrink:0}
+  .lb-name .role{font-size:11px;color:var(--n-500);margin-top:1px;letter-spacing:0.04em}
+
+  /* Multi-line evolution chart (consultor lines) */
+  .multi-line{padding:18px 24px 14px}
+  .multi-line svg{width:100%;height:200px;display:block}
+  .multi-line .grid line{stroke:var(--n-100);stroke-width:1}
+  .multi-line .ln{fill:none;stroke-width:1.6;opacity:0.85}
+  .multi-line .ln-1{stroke:var(--cove)}
+  .multi-line .ln-2{stroke:var(--oak-mid)}
+  .multi-line .ln-3{stroke:var(--sage)}
+  .multi-line .ln-4{stroke:#7a5230}
+  .multi-line .ln-5{stroke:#3f2616}
+  .multi-line .legend{display:flex;gap:18px;font-size:11px;color:var(--n-700);margin-top:14px;flex-wrap:wrap;letter-spacing:0.04em}
+  .multi-line .legend span{display:flex;align-items:center;gap:6px}
+  .multi-line .legend i{display:inline-block;width:12px;height:2px;background:var(--cove)}
+
+  /* ============ DONUT ============ */
+  .donut-wrap{padding:18px 24px;display:flex;align-items:center;gap:24px}
+  .donut-wrap svg{width:140px;height:140px;flex-shrink:0}
+  .donut-legend{flex:1;display:flex;flex-direction:column;gap:10px;font-size:12px}
+  .donut-legend .lg-row{display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--n-100)}
+  .donut-legend .lg-row:last-child{border-bottom:none}
+  .donut-legend .sw{width:10px;height:10px}
+  .donut-legend .lbl{color:var(--n-900);font-size:12px}
+  .donut-legend .val{color:var(--n-700);font-size:12px;font-family:'Jost',sans-serif;letter-spacing:0.02em}
+
+  /* ============ VERTICAL BAR CHART ============ */
+  .vbar-chart{padding:24px;display:flex;align-items:flex-end;gap:16px;height:220px;border-bottom:1px solid var(--n-100)}
+  .vbar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%}
+  .vbar .bar{width:100%;background:var(--cove);min-height:4px;transition:opacity .2s;position:relative}
+  .vbar .bar:hover{opacity:0.85}
+  .vbar .bar.oak{background:var(--oak-mid)}
+  .vbar .bar.sage{background:var(--sage)}
+  .vbar .bar.dark{background:#2a1a0e}
+  .vbar .bar.mid{background:#7a5230}
+  .vbar .v-lbl{font-size:10.5px;color:var(--n-700);letter-spacing:0.08em;text-transform:uppercase;text-align:center}
+  .vbar .v-val{font-family:'Jost',sans-serif;font-weight:400;font-size:13px;color:var(--n-900)}
+  .vbar-foot{padding:14px 24px;display:flex;justify-content:space-between;font-size:11px;color:var(--n-500);letter-spacing:0.06em;text-transform:uppercase}
+
+  /* ============ AGING / STACKED HORIZONTAL ============ */
+  .stack-bar{margin:0 24px 16px;height:34px;display:flex;border:1px solid var(--n-300)}
+  .stack-seg{display:flex;align-items:center;justify-content:center;color:var(--riva-ivory);font-size:11px;letter-spacing:0.06em;border-right:1px solid rgba(255,255,255,0.15)}
+  .stack-seg:last-child{border-right:none}
+  .stack-seg.s0{background:var(--success)}
+  .stack-seg.s1{background:var(--cove)}
+  .stack-seg.s2{background:var(--warning)}
+  .stack-seg.s3{background:var(--error)}
+  .stack-legend{padding:0 24px 18px;display:flex;gap:18px;font-size:11px;flex-wrap:wrap;letter-spacing:0.04em}
+  .stack-legend span{display:flex;align-items:center;gap:6px;color:var(--n-700)}
+  .stack-legend i{width:10px;height:10px;display:inline-block}
+
+  /* ============ GAUGE (NPS, scores) ============ */
+  .gauge{padding:24px;display:flex;flex-direction:column;align-items:center}
+  .gauge svg{width:200px;height:120px;display:block}
+  .gauge .gx-bg{fill:none;stroke:var(--n-100);stroke-width:14}
+  .gauge .gx-fg{fill:none;stroke:var(--sage);stroke-width:14;stroke-linecap:butt}
+  .gauge .score{font-family:'Jost',sans-serif;font-weight:300;font-size:38px;letter-spacing:0.02em;margin-top:-30px;color:var(--n-900)}
+  .gauge .gx-lbl{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--n-500);margin-top:6px}
+  .gauge .scale{display:flex;justify-content:space-between;width:200px;font-size:9.5px;color:var(--n-500);margin-top:14px;letter-spacing:0.08em}
+
+  /* ============ HEATMAP ============ */
+  .heatmap{padding:20px 24px}
+  .hm-grid{display:grid;grid-template-columns:repeat(15,1fr);gap:3px}
+  .hm-cell{aspect-ratio:1;background:var(--n-100);min-height:18px}
+  .hm-cell.l1{background:#dfe8d6}
+  .hm-cell.l2{background:#aebd9c}
+  .hm-cell.l3{background:var(--sage)}
+  .hm-cell.l4{background:#6e7860}
+  .hm-cell.err{background:var(--error)}
+  .hm-legend{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:10px;color:var(--n-500);letter-spacing:0.08em;text-transform:uppercase}
+  .hm-legend .scale{display:flex;gap:3px;align-items:center}
+  .hm-legend .scale i{width:12px;height:12px;display:inline-block;background:var(--n-100)}
+
+  /* ============ WATERFALL / P&L cascade ============ */
+  .waterfall{padding:24px;display:flex;align-items:flex-end;gap:6px;height:240px;border-bottom:1px solid var(--n-100)}
+  .wf-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;position:relative}
+  .wf-bar{width:100%;display:flex;align-items:center;justify-content:center;color:var(--riva-ivory);font-size:10.5px;letter-spacing:0.04em;font-weight:500}
+  .wf-bar.pos{background:var(--sage);color:var(--riva-black)}
+  .wf-bar.neg{background:var(--error)}
+  .wf-bar.tot{background:var(--riva-black)}
+  .wf-bar.start{background:var(--cove)}
+  .wf-lbl{font-size:10px;color:var(--n-700);letter-spacing:0.08em;text-transform:uppercase;text-align:center;line-height:1.3}
+  .wf-val{font-family:'Jost',sans-serif;font-weight:400;font-size:12px;color:var(--n-900)}
+
+  /* ============ TIMELINE / GANTT ============ */
+  .timeline{padding:24px}
+  .tl-row{display:grid;grid-template-columns:180px 1fr 80px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--n-100)}
+  .tl-row:last-child{border-bottom:none}
+  .tl-name{font-size:12px;font-weight:500;color:var(--n-900)}
+  .tl-name .sub{font-size:10.5px;color:var(--n-500);font-weight:400;margin-top:2px;letter-spacing:0.04em}
+  .tl-track{position:relative;height:22px;background:var(--n-100)}
+  .tl-bar{position:absolute;top:0;height:100%;background:var(--cove)}
+  .tl-bar.sage{background:var(--sage)}
+  .tl-bar.oak{background:var(--oak-mid)}
+  .tl-bar.warn{background:var(--warning)}
+  .tl-date{font-size:10.5px;color:var(--n-500);letter-spacing:0.06em;text-transform:uppercase;text-align:right}
+  .tl-axis{display:grid;grid-template-columns:180px 1fr 80px;gap:14px;padding:14px 24px 10px;font-size:9.5px;color:var(--n-500);letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--n-100);align-items:center}
+  .tl-axis>span{font-weight:600}
+  .tl-axis .scale{display:flex;justify-content:space-between;gap:8px;font-weight:400}
+  .tl-axis .scale span{white-space:nowrap}
+
+  /* ============ ROADMAP / KANBAN-LITE ============ */
+  .roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--n-300);border:1px solid var(--n-300)}
+  .rm-col{background:var(--riva-white);padding:16px;min-height:200px}
+  .rm-col h4{font-family:'Jost',sans-serif;font-weight:400;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;color:var(--n-700)}
+  .rm-item{padding:10px;background:var(--n-100);margin-bottom:8px;font-size:12px;border-left:3px solid var(--cove)}
+  .rm-item.oak{border-left-color:var(--oak-mid)}
+  .rm-item.sage{border-left-color:var(--sage)}
+  .rm-item .meta{font-size:10px;color:var(--n-500);margin-top:4px;letter-spacing:0.06em;text-transform:uppercase}
+
+  /* ============ RESPONSIVE-ish ============ */
+  @media (max-width:1100px){
+    .kpi-grid,.dept-grid,.integ-grid{grid-template-columns:repeat(2,1fr)}
+    .grid-2{grid-template-columns:1fr}
+    .flagship-card{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside>
+    <div class="logo">
+      <div class="logo-mark">THE</div>
+      <div class="logo-name">RIVA</div>
+      <div class="logo-sub">C O M P A N Y</div>
+    </div>
+
+    <div class="sede-switch">
+      <div class="eyebrow">Sede</div>
+      <div class="sede-tabs">
+        <button class="active" data-sede="all">Holding</button>
+        <button data-sede="es">España</button>
+        <button data-sede="us">USA</button>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-section">
+        <div class="eyebrow">Vista general</div>
+        <a href="#" class="active" data-view="dashboard">Dashboard</a>
+        <a href="#" data-view="automations">Automatizaciones <span class="badge">12</span></a>
+        <a href="#" data-view="integrations">Integraciones</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="eyebrow">Partners · Showrooms</div>
+        <a href="#" data-view="partners">Todos los partners <span class="badge">47</span></a>
+        <a href="#" class="flag" data-view="flagship">Flagship Miami <span class="badge">OWN</span></a>
+      </div>
+
+      <div class="nav-section">
+        <div class="eyebrow">Departamentos</div>
+        <a href="#" data-view="dept-ops">Operations</a>
+        <a href="#" data-view="dept-sales">Ventas</a>
+        <a href="#" data-view="dept-mkt">Marketing</a>
+        <a href="#" data-view="dept-acc">Accounting</a>
+        <a href="#" data-view="dept-supply">Supply Chain</a>
+        <a href="#" data-view="dept-post">Postventa</a>
+        <a href="#" data-view="dept-tech">Tecnología</a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user">
+        <div class="avatar">PS</div>
+        <div>
+          <div style="color:var(--riva-ivory);font-size:12px">Pablo Sanz</div>
+          <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase">CEO · Acceso global</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+    <div class="topbar">
+      <div class="crumb">Holding · <b id="crumb">Dashboard</b></div>
+      <div class="topbar-right">
+        <div class="search">
+          <span>⌕</span>
+          <span>Buscar partner, factura, contacto...</span>
+          <span class="kbd">⌘K</span>
+        </div>
+        <div class="bell">🔔<span class="dot"></span></div>
+        <div class="esc-out">Salir Demo · Esc</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ============ DASHBOARD VIEW ============ -->
+      <section class="view active" id="view-dashboard">
+
+        <div class="page-head">
+          <div>
+            <div class="eyebrow" style="margin-bottom:10px">The RIVA Company · Mayo 2026</div>
+            <h1>Vista del holding</h1>
+            <p>Resumen cross-sede de las operaciones del grupo. Ventas de partners y flagship, automatizaciones activas y estado por departamento.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline">Exportar informe</button>
+            <button class="btn btn-primary">+ Nueva acción</button>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="eyebrow">Ingresos mes · España</div>
+            <div class="v">€ 384.200</div>
+            <div class="delta up">↑ 12,4% vs abril</div>
+            <div class="sub">31 partners activos</div>
+          </div>
+          <div class="kpi">
+            <div class="eyebrow">Ingresos mes · USA</div>
+            <div class="v">$ 412.800</div>
+            <div class="delta up">↑ 8,1% vs abril</div>
+            <div class="sub">16 showrooms activos</div>
+          </div>
+          <div class="kpi">
+            <div class="eyebrow">Flagship Miami</div>
+            <div class="v">€ 96.450</div>
+            <div class="delta up">↑ 22,6% vs abril</div>
+            <div class="sub">P&amp;L independiente</div>
+          </div>
+          <div class="kpi">
+            <div class="eyebrow">Automatizaciones</div>
+            <div class="v">847</div>
+            <div class="delta up">12 flujos activos</div>
+            <div class="sub">Ahorro est. 142 h/mes</div>
+          </div>
+        </div>
+
+        <!-- Flagship featured -->
+        <div class="flagship-card">
+          <div>
+            <div class="eyebrow">Flagship · Sede propia</div>
+            <h2>Miami · Design District</h2>
+            <p>Primer showroom 100% RIVA. Tratado como partner en el sistema pero con P&amp;L propio, equipo dedicado y reporting al detalle. Inaugurado febrero 2026.</p>
+            <div class="actions">
+              <button class="btn btn-outline" onclick="go('flagship')">Ver dashboard completo</button>
+              <button class="btn btn-outline">Cuenta de resultados</button>
+            </div>
+          </div>
+          <div class="flag-stats">
+            <div class="flag-stat">
+              <div class="lbl">Visitas Mayo</div>
+              <div class="num">412</div>
+              <div class="ch">↑ 18% vs abril</div>
+            </div>
+            <div class="flag-stat">
+              <div class="lbl">Tasa conversión</div>
+              <div class="num">14,3%</div>
+              <div class="ch">↑ 2,1 pp</div>
+            </div>
+            <div class="flag-stat">
+              <div class="lbl">Ticket medio</div>
+              <div class="num">€ 9.840</div>
+              <div class="ch">↑ 5,4%</div>
+            </div>
+            <div class="flag-stat">
+              <div class="lbl">Margen bruto</div>
+              <div class="num">38,2%</div>
+              <div class="ch">— estable</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pipeline comercial -->
+        <div class="ps-head">
+          <h2>Pipeline comercial</h2>
+          <div class="filters">
+            <button class="filter active">Holding</button>
+            <button class="filter">RIVA Spain</button>
+            <button class="filter">TIERRA</button>
+            <button class="filter">Flagship</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:32px">
+          <div class="panel-head">
+            <h3>Conversión por etapa</h3>
+            <div class="time-tabs">
+              <button>Mes</button><button>Trimestre</button><button class="active">Año</button>
+            </div>
+          </div>
+          <div class="conv-bar">
+            <div class="conv-seg"><span class="pct">100%</span><span class="stg">Lead</span></div>
+            <div class="conv-seg"><span class="pct">62%</span><span class="stg">Cualificado</span></div>
+            <div class="conv-seg"><span class="pct">38%</span><span class="stg">Propuesta</span></div>
+            <div class="conv-seg"><span class="pct">22%</span><span class="stg">Negociación</span></div>
+            <div class="conv-seg"><span class="pct">14%</span><span class="stg">Cierre</span></div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <!-- Funnel -->
+          <div class="panel">
+            <div class="panel-head"><h3>Embudo de pipeline</h3><a href="#" class="link"># · €</a></div>
+            <div class="funnel">
+              <div class="funnel-row">
+                <div class="funnel-stage">Lead</div>
+                <div class="funnel-bar" style="width:100%;background:#2a1a0e">312 · € 4,2M</div>
+                <div class="funnel-meta">100%</div>
+              </div>
+              <div class="funnel-row">
+                <div class="funnel-stage">Cualif.</div>
+                <div class="funnel-bar" style="width:78%;background:#3f2616">192 · € 3,1M</div>
+                <div class="funnel-meta">62%</div>
+              </div>
+              <div class="funnel-row">
+                <div class="funnel-stage">Propuesta</div>
+                <div class="funnel-bar" style="width:54%;background:var(--cove)">118 · € 2,1M</div>
+                <div class="funnel-meta">38%</div>
+              </div>
+              <div class="funnel-row">
+                <div class="funnel-stage">Negoc.</div>
+                <div class="funnel-bar" style="width:32%;background:#7a5230">68 · € 1,4M</div>
+                <div class="funnel-meta">22%</div>
+              </div>
+              <div class="funnel-row">
+                <div class="funnel-stage">Cierre</div>
+                <div class="funnel-bar" style="width:18%;background:var(--sage);color:var(--riva-black)">42 · € 840k</div>
+                <div class="funnel-meta">14%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Won 12m -->
+          <div class="panel">
+            <div class="panel-head"><h3>Won — últimos 12 meses</h3><a href="#" class="link">Por mes</a></div>
+            <div class="line-chart">
+              <svg viewBox="0 0 600 180" preserveAspectRatio="none">
+                <g class="grid">
+                  <line x1="0" y1="36" x2="600" y2="36"/>
+                  <line x1="0" y1="72" x2="600" y2="72"/>
+                  <line x1="0" y1="108" x2="600" y2="108"/>
+                  <line x1="0" y1="144" x2="600" y2="144"/>
+                </g>
+                <path class="area" d="M 0,140 L 50,130 L 100,118 L 150,124 L 200,108 L 250,96 L 300,88 L 350,72 L 400,64 L 450,58 L 500,42 L 550,30 L 600,30 L 600,180 L 0,180 Z"/>
+                <polyline class="line" points="0,140 50,130 100,118 150,124 200,108 250,96 300,88 350,72 400,64 450,58 500,42 550,30 600,30"/>
+                <circle class="dot" cx="0" cy="140" r="2.5"/>
+                <circle class="dot" cx="50" cy="130" r="2.5"/>
+                <circle class="dot" cx="100" cy="118" r="2.5"/>
+                <circle class="dot" cx="150" cy="124" r="2.5"/>
+                <circle class="dot" cx="200" cy="108" r="2.5"/>
+                <circle class="dot" cx="250" cy="96" r="2.5"/>
+                <circle class="dot" cx="300" cy="88" r="2.5"/>
+                <circle class="dot" cx="350" cy="72" r="2.5"/>
+                <circle class="dot" cx="400" cy="64" r="2.5"/>
+                <circle class="dot" cx="450" cy="58" r="2.5"/>
+                <circle class="dot" cx="500" cy="42" r="2.5"/>
+                <circle class="dot" cx="550" cy="30" r="2.5"/>
+                <circle class="dot" cx="600" cy="30" r="3.5" style="fill:var(--oak-mid)"/>
+              </svg>
+              <div class="x-labels">
+                <span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span>
+              </div>
+              <div class="totals">
+                <span>Total 12m · <b>142 deals won</b></span>
+                <span><b>€ 2,84M</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ratios -->
+          <div class="panel">
+            <div class="panel-head"><h3>Ratios &amp; velocidad</h3><a href="#" class="link">Detalle</a></div>
+            <div class="ratio-grid">
+              <div class="ratio">
+                <div class="lbl">Leads-to-Close</div>
+                <div class="num">14,3%</div>
+                <div class="spark"><svg viewBox="0 0 80 22" preserveAspectRatio="none"><polyline class="ln" points="0,18 10,16 20,17 30,14 40,12 50,10 60,8 70,6 80,4"/></svg></div>
+              </div>
+              <div class="ratio">
+                <div class="lbl">Closing Ratio</div>
+                <div class="num">31%</div>
+                <div class="spark"><svg viewBox="0 0 80 22" preserveAspectRatio="none"><polyline class="ln" points="0,14 10,15 20,12 30,11 40,10 50,9 60,8 70,7 80,6"/></svg></div>
+              </div>
+              <div class="ratio">
+                <div class="lbl">Ciclo medio</div>
+                <div class="num">42 d</div>
+                <div class="delta neutral">— estable</div>
+              </div>
+              <div class="ratio">
+                <div class="lbl">Velocidad</div>
+                <div class="num">9,2/mes</div>
+                <div class="delta up">↑ 14%</div>
+              </div>
+              <div class="ratio">
+                <div class="lbl">Abiertos</div>
+                <div class="num">118</div>
+                <div class="delta up">↑ 22 vs mes ant.</div>
+              </div>
+              <div class="ratio">
+                <div class="lbl">Won YTD</div>
+                <div class="num">42</div>
+                <div class="delta up">↑ 18% vs 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Automations + Notifs -->
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Automatizaciones recientes</h3>
+              <a href="#" class="link" onclick="go('automations')">Ver todas</a>
+            </div>
+            <div class="panel-body auto-list">
+              <div class="auto-row">
+                <div class="auto-icon">QB</div>
+                <div class="auto-flow"><span class="step">QuickBooks</span><span class="arr">→</span>Factura #2026-0418 generada<span class="arr">→</span><span class="step">Email con link de pago</span></div>
+                <div class="pill ok">Cobrado</div>
+                <div class="auto-meta">Hace 14 min</div>
+              </div>
+              <div class="auto-row">
+                <div class="auto-icon">CRM</div>
+                <div class="auto-flow"><span class="step">Lead Showroom Valencia</span><span class="arr">→</span>Asignado a Ventas ES<span class="arr">→</span><span class="step">Tarea creada</span></div>
+                <div class="pill ok">OK</div>
+                <div class="auto-meta">Hace 38 min</div>
+              </div>
+              <div class="auto-row">
+                <div class="auto-icon">SC</div>
+                <div class="auto-flow"><span class="step">Pedido Supply Chain</span><span class="arr">→</span>OC #4421 a fábrica<span class="arr">→</span><span class="step">Factura proforma en Accounting</span></div>
+                <div class="pill ok">OK</div>
+                <div class="auto-meta">Hace 1 h</div>
+              </div>
+              <div class="auto-row">
+                <div class="auto-icon">$</div>
+                <div class="auto-flow"><span class="step">Stripe Link</span><span class="arr">→</span>Pago $ 12.400 recibido<span class="arr">→</span><span class="step">Conciliado en QuickBooks</span></div>
+                <div class="pill ok">Cobrado</div>
+                <div class="auto-meta">Hace 2 h</div>
+              </div>
+              <div class="auto-row">
+                <div class="auto-icon">!</div>
+                <div class="auto-flow"><span class="step">Reseña 2★</span><span class="arr">→</span>Ticket Postventa #882<span class="arr">→</span><span class="step">Asignado a Carla M.</span></div>
+                <div class="pill warn">Abierto</div>
+                <div class="auto-meta">Hace 3 h</div>
+              </div>
+              <div class="auto-row">
+                <div class="auto-icon">QB</div>
+                <div class="auto-flow"><span class="step">Factura #2026-0417</span><span class="arr">→</span>Recordatorio enviado (D+7)<span class="arr">→</span><span class="step">Partner: Studio Rota</span></div>
+                <div class="pill warn">Pendiente</div>
+                <div class="auto-meta">Hace 5 h</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Notificaciones</h3>
+              <a href="#" class="link">3 nuevas</a>
+            </div>
+            <div class="panel-body notif-list">
+              <div class="notif">
+                <div class="notif-dot"></div>
+                <div class="notif-body">
+                  <span class="who">Flagship Miami</span> · 3 visitas reservadas para mañana
+                  <div class="time">Hace 22 min</div>
+                </div>
+              </div>
+              <div class="notif">
+                <div class="notif-dot"></div>
+                <div class="notif-body">
+                  <span class="who">Accounting</span> · 4 facturas USA vencen en 48h
+                  <div class="time">Hace 1 h</div>
+                </div>
+              </div>
+              <div class="notif">
+                <div class="notif-dot"></div>
+                <div class="notif-body">
+                  <span class="who">Supply Chain</span> · Lote Cove agotado en almacén ES
+                  <div class="time">Hace 4 h</div>
+                </div>
+              </div>
+              <div class="notif read">
+                <div class="notif-dot"></div>
+                <div class="notif-body">
+                  <span class="who">Marketing</span> · Campaña TIERRA enviada (12.840 destinatarios)
+                  <div class="time">Ayer · 18:24</div>
+                </div>
+              </div>
+              <div class="notif read">
+                <div class="notif-dot"></div>
+                <div class="notif-body">
+                  <span class="who">Tecnología</span> · CRM interno · deploy v2.4.1
+                  <div class="time">Ayer · 11:02</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Departments -->
+        <div class="ps-head">
+          <h2>Departamentos</h2>
+          <div class="eyebrow">7 áreas · vista resumen</div>
+        </div>
+        <div class="dept-grid">
+          <div class="dept" onclick="go('dept-ops')">
+            <div class="eyebrow">Operations</div>
+            <h4>En curso</h4>
+            <div class="row"><span>Pedidos abiertos</span><b>34</b></div>
+            <div class="row"><span>Incidencias</span><b>2</b></div>
+            <div class="row"><span>SLA cumplido</span><b>98%</b></div>
+          </div>
+          <div class="dept" onclick="go('dept-sales')">
+            <div class="eyebrow">Ventas</div>
+            <h4>Pipeline</h4>
+            <div class="row"><span>Deals abiertos</span><b>118</b></div>
+            <div class="row"><span>Forecast Q2</span><b>€ 2,4M</b></div>
+            <div class="row"><span>Cierre prom.</span><b>42 d</b></div>
+          </div>
+          <div class="dept" onclick="go('dept-mkt')">
+            <div class="eyebrow">Marketing</div>
+            <h4>Campañas</h4>
+            <div class="row"><span>Activas</span><b>4</b></div>
+            <div class="row"><span>Leads mes</span><b>312</b></div>
+            <div class="row"><span>CPL medio</span><b>€ 28</b></div>
+          </div>
+          <div class="dept" onclick="go('dept-acc')">
+            <div class="eyebrow">Accounting</div>
+            <h4>Cobros</h4>
+            <div class="row"><span>Facturas emitidas</span><b>184</b></div>
+            <div class="row"><span>Pendientes</span><b>€ 142k</b></div>
+            <div class="row"><span>DSO</span><b>34 d</b></div>
+          </div>
+          <div class="dept" onclick="go('dept-supply')">
+            <div class="eyebrow">Supply Chain</div>
+            <h4>Inventario</h4>
+            <div class="row"><span>SKUs activos</span><b>142</b></div>
+            <div class="row"><span>Stock crítico</span><b>3</b></div>
+            <div class="row"><span>Lead time</span><b>28 d</b></div>
+          </div>
+          <div class="dept" onclick="go('dept-post')">
+            <div class="eyebrow">Postventa</div>
+            <h4>Tickets</h4>
+            <div class="row"><span>Abiertos</span><b>11</b></div>
+            <div class="row"><span>NPS últim. 30d</span><b>+62</b></div>
+            <div class="row"><span>Tiempo resp.</span><b>3,2 h</b></div>
+          </div>
+          <div class="dept" onclick="go('dept-tech')">
+            <div class="eyebrow">Tecnología</div>
+            <h4>Plataforma</h4>
+            <div class="row"><span>CRM interno</span><b>v2.4.1</b></div>
+            <div class="row"><span>Uptime 30d</span><b>99,97%</b></div>
+            <div class="row"><span>HubSpot</span><b>email only</b></div>
+          </div>
+          <div class="dept" style="background:var(--n-100)">
+            <div class="eyebrow" style="color:var(--cove)">+ Añadir vista</div>
+            <h4 style="color:var(--n-500);font-weight:300">Custom</h4>
+            <div class="row" style="color:var(--n-500)">Cuadro de mando ad-hoc para el holding o una sede.</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============ AUTOMATIONS VIEW ============ -->
+      <section class="view" id="view-automations">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow" style="margin-bottom:10px">Núcleo del Hub</div>
+            <h1>Automatizaciones</h1>
+            <p>Flujos que reemplazan tareas manuales: facturación QuickBooks, links de pago, registro de actividad comercial, conciliación bancaria, alertas de postventa.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline">Logs</button>
+            <button class="btn btn-primary">+ Crear flujo</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Flujos activos</div><div class="v">12</div><div class="sub">3 ES · 4 USA · 5 globales</div></div>
+          <div class="kpi"><div class="eyebrow">Ejecuciones 30d</div><div class="v">8.412</div><div class="delta up">↑ 14% vs mes anterior</div></div>
+          <div class="kpi"><div class="eyebrow">Éxito</div><div class="v">99,2%</div><div class="sub">63 reintentos automáticos</div></div>
+          <div class="kpi"><div class="eyebrow">Horas ahorradas</div><div class="v">142 h</div><div class="sub">Equivale a ~0,9 FTE</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Catálogo de flujos</h3><a href="#" class="link">Ver plantillas</a></div>
+          <div class="panel-body auto-list">
+            <div class="auto-row">
+              <div class="auto-icon">QB</div>
+              <div class="auto-flow"><b>Factura → link de pago → conciliación</b><br><span class="step">QuickBooks emite factura · Stripe genera link · cobro concilia en QB automáticamente</span></div>
+              <div class="pill ok">Activo</div>
+              <div class="auto-meta">312 ejec/mes</div>
+            </div>
+            <div class="auto-row">
+              <div class="auto-icon">$</div>
+              <div class="auto-flow"><b>Recordatorios de cobro D+7 / D+14 / D+21</b><br><span class="step">Factura impagada · email automático en tono del partner · Postventa avisado en D+21</span></div>
+              <div class="pill ok">Activo</div>
+              <div class="auto-meta">84 ejec/mes</div>
+            </div>
+            <div class="auto-row">
+              <div class="auto-icon">V</div>
+              <div class="auto-flow"><b>Registro de actividad comercial</b><br><span class="step">Llamada/email/visita · CRM interno log automático · QB ve histórico al facturar</span></div>
+              <div class="pill ok">Activo</div>
+              <div class="auto-meta">1.840 ejec/mes</div>
+            </div>
+            <div class="auto-row">
+              <div class="auto-icon">SC</div>
+              <div class="auto-flow"><b>Stock crítico → reposición</b><br><span class="step">SKU bajo umbral · alerta Supply Chain · OC preparada para aprobación</span></div>
+              <div class="pill ok">Activo</div>
+              <div class="auto-meta">22 ejec/mes</div>
+            </div>
+            <div class="auto-row">
+              <div class="auto-icon">P</div>
+              <div class="auto-flow"><b>Reseña ≤3★ → ticket Postventa</b><br><span class="step">Detección reseña · ticket asignado · plantilla de respuesta lista</span></div>
+              <div class="pill ok">Activo</div>
+              <div class="auto-meta">9 ejec/mes</div>
+            </div>
+            <div class="auto-row">
+              <div class="auto-icon">M</div>
+              <div class="auto-flow"><b>Lead → secuencia email (sustituye HubSpot)</b><br><span class="step">Nuevo lead web · 4 emails en 21 días · score actualizado</span></div>
+              <div class="pill warn">Piloto</div>
+              <div class="auto-meta">142 ejec/mes</div>
+            </div>
+            <div class="auto-row">
+              <div class="auto-icon">F</div>
+              <div class="auto-flow"><b>Flagship · cierre de caja diario</b><br><span class="step">Cierre de día · ingresos a QB sede propia · informe email al CEO</span></div>
+              <div class="pill ok">Activo</div>
+              <div class="auto-meta">30 ejec/mes</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============ PARTNERS VIEW ============ -->
+      <section class="view" id="view-partners">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow" style="margin-bottom:10px">Red comercial</div>
+            <h1>Partners &amp; Showrooms</h1>
+            <p>47 partners activos. La mayoría son corners en showrooms de terceros. El Flagship Miami es sede propia y se trata aquí como un partner más, con dashboard ampliado.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline">Exportar</button>
+            <button class="btn btn-primary">+ Nuevo partner</button>
+          </div>
+        </div>
+
+        <div class="ps-head">
+          <h2>Listado</h2>
+          <div class="filters">
+            <button class="filter active">Todos</button>
+            <button class="filter">España</button>
+            <button class="filter">USA</button>
+            <button class="filter">Flagship</button>
+            <button class="filter">Top 10</button>
+          </div>
+        </div>
+
+        <table>
+          <thead><tr>
+            <th>Partner</th><th>Sede</th><th>Tipo</th><th>Ventas YTD</th><th>Última actividad</th><th>Estado</th>
+          </tr></thead>
+          <tbody>
+            <tr class="flagship" onclick="go('flagship')">
+              <td><div class="name">Flagship Miami<span class="tag-own">Own</span></div><div class="meta">Design District · sede propia</div></td>
+              <td>España</td><td>Flagship</td><td>€ 384.200</td><td>Hoy · 10:42</td>
+              <td><span class="pill ok">Activo</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">Studio Rota</div><div class="meta">Barcelona · corner 18 m²</div></td>
+              <td>España</td><td>Corner</td><td>€ 142.800</td><td>Hoy · 09:18</td>
+              <td><span class="pill ok">Activo</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">Casa Mendel</div><div class="meta">Valencia · corner 12 m²</div></td>
+              <td>España</td><td>Corner</td><td>€ 96.420</td><td>Ayer · 17:50</td>
+              <td><span class="pill ok">Activo</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">Ebony &amp; Oak NY</div><div class="meta">Manhattan · corner 22 m²</div></td>
+              <td>USA</td><td>Corner</td><td>$ 198.400</td><td>Hoy · 08:02</td>
+              <td><span class="pill ok">Activo</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">FloorHaus Miami</div><div class="meta">Wynwood · espacio 30 m²</div></td>
+              <td>USA</td><td>Espacio</td><td>$ 162.100</td><td>Hoy · 11:24</td>
+              <td><span class="pill ok">Activo</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">McGee Showroom</div><div class="meta">Salt Lake City · corner 14 m²</div></td>
+              <td>USA</td><td>Corner</td><td>$ 88.940</td><td>Ayer · 16:30</td>
+              <td><span class="pill warn">Sin actividad 7d</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">DuChâteau Bilbao</div><div class="meta">Bilbao · corner 10 m²</div></td>
+              <td>España</td><td>Corner</td><td>€ 48.220</td><td>3 días</td>
+              <td><span class="pill warn">Sin actividad 3d</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">Hakwood Sevilla</div><div class="meta">Sevilla · corner 8 m²</div></td>
+              <td>España</td><td>Corner</td><td>€ 32.180</td><td>5 días</td>
+              <td><span class="pill warn">Bajo objetivo</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">UpWall Aspen</div><div class="meta">Aspen, CO · espacio 25 m²</div></td>
+              <td>USA</td><td>Espacio</td><td>$ 122.300</td><td>Hoy · 12:15</td>
+              <td><span class="pill ok">Activo</span></td>
+            </tr>
+            <tr>
+              <td><div class="name">Mirage Boston</div><div class="meta">Boston · corner 12 m²</div></td>
+              <td>USA</td><td>Corner</td><td>$ 64.100</td><td>2 días</td>
+              <td><span class="pill ok">Activo</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============ FLAGSHIP DETAIL VIEW ============ -->
+      <section class="view" id="view-flagship">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow" style="margin-bottom:10px">Flagship · Sede propia · Miami</div>
+            <h1>Design District</h1>
+            <p>Dashboard ampliado del único showroom 100% RIVA. Tratado como partner en el sistema, con P&amp;L independiente, equipo dedicado y reporting al detalle.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline">P&amp;L completo</button>
+            <button class="btn btn-primary">+ Reservar visita</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Ingresos mes</div><div class="v">€ 96.450</div><div class="delta up">↑ 22,6%</div></div>
+          <div class="kpi"><div class="eyebrow">Visitas mes</div><div class="v">412</div><div class="delta up">↑ 18%</div></div>
+          <div class="kpi"><div class="eyebrow">Conversión</div><div class="v">14,3%</div><div class="delta up">↑ 2,1 pp</div></div>
+          <div class="kpi"><div class="eyebrow">Margen bruto</div><div class="v">38,2%</div><div class="sub">Objetivo 40%</div></div>
+          <div class="kpi"><div class="eyebrow">Ticket medio</div><div class="v">€ 9.840</div><div class="delta up">↑ 5,4%</div></div>
+          <div class="kpi"><div class="eyebrow">Equipo</div><div class="v">6</div><div class="sub">2 ventas · 2 diseño · 2 ops</div></div>
+          <div class="kpi"><div class="eyebrow">Stock SKUs</div><div class="v">94</div><div class="sub">3 en reposición</div></div>
+          <div class="kpi"><div class="eyebrow">NPS</div><div class="v">+71</div><div class="delta up">vs +62 holding</div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h3>Pipeline propio</h3><a href="#" class="link">Ver todos</a></div>
+            <div class="panel-body">
+              <table>
+                <thead><tr><th>Cliente</th><th>Proyecto</th><th>Importe</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr><td>Casa Velázquez</td><td>Reforma 220 m²</td><td>€ 28.400</td><td><span class="pill ok">Cerrado</span></td></tr>
+                  <tr><td>Hotel La Reserva</td><td>Suites 8 unid.</td><td>€ 64.200</td><td><span class="pill warn">Negociación</span></td></tr>
+                  <tr><td>R. Estudio</td><td>Vivienda 140 m²</td><td>€ 18.900</td><td><span class="pill ok">Cerrado</span></td></tr>
+                  <tr><td>Promotor Eolo</td><td>3 viviendas</td><td>€ 42.100</td><td><span class="pill warn">Propuesta</span></td></tr>
+                  <tr><td>Estudio Mora</td><td>Local comercial</td><td>€ 12.600</td><td><span class="pill">Lead</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Actividad de hoy</h3></div>
+            <div class="panel-body notif-list">
+              <div class="notif"><div class="notif-dot"></div><div class="notif-body">3 visitas reservadas <div class="time">10:00 · 12:30 · 17:00</div></div></div>
+              <div class="notif"><div class="notif-dot"></div><div class="notif-body">Factura #M-0142 cobrada <div class="time">€ 28.400 · Casa Velázquez</div></div></div>
+              <div class="notif read"><div class="notif-dot"></div><div class="notif-body">Reposición Cove llega mañana <div class="time">Lote 28 m²</div></div></div>
+              <div class="notif read"><div class="notif-dot"></div><div class="notif-body">Sesión foto producto · 16:00 <div class="time">Para campaña TIERRA junio</div></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-integrations">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow" style="margin-bottom:10px">Stack conectado al Hub</div>
+            <h1>Integraciones</h1>
+            <p>El Hub conecta QuickBooks, Stripe, el CRM interno y otros sistemas. HubSpot queda relegado a email marketing — se evalúa sustituirlo por una alternativa más barata.</p>
+          </div>
+        </div>
+        <div class="integ-grid">
+          <div class="integ"><div class="nm">QuickBooks</div><div class="st on">● Conectado</div></div>
+          <div class="integ"><div class="nm">Stripe</div><div class="st on">● Conectado</div></div>
+          <div class="integ"><div class="nm">CRM Interno</div><div class="st on">● Conectado</div></div>
+          <div class="integ"><div class="nm">HubSpot</div><div class="st warn">● Solo email</div></div>
+          <div class="integ"><div class="nm">Google Workspace</div><div class="st on">● Conectado</div></div>
+          <div class="integ"><div class="nm">Slack</div><div class="st on">● Conectado</div></div>
+          <div class="integ"><div class="nm">Shopify</div><div class="st off">○ Sin conectar</div></div>
+          <div class="integ"><div class="nm">DocuSign</div><div class="st on">● Conectado</div></div>
+          <div class="integ"><div class="nm">Square</div><div class="st on">● Flagship</div></div>
+          <div class="integ"><div class="nm">PayPal</div><div class="st off">○ Sin conectar</div></div>
+          <div class="integ"><div class="nm">Canva</div><div class="st on">● Marketing</div></div>
+          <div class="integ"><div class="nm">+ Añadir</div><div class="st off">Catálogo</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Recomendación · HubSpot</h3></div>
+          <div class="panel-body" style="padding:24px">
+            <p style="margin-bottom:14px">Actualmente HubSpot se usa exclusivamente para envíos masivos de email marketing y cuesta una suscripción completa que no se está aprovechando.</p>
+            <p style="margin-bottom:14px"><b>Alternativas:</b> migrar a un proveedor de email (Mailchimp, Brevo, Resend) integrado vía API al CRM interno. Ahorro estimado: 70-85% del coste actual de HubSpot.</p>
+            <div style="display:flex;gap:10px"><button class="btn btn-outline">Ver comparativa</button><button class="btn btn-primary">Plan de migración</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DEPARTMENT · OPERATIONS (rich) ============ -->
+      <section class="view" id="view-dept-ops">
+        <div class="page-head"><div><div class="eyebrow" style="margin-bottom:10px">Departamento</div><h1>Operations</h1><p>Pedidos, logística, instalaciones, coordinación cross-sede. Gestiona el flujo de la fábrica al cliente final y mide cumplimiento de SLA.</p></div><div class="page-actions"><button class="btn btn-outline">Procesos</button><button class="btn btn-primary">+ Tarea</button></div></div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Pedidos abiertos</div><div class="v">34</div><div class="delta up">&uarr; 6 vs sem. ant.</div></div>
+          <div class="kpi"><div class="eyebrow">Instalaciones semana</div><div class="v">12</div><div class="sub">8 ES &middot; 4 USA</div></div>
+          <div class="kpi"><div class="eyebrow">SLA cumplido</div><div class="v">98%</div><div class="delta up">&uarr; 1,2 pp</div></div>
+          <div class="kpi"><div class="eyebrow">Tiempo medio entrega</div><div class="v">11 d</div><div class="delta up">&minus;2 d vs Q1</div></div>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-head"><h3>Mix de proyectos</h3><a href="#" class="link">YTD</a></div>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="#2a1a0e" stroke-width="9" stroke-dasharray="48 52" stroke-dashoffset="25"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--cove)" stroke-width="9" stroke-dasharray="32 68" stroke-dashoffset="-23"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--oak-mid)" stroke-width="9" stroke-dasharray="14 86" stroke-dashoffset="-55"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--sage)" stroke-width="9" stroke-dasharray="6 94" stroke-dashoffset="-69"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="lg-row"><span class="sw" style="background:#2a1a0e"></span><span class="lbl">Residencial alto</span><span class="val">48%</span></div>
+                <div class="lg-row"><span class="sw" style="background:var(--cove)"></span><span class="lbl">Residencial</span><span class="val">32%</span></div>
+                <div class="lg-row"><span class="sw" style="background:var(--oak-mid)"></span><span class="lbl">Hospitality</span><span class="val">14%</span></div>
+                <div class="lg-row"><span class="sw" style="background:var(--sage)"></span><span class="lbl">Comercial / oficinas</span><span class="val">6%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Heatmap instalaciones &middot; 5 semanas</h3><a href="#" class="link">+ ver mes</a></div>
+            <div class="heatmap">
+              <div class="hm-grid" style="grid-template-columns:repeat(7,1fr)">
+                <div class="hm-cell l1"></div><div class="hm-cell l2"></div><div class="hm-cell l1"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell l2"></div><div class="hm-cell"></div>
+                <div class="hm-cell l1"></div><div class="hm-cell l3"></div><div class="hm-cell l2"></div><div class="hm-cell l3"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell"></div>
+                <div class="hm-cell l2"></div><div class="hm-cell l2"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l2"></div><div class="hm-cell l1"></div>
+                <div class="hm-cell l1"></div><div class="hm-cell l2"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l2"></div><div class="hm-cell l1"></div><div class="hm-cell"></div>
+                <div class="hm-cell"></div><div class="hm-cell l1"></div><div class="hm-cell l2"></div><div class="hm-cell l2"></div><div class="hm-cell err"></div><div class="hm-cell l1"></div><div class="hm-cell"></div>
+              </div>
+              <div class="hm-legend">
+                <span>L &middot; M &middot; X &middot; J &middot; V &middot; S &middot; D</span>
+                <div class="scale"><span>&minus;</span><i></i><i style="background:#dfe8d6"></i><i style="background:#aebd9c"></i><i style="background:var(--sage)"></i><i style="background:#6e7860"></i><span>+</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>SLA por sede</h3><a href="#" class="link">Detalle</a></div>
+            <div class="ratio-grid">
+              <div class="ratio"><div class="lbl">ES &middot; on-time</div><div class="num">98,4%</div><div class="delta up">&uarr; 0,8 pp</div></div>
+              <div class="ratio"><div class="lbl">USA &middot; on-time</div><div class="num">96,1%</div><div class="delta up">&uarr; 2,1 pp</div></div>
+              <div class="ratio"><div class="lbl">Damage rate</div><div class="num">0,4%</div><div class="delta up">&minus;0,2 pp</div></div>
+              <div class="ratio"><div class="lbl">Re-install</div><div class="num">2</div><div class="delta neutral">vs 3 mes ant.</div></div>
+              <div class="ratio"><div class="lbl">NPS instalación</div><div class="num">+74</div><div class="delta up">&uarr; 5</div></div>
+              <div class="ratio"><div class="lbl">Capacity uso</div><div class="num">82%</div><div class="delta neutral">objetivo 85%</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ps-head"><h2>Pr&oacute;ximas instalaciones</h2><div class="filters"><button class="filter active">14 d&iacute;as</button><button class="filter">30 d&iacute;as</button><button class="filter">90 d&iacute;as</button></div></div>
+        <div class="panel" style="margin-bottom:48px">
+          <div class="tl-axis"><span>Proyecto</span><div class="scale"><span>L 19</span><span>M 20</span><span>X 21</span><span>J 22</span><span>V 23</span><span>L 26</span><span>X 28</span><span>V 30</span><span>L 02</span></div><span>Estado</span></div>
+          <div class="timeline">
+            <div class="tl-row"><div class="tl-name">Hotel La Reserva<div class="sub">Madrid &middot; 420 m&sup2;</div></div><div class="tl-track"><div class="tl-bar sage" style="left:36%;width:14%"></div></div><div class="tl-date">23 may</div></div>
+            <div class="tl-row"><div class="tl-name">Casa Vel&aacute;zquez<div class="sub">Madrid &middot; 220 m&sup2;</div></div><div class="tl-track"><div class="tl-bar sage" style="left:42%;width:8%"></div></div><div class="tl-date">24 may</div></div>
+            <div class="tl-row"><div class="tl-name">Penthouse Tribeca<div class="sub">NY &middot; 380 m&sup2;</div></div><div class="tl-track"><div class="tl-bar warn" style="left:52%;width:18%"></div></div><div class="tl-date">26 may</div></div>
+            <div class="tl-row"><div class="tl-name">Brownstone UWS<div class="sub">NY &middot; 290 m&sup2;</div></div><div class="tl-track"><div class="tl-bar" style="left:62%;width:12%"></div></div><div class="tl-date">28 may</div></div>
+            <div class="tl-row"><div class="tl-name">Casa Sotogrande<div class="sub">C&aacute;diz &middot; 540 m&sup2;</div></div><div class="tl-track"><div class="tl-bar oak" style="left:72%;width:20%"></div></div><div class="tl-date">30 may</div></div>
+            <div class="tl-row"><div class="tl-name">R. Estudio<div class="sub">Madrid &middot; 140 m&sup2;</div></div><div class="tl-track"><div class="tl-bar sage" style="left:88%;width:8%"></div></div><div class="tl-date">02 jun</div></div>
+          </div>
+        </div>
+
+        <div class="ps-head"><h2>Equipo de instalaci&oacute;n</h2><div class="time-tabs"><button>Sem.</button><button class="active">Mes</button><button>YTD</button></div></div>
+        <table>
+          <thead><tr><th></th><th>Equipo</th><th>Sede</th><th>Proyectos mes</th><th>SLA</th><th>Damage rate</th><th>NPS</th></tr></thead>
+          <tbody>
+            <tr><td><span class="lb-rank">1</span></td><td><div class="lb-name"><div class="lb-avatar">A1</div><div><div style="font-weight:500">Crew Madrid A</div><div class="role">3 instaladores</div></div></div></td><td>ES</td><td>8</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:100%"></div></div><div class="lb-val">100%</div></div></td><td>0,0%</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:96%"></div></div><div class="lb-val">+78</div></div></td></tr>
+            <tr><td><span class="lb-rank">2</span></td><td><div class="lb-name"><div class="lb-avatar" style="background:var(--oak-mid);color:var(--riva-black)">A2</div><div><div style="font-weight:500">Crew Madrid B</div><div class="role">3 instaladores</div></div></div></td><td>ES</td><td>7</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:92%"></div></div><div class="lb-val">97%</div></div></td><td>0,3%</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:88%"></div></div><div class="lb-val">+72</div></div></td></tr>
+            <tr><td><span class="lb-rank">3</span></td><td><div class="lb-name"><div class="lb-avatar" style="background:var(--sage);color:var(--riva-black)">BC</div><div><div style="font-weight:500">Crew Barcelona</div><div class="role">2 instaladores</div></div></div></td><td>ES</td><td>5</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:88%"></div></div><div class="lb-val">96%</div></div></td><td>0,5%</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:82%"></div></div><div class="lb-val">+68</div></div></td></tr>
+            <tr><td><span class="lb-rank">4</span></td><td><div class="lb-name"><div class="lb-avatar" style="background:#7a5230">NY</div><div><div style="font-weight:500">Crew NY East</div><div class="role">4 instaladores</div></div></div></td><td>USA</td><td>6</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:78%"></div></div><div class="lb-val">94%</div></div></td><td>0,8%</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:76%"></div></div><div class="lb-val">+64</div></div></td></tr>
+            <tr><td><span class="lb-rank">5</span></td><td><div class="lb-name"><div class="lb-avatar" style="background:#3f2616">FL</div><div><div style="font-weight:500">Crew Miami</div><div class="role">3 instaladores</div></div></div></td><td>USA</td><td>4</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:64%"></div></div><div class="lb-val">92%</div></div></td><td>1,1%</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:68%"></div></div><div class="lb-val">+58</div></div></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="view" id="view-dept-sales">
+        <div class="page-head"><div><div class="eyebrow" style="margin-bottom:10px">Departamento</div><h1>Ventas</h1><p>Pipeline cross-sede, equipo comercial por sede + partners. Sustituye el uso comercial de HubSpot. Cada comercial gestiona su cartera de showrooms y el flagship.</p></div><div class="page-actions"><button class="btn btn-outline">Forecast</button><button class="btn btn-primary">+ Lead</button></div></div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Forecast ponderado</div><div class="v">€ 1,42M</div><div class="delta up">↑ 9% vs Q1</div></div>
+          <div class="kpi"><div class="eyebrow">Closed Won YTD</div><div class="v">€ 2,84M</div><div class="sub">142 deals · 5 meses</div></div>
+          <div class="kpi"><div class="eyebrow">Forecast Q2</div><div class="v">€ 2,4M</div><div class="delta up">Won + ponderado</div></div>
+          <div class="kpi"><div class="eyebrow">Tasa cierre</div><div class="v">31%</div><div class="delta up">↑ 2,1 pp</div></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:32px">
+          <div class="panel-head">
+            <h3>Conversión por etapa</h3>
+            <div class="time-tabs"><button>Mes</button><button>Trimestre</button><button class="active">Año</button></div>
+          </div>
+          <div class="conv-bar">
+            <div class="conv-seg"><span class="pct">100%</span><span class="stg">Lead</span></div>
+            <div class="conv-seg"><span class="pct">62%</span><span class="stg">Cualificado</span></div>
+            <div class="conv-seg"><span class="pct">38%</span><span class="stg">Propuesta</span></div>
+            <div class="conv-seg"><span class="pct">22%</span><span class="stg">Negociación</span></div>
+            <div class="conv-seg"><span class="pct">14%</span><span class="stg">Cierre</span></div>
+          </div>
+        </div>
+
+        <div class="ps-head">
+          <h2>Pipeline kanban</h2>
+          <div class="filters">
+            <button class="filter active">Todos</button>
+            <button class="filter">RIVA Spain</button>
+            <button class="filter">TIERRA</button>
+            <button class="filter">Flagship</button>
+          </div>
+        </div>
+        <div class="kanban">
+          <div class="kan-col" data-stage="cualif">
+            <div class="kan-head"><div class="kan-stage">Cualificado</div><div class="kan-meta">42 · &#8364; 840k</div></div>
+            <div class="kan-card"><div class="nm">Hotel La Reserva</div><div class="pt">Studio Rota · ES</div><div class="am">&#8364; 64.200</div></div>
+            <div class="kan-card"><div class="nm">Promotor Eolo</div><div class="pt">Flagship Miami</div><div class="am">&#8364; 42.100</div></div>
+            <div class="kan-card"><div class="nm">Penthouse Tribeca</div><div class="pt">Ebony &amp; Oak NY</div><div class="am">$ 88.400</div></div>
+            <div class="kan-card"><div class="nm">Restaurante Velos</div><div class="pt">Casa Mendel · ES</div><div class="am">&#8364; 28.900</div></div>
+            <div class="kan-foot"><span>5 deals</span><span>&larr; Lead</span></div>
+          </div>
+          <div class="kan-col" data-stage="propuesta">
+            <div class="kan-head"><div class="kan-stage">Propuesta</div><div class="kan-meta">34 · &#8364; 720k</div></div>
+            <div class="kan-card"><div class="nm">Casa Velázquez</div><div class="pt">Flagship Miami</div><div class="am">&#8364; 28.400</div></div>
+            <div class="kan-card"><div class="nm">FloorHaus Project</div><div class="pt">FloorHaus Miami</div><div class="am">$ 124.000</div></div>
+            <div class="kan-card"><div class="nm">Hotel Aspen Lodge</div><div class="pt">UpWall Aspen</div><div class="am">$ 96.800</div></div>
+            <div class="kan-foot"><span>4 deals</span><span>54% conv.</span></div>
+          </div>
+          <div class="kan-col" data-stage="negociacion">
+            <div class="kan-head"><div class="kan-stage">Negociación</div><div class="kan-meta">22 · &#8364; 480k</div></div>
+            <div class="kan-card"><div class="nm">Reforma Pedralbes</div><div class="pt">Studio Rota · ES</div><div class="am">&#8364; 38.200</div></div>
+            <div class="kan-card"><div class="nm">Brownstone NY</div><div class="pt">Ebony &amp; Oak NY</div><div class="am">$ 72.100</div></div>
+            <div class="kan-card"><div class="nm">Office HQ Bilbao</div><div class="pt">DuChâteau Bilbao</div><div class="am">&#8364; 54.800</div></div>
+            <div class="kan-foot"><span>3 deals</span><span>32% conv.</span></div>
+          </div>
+          <div class="kan-col" data-stage="cierre">
+            <div class="kan-head"><div class="kan-stage">Cierre / Won</div><div class="kan-meta">20 · &#8364; 360k</div></div>
+            <div class="kan-card"><div class="nm">R. Estudio</div><div class="pt">Flagship Miami</div><div class="am">&#8364; 18.900</div></div>
+            <div class="kan-card"><div class="nm">Penthouse Miami</div><div class="pt">FloorHaus Miami</div><div class="am">$ 42.300</div></div>
+            <div class="kan-card"><div class="nm">Casa Sotogrande</div><div class="pt">Casa Mendel</div><div class="am">&#8364; 32.600</div></div>
+            <div class="kan-foot"><span>3 deals</span><span>18% conv.</span></div>
+          </div>
+          <div class="kan-col" data-stage="perdido">
+            <div class="kan-head"><div class="kan-stage">Perdidos</div><div class="kan-meta">8 · &#8364; 142k</div></div>
+            <div class="kan-card"><div class="nm">Loft Soho</div><div class="pt">Mirage Boston</div><div class="am" style="color:var(--n-500)">$ 38.000</div></div>
+            <div class="kan-card"><div class="nm">Chalet Sierra</div><div class="pt">Hakwood Sevilla</div><div class="am" style="color:var(--n-500)">&#8364; 22.400</div></div>
+            <div class="kan-foot"><span>2 deals</span><span>precio</span></div>
+          </div>
+        </div>
+
+        <div class="ps-head">
+          <h2>Equipo comercial</h2>
+          <div class="time-tabs"><button>Mes</button><button>Trimestre</button><button class="active">Año</button></div>
+        </div>
+        <p style="font-size:12px;color:var(--n-500);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px">Ranking · click en columna para ordenar</p>
+
+        <table>
+          <thead><tr>
+            <th></th><th>Comercial</th><th>Partners</th><th>Deals</th><th>Won</th><th>Closing rate</th><th>Pipeline (&#8364;)</th><th>Won YTD (&#8364;)</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="lb-rank">1</span></td>
+              <td><div class="lb-name"><div class="lb-avatar">CM</div><div><div style="font-weight:500">Carla Méndez</div><div class="role">Senior · España</div></div></div></td>
+              <td>12</td><td>34</td><td>14 / 34</td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:88%"></div></div><div class="lb-val">41,2%</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:100%"></div></div><div class="lb-val">&#8364; 612k</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:100%"></div></div><div class="lb-val">&#8364; 840k</div></div></td>
+            </tr>
+            <tr>
+              <td><span class="lb-rank">2</span></td>
+              <td><div class="lb-name"><div class="lb-avatar" style="background:var(--oak-mid);color:var(--riva-black)">JR</div><div><div style="font-weight:500">Jake Roberts</div><div class="role">Senior · USA East</div></div></div></td>
+              <td>9</td><td>28</td><td>10 / 28</td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:76%"></div></div><div class="lb-val">35,7%</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:84%"></div></div><div class="lb-val">&#8364; 514k</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:81%"></div></div><div class="lb-val">&#8364; 682k</div></div></td>
+            </tr>
+            <tr>
+              <td><span class="lb-rank">3</span></td>
+              <td><div class="lb-name"><div class="lb-avatar" style="background:var(--sage);color:var(--riva-black)">DA</div><div><div style="font-weight:500">Diego Arrieta</div><div class="role">Mid · USA East + Flagship</div></div></div></td>
+              <td>8</td><td>26</td><td>9 / 26</td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:72%"></div></div><div class="lb-val">34,6%</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:72%"></div></div><div class="lb-val">&#8364; 442k</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:68%"></div></div><div class="lb-val">&#8364; 572k</div></div></td>
+            </tr>
+            <tr>
+              <td><span class="lb-rank">4</span></td>
+              <td><div class="lb-name"><div class="lb-avatar" style="background:#7a5230">AT</div><div><div style="font-weight:500">Ashley Tan</div><div class="role">Mid · USA West</div></div></div></td>
+              <td>7</td><td>22</td><td>7 / 22</td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:64%"></div></div><div class="lb-val">31,8%</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:62%"></div></div><div class="lb-val">&#8364; 380k</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:54%"></div></div><div class="lb-val">&#8364; 452k</div></div></td>
+            </tr>
+            <tr>
+              <td><span class="lb-rank">5</span></td>
+              <td><div class="lb-name"><div class="lb-avatar" style="background:#3f2616">LP</div><div><div style="font-weight:500">Laura Pinto</div><div class="role">Junior · España</div></div></div></td>
+              <td>6</td><td>18</td><td>5 / 18</td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:54%"></div></div><div class="lb-val">27,8%</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:48%"></div></div><div class="lb-val">&#8364; 294k</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:36%"></div></div><div class="lb-val">&#8364; 302k</div></div></td>
+            </tr>
+            <tr>
+              <td><span class="lb-rank">6</span></td>
+              <td><div class="lb-name"><div class="lb-avatar" style="background:#2a1a0e">MO</div><div><div style="font-weight:500">Marc Olivier</div><div class="role">Junior · USA</div></div></div></td>
+              <td>5</td><td>14</td><td>3 / 14</td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:42%"></div></div><div class="lb-val">21,4%</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:36%"></div></div><div class="lb-val">&#8364; 218k</div></div></td>
+              <td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:22%"></div></div><div class="lb-val">&#8364; 184k</div></div></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="panel" style="margin-top:32px">
+          <div class="panel-head">
+            <h3>Won credit · evolución por comercial</h3>
+            <div style="display:flex;gap:8px"><button class="filter active">Won credit</button><button class="filter">Pipeline</button><button class="filter">Actividad</button></div>
+          </div>
+          <div class="multi-line">
+            <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+              <g class="grid">
+                <line x1="0" y1="40" x2="600" y2="40"/>
+                <line x1="0" y1="80" x2="600" y2="80"/>
+                <line x1="0" y1="120" x2="600" y2="120"/>
+                <line x1="0" y1="160" x2="600" y2="160"/>
+              </g>
+              <polyline class="ln ln-1" points="0,140 100,128 200,108 300,86 400,68 500,48 600,32"/>
+              <polyline class="ln ln-2" points="0,150 100,142 200,124 300,108 400,92 500,72 600,58"/>
+              <polyline class="ln ln-3" points="0,158 100,148 200,134 300,118 400,104 500,90 600,76"/>
+              <polyline class="ln ln-4" points="0,164 100,158 200,148 300,140 400,128 500,118 600,106"/>
+              <polyline class="ln ln-5" points="0,172 100,168 200,162 300,156 400,148 500,140 600,134"/>
+            </svg>
+            <div class="x-labels" style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--n-500);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase">
+              <span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span>
+            </div>
+            <div class="legend">
+              <span><i style="background:var(--cove)"></i>Carla M.</span>
+              <span><i style="background:var(--oak-mid)"></i>Jake R.</span>
+              <span><i style="background:var(--sage)"></i>Diego A.</span>
+              <span><i style="background:#7a5230"></i>Ashley T.</span>
+              <span><i style="background:#3f2616"></i>Laura P.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ============ DEPARTMENT · MARKETING (rich) ============ -->
+      <section class="view" id="view-dept-mkt">
+        <div class="page-head"><div><div class="eyebrow" style="margin-bottom:10px">Departamento</div><h1>Marketing</h1><p>Campa&ntilde;as, generaci&oacute;n de leads, contenido. Email marketing a&uacute;n en HubSpot &mdash; pendiente migrar al Hub.</p></div><div class="page-actions"><button class="btn btn-outline">Calendario</button><button class="btn btn-primary">+ Campa&ntilde;a</button></div></div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Campa&ntilde;as activas</div><div class="v">4</div><div class="sub">2 ES &middot; 2 USA</div></div>
+          <div class="kpi"><div class="eyebrow">Leads mes</div><div class="v">312</div><div class="delta up">&uarr; 24% vs abril</div></div>
+          <div class="kpi"><div class="eyebrow">CPL medio</div><div class="v">&#8364; 28</div><div class="delta up">&minus;&#8364; 4 vs Q1</div></div>
+          <div class="kpi"><div class="eyebrow">Open rate email</div><div class="v">38%</div><div class="delta up">&uarr; 6 pp</div></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:32px">
+          <div class="panel-head"><h3>Embudo Lead &rarr; Cliente</h3><div class="time-tabs"><button>Mes</button><button class="active">Trimestre</button><button>A&ntilde;o</button></div></div>
+          <div class="conv-bar">
+            <div class="conv-seg"><span class="pct">100%</span><span class="stg">Lead</span></div>
+            <div class="conv-seg"><span class="pct">48%</span><span class="stg">MQL</span></div>
+            <div class="conv-seg"><span class="pct">24%</span><span class="stg">SQL</span></div>
+            <div class="conv-seg"><span class="pct">11%</span><span class="stg">Oportunidad</span></div>
+            <div class="conv-seg"><span class="pct">4,2%</span><span class="stg">Cliente</span></div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-head"><h3>Leads por canal &middot; mes</h3><a href="#" class="link">312 leads</a></div>
+            <div class="vbar-chart">
+              <div class="vbar"><div class="v-val">98</div><div class="bar" style="height:65%"></div><div class="v-lbl">Org&aacute;nico</div></div>
+              <div class="vbar"><div class="v-val">72</div><div class="bar oak" style="height:48%"></div><div class="v-lbl">Paid</div></div>
+              <div class="vbar"><div class="v-val">58</div><div class="bar sage" style="height:38%"></div><div class="v-lbl">Partners</div></div>
+              <div class="vbar"><div class="v-val">44</div><div class="bar mid" style="height:29%"></div><div class="v-lbl">Referidos</div></div>
+              <div class="vbar"><div class="v-val">28</div><div class="bar dark" style="height:18%"></div><div class="v-lbl">Eventos</div></div>
+              <div class="vbar"><div class="v-val">12</div><div class="bar" style="height:8%;opacity:0.7"></div><div class="v-lbl">Prensa</div></div>
+            </div>
+            <div class="vbar-foot"><span>Total &middot; 312</span><span>CPL medio &middot; &#8364; 28</span></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Leads 12 meses por canal</h3><div style="display:flex;gap:6px"><button class="filter active">Org.</button><button class="filter">Paid</button><button class="filter">Partners</button></div></div>
+            <div class="multi-line">
+              <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+                <g class="grid"><line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="80" x2="600" y2="80"/><line x1="0" y1="120" x2="600" y2="120"/><line x1="0" y1="160" x2="600" y2="160"/></g>
+                <polyline class="ln ln-1" points="0,148 50,142 100,138 150,124 200,116 250,98 300,86 350,74 400,68 450,58 500,46 550,38 600,30"/>
+                <polyline class="ln ln-2" points="0,168 50,162 100,158 150,150 200,142 250,130 300,118 350,108 400,98 450,86 500,76 550,68 600,60"/>
+                <polyline class="ln ln-3" points="0,178 50,170 100,166 150,158 200,148 250,140 300,128 350,118 400,108 450,98 500,90 550,84 600,78"/>
+              </svg>
+              <div class="x-labels" style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--n-500);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase">
+                <span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span>
+              </div>
+              <div class="legend">
+                <span><i style="background:var(--cove)"></i>Org&aacute;nico</span>
+                <span><i style="background:var(--oak-mid)"></i>Paid</span>
+                <span><i style="background:var(--sage)"></i>Partners</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Ratios marketing</h3><a href="#" class="link">YTD</a></div>
+            <div class="ratio-grid">
+              <div class="ratio"><div class="lbl">Lead &rarr; cliente</div><div class="num">4,2%</div><div class="delta up">&uarr; 1,1 pp</div></div>
+              <div class="ratio"><div class="lbl">CAC</div><div class="num">&#8364; 680</div><div class="delta up">&minus;&#8364; 90</div></div>
+              <div class="ratio"><div class="lbl">ROAS paid</div><div class="num">3,8x</div><div class="delta up">&uarr; 0,4x</div></div>
+              <div class="ratio"><div class="lbl">CTR email</div><div class="num">12,4%</div><div class="delta up">&uarr; 2,1 pp</div></div>
+              <div class="ratio"><div class="lbl">Web sessions</div><div class="num">42k</div><div class="delta up">&uarr; 18%</div></div>
+              <div class="ratio"><div class="lbl">Brand search</div><div class="num">+34%</div><div class="delta up">vs 12m</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ps-head"><h2>Campa&ntilde;as activas</h2><div class="filters"><button class="filter active">Activas</button><button class="filter">Pr&oacute;ximas</button><button class="filter">Cerradas</button></div></div>
+        <table>
+          <thead><tr><th>Campa&ntilde;a</th><th>Canal</th><th>Periodo</th><th>Spend</th><th>Leads</th><th>CPL</th><th>Conv.</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:500">TIERRA &middot; spring</div><div style="font-size:11px;color:var(--n-500);letter-spacing:0.04em">ES + USA &middot; Instagram + email</div></td><td>Paid + email</td><td>1 abr &mdash; 31 may</td><td>&#8364; 14.200</td><td>184</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:88%"></div></div><div class="lb-val">&#8364; 24</div></div></td><td>5,1%</td><td><span class="pill ok">En curso</span></td></tr>
+            <tr><td><div style="font-weight:500">RIVA Spain &middot; arquitectos</div><div style="font-size:11px;color:var(--n-500);letter-spacing:0.04em">ES &middot; eventos + LinkedIn</div></td><td>Eventos + LI</td><td>15 abr &mdash; 30 jun</td><td>&#8364; 22.800</td><td>72</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:62%"></div></div><div class="lb-val">&#8364; 38</div></div></td><td>8,3%</td><td><span class="pill ok">En curso</span></td></tr>
+            <tr><td><div style="font-weight:500">Flagship &middot; Madrid</div><div style="font-size:11px;color:var(--n-500);letter-spacing:0.04em">ES &middot; local + influencers</div></td><td>Local + IG</td><td>1 may &mdash; 15 jun</td><td>&#8364; 8.400</td><td>42</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:72%"></div></div><div class="lb-val">&#8364; 32</div></div></td><td>11,9%</td><td><span class="pill ok">En curso</span></td></tr>
+            <tr><td><div style="font-weight:500">Cove &middot; lanzamiento</div><div style="font-size:11px;color:var(--n-500);letter-spacing:0.04em">USA &middot; PR + paid social</div></td><td>PR + paid</td><td>10 may &mdash; 30 jun</td><td>$ 18.400</td><td>14</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:30%"></div></div><div class="lb-val">$ 84</div></div></td><td>&mdash;</td><td><span class="pill warn">Bajo CPL obj.</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <!-- ============ DEPARTMENT · ACCOUNTING (rich) ============ -->
+      <section class="view" id="view-dept-acc">
+        <div class="page-head"><div><div class="eyebrow" style="margin-bottom:10px">Departamento</div><h1>Accounting</h1><p>Facturaci&oacute;n QuickBooks, cobros autom&aacute;ticos v&iacute;a link de pago, conciliaci&oacute;n, P&amp;L por sede y por flagship. N&uacute;cleo del Hub.</p></div><div class="page-actions"><button class="btn btn-outline">Cierre mes</button><button class="btn btn-primary">+ Factura</button></div></div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Facturas mes</div><div class="v">184</div><div class="delta up">&uarr; 12% vs abril</div></div>
+          <div class="kpi"><div class="eyebrow">Cobrado YTD</div><div class="v">&#8364; 2,84M</div><div class="delta up">&uarr; 9%</div></div>
+          <div class="kpi"><div class="eyebrow">Pendiente</div><div class="v">&#8364; 142k</div><div class="delta neutral">3,2% del facturado</div></div>
+          <div class="kpi"><div class="eyebrow">DSO</div><div class="v">34 d</div><div class="delta up">&minus;4 d vs Q1</div></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:32px">
+          <div class="panel-head"><h3>Aging de cobros &middot; &#8364; 142k pendiente</h3><div class="time-tabs"><button class="active">Total</button><button>ES</button><button>USA</button></div></div>
+          <div class="stack-bar">
+            <div class="stack-seg s0" style="flex:0 0 48%">&#8364; 68k &middot; 0-30 d</div>
+            <div class="stack-seg s1" style="flex:0 0 28%">&#8364; 40k &middot; 31-60 d</div>
+            <div class="stack-seg s2" style="flex:0 0 18%">&#8364; 26k &middot; 61-90 d</div>
+            <div class="stack-seg s3" style="flex:0 0 6%">&#8364; 8k</div>
+          </div>
+          <div class="stack-legend">
+            <span><i style="background:var(--success)"></i>0-30 d &middot; al d&iacute;a</span>
+            <span><i style="background:var(--cove)"></i>31-60 d &middot; recordatorio</span>
+            <span><i style="background:var(--warning)"></i>61-90 d &middot; 2&ordm; aviso</span>
+            <span><i style="background:var(--error)"></i>90+ d &middot; postventa</span>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-head"><h3>Ingresos por origen</h3><a href="#" class="link">YTD</a></div>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--cove)" stroke-width="9" stroke-dasharray="42 58" stroke-dashoffset="25"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--oak-mid)" stroke-width="9" stroke-dasharray="38 62" stroke-dashoffset="-17"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--sage)" stroke-width="9" stroke-dasharray="20 80" stroke-dashoffset="-55"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="lg-row"><span class="sw" style="background:var(--cove)"></span><span class="lbl">USA partners</span><span class="val">&#8364; 1,18M</span></div>
+                <div class="lg-row"><span class="sw" style="background:var(--oak-mid)"></span><span class="lbl">ES partners</span><span class="val">&#8364; 1,08M</span></div>
+                <div class="lg-row"><span class="sw" style="background:var(--sage)"></span><span class="lbl">Flagship Miami</span><span class="val">&#8364; 580k</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>P&amp;L mensual &middot; mayo</h3><a href="#" class="link">Cascada</a></div>
+            <div class="waterfall">
+              <div class="wf-col"><div class="wf-val">&#8364; 642k</div><div class="wf-bar start" style="height:88%">Ingresos</div><div class="wf-lbl">Total</div></div>
+              <div class="wf-col"><div class="wf-val">&minus;&#8364; 286k</div><div class="wf-bar neg" style="height:38%">&minus;COGS</div><div class="wf-lbl">Coste<br>producto</div></div>
+              <div class="wf-col"><div class="wf-val">&#8364; 356k</div><div class="wf-bar pos" style="height:50%">Margen</div><div class="wf-lbl">Bruto<br>55,4%</div></div>
+              <div class="wf-col"><div class="wf-val">&minus;&#8364; 142k</div><div class="wf-bar neg" style="height:20%">&minus;OpEx</div><div class="wf-lbl">N&oacute;minas<br>marketing</div></div>
+              <div class="wf-col"><div class="wf-val">&minus;&#8364; 38k</div><div class="wf-bar neg" style="height:6%">&minus;Tax</div><div class="wf-lbl">Impuestos</div></div>
+              <div class="wf-col"><div class="wf-val">&#8364; 176k</div><div class="wf-bar tot" style="height:25%">Net</div><div class="wf-lbl">Neto<br>27,4%</div></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Cobros 12 meses</h3><a href="#" class="link">Emitido vs cobrado</a></div>
+            <div class="multi-line">
+              <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+                <g class="grid"><line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="80" x2="600" y2="80"/><line x1="0" y1="120" x2="600" y2="120"/><line x1="0" y1="160" x2="600" y2="160"/></g>
+                <polyline class="ln ln-1" points="0,140 50,134 100,128 150,118 200,108 250,98 300,88 350,76 400,64 450,52 500,42 550,32 600,22"/>
+                <polyline class="ln ln-2" points="0,158 50,150 100,142 150,134 200,124 250,114 300,104 350,92 400,82 450,72 500,60 550,50 600,40"/>
+              </svg>
+              <div class="x-labels" style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--n-500);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase">
+                <span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span>
+              </div>
+              <div class="legend">
+                <span><i style="background:var(--cove)"></i>Emitido</span>
+                <span><i style="background:var(--oak-mid)"></i>Cobrado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ps-head"><h2>Cobros pendientes &middot; con autom&aacute;tica</h2><div class="filters"><button class="filter">Todas</button><button class="filter active">Vencidas</button><button class="filter">Riesgo</button></div></div>
+        <table>
+          <thead><tr><th>Factura</th><th>Partner</th><th>Importe</th><th>Vencida</th><th>Pr&oacute;xima acci&oacute;n</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>#2026-0417</td><td>Studio Rota &middot; ES</td><td>&#8364; 14.200</td><td>D+7</td><td>Recordatorio email D+14</td><td><span class="pill warn">1&ordm; aviso</span></td></tr>
+            <tr><td>#2026-0411</td><td>UpWall Aspen &middot; USA</td><td>$ 18.400</td><td>D+9</td><td>Stripe link reenviado</td><td><span class="pill warn">1&ordm; aviso</span></td></tr>
+            <tr><td>#2026-0402</td><td>Mirage Boston &middot; USA</td><td>$ 8.400</td><td>D+14</td><td>2&ordm; recordatorio enviado</td><td><span class="pill warn">2&ordm; aviso</span></td></tr>
+            <tr><td>#2026-0398</td><td>DuCh&acirc;teau Bilbao</td><td>&#8364; 9.600</td><td>D+18</td><td>Llamada programada</td><td><span class="pill warn">2&ordm; aviso</span></td></tr>
+            <tr><td>#2026-0388</td><td>Hakwood Sevilla</td><td>&#8364; 6.840</td><td>D+22</td><td>Postventa avisado</td><td><span class="pill err">3&ordm; aviso</span></td></tr>
+            <tr><td>#2026-0376</td><td>FloorHaus Miami</td><td>$ 4.200</td><td>D+34</td><td>Escalado a finance</td><td><span class="pill err">Riesgo</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <!-- ============ DEPARTMENT · SUPPLY CHAIN (rich) ============ -->
+      <section class="view" id="view-dept-supply">
+        <div class="page-head"><div><div class="eyebrow" style="margin-bottom:10px">Departamento</div><h1>Supply Chain</h1><p>Inventario, lead times, OC a f&aacute;brica, almacenes ES y USA. Stock cr&iacute;tico genera alerta autom&aacute;tica con OC pre-rellenada.</p></div><div class="page-actions"><button class="btn btn-outline">Inventario</button><button class="btn btn-primary">+ OC</button></div></div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">SKUs activos</div><div class="v">142</div><div class="sub">94 ES &middot; 88 USA</div></div>
+          <div class="kpi"><div class="eyebrow">Stock cr&iacute;tico</div><div class="v">3</div><div class="delta down">Cove &middot; Laguna &middot; Velino</div></div>
+          <div class="kpi"><div class="eyebrow">Lead time medio</div><div class="v">28 d</div><div class="delta up">&minus;3 d vs Q1</div></div>
+          <div class="kpi"><div class="eyebrow">OC abiertas</div><div class="v">7</div><div class="sub">&#8364; 184k en tr&aacute;nsito</div></div>
+        </div>
+
+        <div class="ps-head"><h2>Pipeline de OC &middot; f&aacute;brica al almac&eacute;n</h2><div class="filters"><button class="filter active">Todas</button><button class="filter">ES</button><button class="filter">USA</button></div></div>
+        <div class="kanban">
+          <div class="kan-col" data-stage="cualif">
+            <div class="kan-head"><div class="kan-stage">En f&aacute;brica</div><div class="kan-meta">3 OC &middot; &#8364; 78k</div></div>
+            <div class="kan-card"><div class="nm">OC-4421 &middot; Cove</div><div class="pt">Lote 240 m&sup2; &middot; ES</div><div class="am">&#8364; 32k</div></div>
+            <div class="kan-card"><div class="nm">OC-4419 &middot; Laguna</div><div class="pt">Lote 180 m&sup2; &middot; ES</div><div class="am">&#8364; 26k</div></div>
+            <div class="kan-card"><div class="nm">OC-4417 &middot; Velino</div><div class="pt">Lote 140 m&sup2; &middot; USA</div><div class="am">$ 22k</div></div>
+            <div class="kan-foot"><span>Inicio &rarr;</span><span>~14 d</span></div>
+          </div>
+          <div class="kan-col" data-stage="propuesta">
+            <div class="kan-head"><div class="kan-stage">En tr&aacute;nsito</div><div class="kan-meta">2 OC &middot; &#8364; 54k</div></div>
+            <div class="kan-card"><div class="nm">OC-4412 &middot; Glaze</div><div class="pt">Cont. 40' &middot; ES</div><div class="am">&#8364; 28k</div></div>
+            <div class="kan-card"><div class="nm">OC-4408 &middot; Vedetta</div><div class="pt">Cont. 20' &middot; USA</div><div class="am">$ 28k</div></div>
+            <div class="kan-foot"><span>Mar&middot;Med.</span><span>~7 d</span></div>
+          </div>
+          <div class="kan-col" data-stage="negociacion">
+            <div class="kan-head"><div class="kan-stage">Aduana</div><div class="kan-meta">1 OC &middot; $ 32k</div></div>
+            <div class="kan-card"><div class="nm">OC-4402 &middot; Mercury</div><div class="pt">USA &middot; pdte. DUA</div><div class="am">$ 32k</div></div>
+            <div class="kan-foot"><span>NJ port</span><span>2-3 d</span></div>
+          </div>
+          <div class="kan-col" data-stage="cierre">
+            <div class="kan-head"><div class="kan-stage">En almac&eacute;n</div><div class="kan-meta">1 OC &middot; &#8364; 18k</div></div>
+            <div class="kan-card"><div class="nm">OC-4395 &middot; Earth</div><div class="pt">Madrid &middot; recibido</div><div class="am">&#8364; 18k</div></div>
+            <div class="kan-foot"><span>QA</span><span>1-2 d</span></div>
+          </div>
+          <div class="kan-col" data-stage="cierre">
+            <div class="kan-head"><div class="kan-stage">Disponible</div><div class="kan-meta">+ 42 SKUs</div></div>
+            <div class="kan-card"><div class="nm">Cotton</div><div class="pt">ES &middot; 320 m&sup2;</div><div class="am" style="color:var(--sage)">Listo</div></div>
+            <div class="kan-card"><div class="nm">Sand</div><div class="pt">USA &middot; 280 m&sup2;</div><div class="am" style="color:var(--sage)">Listo</div></div>
+            <div class="kan-foot"><span>Disponible</span><span>venta</span></div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-head"><h3>Stock por almac&eacute;n</h3><a href="#" class="link">m&sup2; equivalentes</a></div>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--cove)" stroke-width="9" stroke-dasharray="58 42" stroke-dashoffset="25"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--oak-mid)" stroke-width="9" stroke-dasharray="42 58" stroke-dashoffset="-33"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="lg-row"><span class="sw" style="background:var(--cove)"></span><span class="lbl">Madrid &middot; ES</span><span class="val">5.840 m&sup2;</span></div>
+                <div class="lg-row"><span class="sw" style="background:var(--oak-mid)"></span><span class="lbl">Newark &middot; USA</span><span class="val">4.220 m&sup2;</span></div>
+                <div class="lg-row" style="border-top:1px solid var(--n-300);padding-top:10px;margin-top:6px"><span class="sw" style="background:transparent"></span><span class="lbl" style="font-weight:500">Total</span><span class="val" style="font-weight:500">10.060 m&sup2;</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Lead time por proveedor</h3><a href="#" class="link">d&iacute;as</a></div>
+            <div class="vbar-chart">
+              <div class="vbar"><div class="v-val">22</div><div class="bar sage" style="height:38%"></div><div class="v-lbl">Cordeiro</div></div>
+              <div class="vbar"><div class="v-val">26</div><div class="bar" style="height:46%"></div><div class="v-lbl">Vilanova</div></div>
+              <div class="vbar"><div class="v-val">28</div><div class="bar oak" style="height:52%"></div><div class="v-lbl">Tabuyo</div></div>
+              <div class="vbar"><div class="v-val">32</div><div class="bar mid" style="height:62%"></div><div class="v-lbl">Sevillana</div></div>
+              <div class="vbar"><div class="v-val">38</div><div class="bar dark" style="height:78%"></div><div class="v-lbl">Adriatic</div></div>
+              <div class="vbar"><div class="v-val">42</div><div class="bar" style="height:90%;background:var(--error)"></div><div class="v-lbl">US-Oak Co.</div></div>
+            </div>
+            <div class="vbar-foot"><span>Objetivo &lt; 28 d</span><span>Media &middot; 31 d</span></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Rotaci&oacute;n &amp; salud</h3><a href="#" class="link">YTD</a></div>
+            <div class="ratio-grid">
+              <div class="ratio"><div class="lbl">Rotaci&oacute;n stock</div><div class="num">4,2x</div><div class="delta up">objetivo 4,0x</div></div>
+              <div class="ratio"><div class="lbl">D&iacute;as cobertura</div><div class="num">68 d</div><div class="delta neutral">est&aacute;ndar</div></div>
+              <div class="ratio"><div class="lbl">Stockouts</div><div class="num">3</div><div class="delta down">&uarr; 1 vs abril</div></div>
+              <div class="ratio"><div class="lbl">Merma</div><div class="num">0,8%</div><div class="delta up">&minus;0,3 pp</div></div>
+              <div class="ratio"><div class="lbl">Capacity</div><div class="num">76%</div><div class="delta neutral">de 13.200 m&sup2;</div></div>
+              <div class="ratio"><div class="lbl">On-time pedido</div><div class="num">94%</div><div class="delta up">&uarr; 3 pp</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ps-head"><h2>SKUs cr&iacute;ticos &middot; reposici&oacute;n autom&aacute;tica</h2><div class="time-tabs"><button>Bajo m&iacute;n</button><button class="active">Top demand</button><button>Slow</button></div></div>
+        <table>
+          <thead><tr><th>SKU</th><th>Almac&eacute;n</th><th>Stock</th><th>Umbral</th><th>Cobertura</th><th>OC sugerida</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:500">Cove &middot; oak dark</div><div style="font-size:11px;color:var(--n-500)">12 mm &middot; wide plank</div></td><td>Madrid</td><td>42 m&sup2;</td><td>180 m&sup2;</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:23%;background:var(--error)"></div></div><div class="lb-val">7 d</div></div></td><td>240 m&sup2; &middot; &#8364; 32k</td><td><span class="pill err">Cr&iacute;tico</span></td></tr>
+            <tr><td><div style="font-weight:500">Laguna &middot; oak light</div><div style="font-size:11px;color:var(--n-500)">15 mm &middot; chevron</div></td><td>Madrid</td><td>68 m&sup2;</td><td>160 m&sup2;</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:42%;background:var(--warning)"></div></div><div class="lb-val">14 d</div></div></td><td>180 m&sup2; &middot; &#8364; 26k</td><td><span class="pill warn">Bajo</span></td></tr>
+            <tr><td><div style="font-weight:500">Velino &middot; ash</div><div style="font-size:11px;color:var(--n-500)">12 mm &middot; herringbone</div></td><td>Newark</td><td>54 m&sup2;</td><td>140 m&sup2;</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:38%;background:var(--warning)"></div></div><div class="lb-val">12 d</div></div></td><td>140 m&sup2; &middot; $ 22k</td><td><span class="pill warn">Bajo</span></td></tr>
+            <tr><td><div style="font-weight:500">Glaze &middot; oak light</div><div style="font-size:11px;color:var(--n-500)">12 mm &middot; wide plank</div></td><td>Madrid</td><td>248 m&sup2;</td><td>180 m&sup2;</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:100%"></div></div><div class="lb-val">42 d</div></div></td><td>&mdash;</td><td><span class="pill ok">OK</span></td></tr>
+            <tr><td><div style="font-weight:500">Vedetta &middot; oak smoke</div><div style="font-size:11px;color:var(--n-500)">15 mm &middot; wide plank</div></td><td>Newark</td><td>184 m&sup2;</td><td>140 m&sup2;</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:88%"></div></div><div class="lb-val">38 d</div></div></td><td>&mdash;</td><td><span class="pill ok">OK</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <!-- ============ DEPARTMENT · POSTVENTA (rich) ============ -->
+      <section class="view" id="view-dept-post">
+        <div class="page-head"><div><div class="eyebrow" style="margin-bottom:10px">Departamento</div><h1>Postventa</h1><p>Tickets, rese&ntilde;as, NPS, garant&iacute;as y mantenimiento. Una rese&ntilde;a &le;3&#9733; abre ticket autom&aacute;tico y asigna a equipo.</p></div><div class="page-actions"><button class="btn btn-outline">Encuestas</button><button class="btn btn-primary">+ Ticket</button></div></div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Tickets abiertos</div><div class="v">11</div><div class="delta up">&minus;3 vs sem. ant.</div></div>
+          <div class="kpi"><div class="eyebrow">NPS 30d</div><div class="v">+62</div><div class="delta up">&uarr; 4 pts</div></div>
+          <div class="kpi"><div class="eyebrow">Tiempo respuesta</div><div class="v">3,2 h</div><div class="delta up">&minus;0,8 h</div></div>
+          <div class="kpi"><div class="eyebrow">Rese&ntilde;as mes</div><div class="v">28</div><div class="sub">4,7&#9733; promedio</div></div>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-head"><h3>Net Promoter Score</h3><a href="#" class="link">30 d&iacute;as</a></div>
+            <div class="gauge">
+              <svg viewBox="0 0 200 110">
+                <path class="gx-bg" d="M 15 100 A 85 85 0 0 1 185 100"/>
+                <path class="gx-fg" d="M 15 100 A 85 85 0 0 1 161 38" stroke-dasharray="220" stroke-dashoffset="0"/>
+              </svg>
+              <div class="score">+62</div>
+              <div class="gx-lbl">Excelente</div>
+              <div class="scale"><span>&minus;100</span><span>0</span><span>+100</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Distribuci&oacute;n rese&ntilde;as &middot; mes</h3><a href="#" class="link">28 totales</a></div>
+            <div class="vbar-chart">
+              <div class="vbar"><div class="v-val">22</div><div class="bar sage" style="height:88%"></div><div class="v-lbl">5&#9733;</div></div>
+              <div class="vbar"><div class="v-val">4</div><div class="bar" style="height:18%"></div><div class="v-lbl">4&#9733;</div></div>
+              <div class="vbar"><div class="v-val">1</div><div class="bar oak" style="height:4%"></div><div class="v-lbl">3&#9733;</div></div>
+              <div class="vbar"><div class="v-val">1</div><div class="bar mid" style="height:4%"></div><div class="v-lbl">2&#9733;</div></div>
+              <div class="vbar"><div class="v-val">0</div><div class="bar" style="height:0%;background:var(--error)"></div><div class="v-lbl">1&#9733;</div></div>
+            </div>
+            <div class="vbar-foot"><span>Promedio &middot; 4,7&#9733;</span><span>Tickets auto &middot; 2</span></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>NPS evoluci&oacute;n 12 meses</h3><div style="display:flex;gap:6px"><button class="filter active">Holding</button><button class="filter">ES</button><button class="filter">USA</button></div></div>
+            <div class="multi-line">
+              <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+                <g class="grid"><line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="80" x2="600" y2="80"/><line x1="0" y1="120" x2="600" y2="120"/><line x1="0" y1="160" x2="600" y2="160"/></g>
+                <polyline class="ln ln-3" points="0,108 50,104 100,96 150,92 200,84 250,82 300,76 350,72 400,66 450,60 500,52 550,46 600,38"/>
+                <polyline class="ln ln-1" points="0,118 50,114 100,108 150,98 200,90 250,86 300,82 350,76 400,68 450,62 500,56 550,50 600,42"/>
+                <polyline class="ln ln-2" points="0,128 50,122 100,114 150,108 200,98 250,92 300,88 350,82 400,76 450,68 500,62 550,56 600,52"/>
+              </svg>
+              <div class="x-labels" style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--n-500);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase">
+                <span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span>
+              </div>
+              <div class="legend">
+                <span><i style="background:var(--sage)"></i>Holding +62</span>
+                <span><i style="background:var(--cove)"></i>ES +66</span>
+                <span><i style="background:var(--oak-mid)"></i>USA +56</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ps-head"><h2>Tickets abiertos</h2><div class="filters"><button class="filter active">Todos</button><button class="filter">Urgente</button><button class="filter">Sin asignar</button></div></div>
+        <table>
+          <thead><tr><th>Ticket</th><th>Cliente / Partner</th><th>Tipo</th><th>Asignado</th><th>Tiempo abierto</th><th>Prioridad</th></tr></thead>
+          <tbody>
+            <tr><td>#882</td><td>Casa Velázquez &middot; Flagship</td><td>Defecto acabado</td><td>Carla M.</td><td>3 h</td><td><span class="pill err">Alta</span></td></tr>
+            <tr><td>#881</td><td>Studio Rota &middot; ES</td><td>Pedido recibido incompleto</td><td>Diego A.</td><td>6 h</td><td><span class="pill warn">Media</span></td></tr>
+            <tr><td>#880</td><td>UpWall Aspen &middot; USA</td><td>Consulta mantenimiento</td><td>Ashley T.</td><td>12 h</td><td><span class="pill">Baja</span></td></tr>
+            <tr><td>#879</td><td>FloorHaus Miami &middot; USA</td><td>Reposici&oacute;n garant&iacute;a</td><td>Jake R.</td><td>1 d</td><td><span class="pill warn">Media</span></td></tr>
+            <tr><td>#878</td><td>Hotel Aspen Lodge</td><td>Defecto color &middot; lote</td><td>Sin asignar</td><td>1 d</td><td><span class="pill err">Alta</span></td></tr>
+            <tr><td>#876</td><td>Casa Mendel &middot; ES</td><td>Consulta limpieza</td><td>Laura P.</td><td>2 d</td><td><span class="pill">Baja</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="ps-head" style="margin-top:32px"><h2>Top causas &middot; tickets &uacute;ltimos 90 d&iacute;as</h2><div class="time-tabs"><button>30 d</button><button class="active">90 d</button><button>YTD</button></div></div>
+        <table>
+          <thead><tr><th>Causa</th><th>Tickets</th><th>% del total</th><th>Tiempo medio resol.</th><th>Tendencia</th></tr></thead>
+          <tbody>
+            <tr><td>Defecto acabado / color</td><td>14</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:42%"></div></div><div class="lb-val">28%</div></div></td><td>2,1 d</td><td><span class="pill warn">&uarr; 4 vs Q1</span></td></tr>
+            <tr><td>Consulta mantenimiento</td><td>12</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill sage" style="width:36%"></div></div><div class="lb-val">24%</div></div></td><td>0,8 d</td><td><span class="pill ok">est&aacute;ble</span></td></tr>
+            <tr><td>Pedido incompleto</td><td>9</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill oak" style="width:28%"></div></div><div class="lb-val">18%</div></div></td><td>1,4 d</td><td><span class="pill ok">&minus;2 vs Q1</span></td></tr>
+            <tr><td>Garant&iacute;a / sustituci&oacute;n</td><td>8</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:24%"></div></div><div class="lb-val">16%</div></div></td><td>4,2 d</td><td><span class="pill ok">est&aacute;ble</span></td></tr>
+            <tr><td>Otros</td><td>7</td><td><div class="lb-cell"><div class="lb-bar"><div class="lb-bar-fill" style="width:22%;opacity:0.6"></div></div><div class="lb-val">14%</div></div></td><td>1,2 d</td><td><span class="pill">&mdash;</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <!-- ============ DEPARTMENT · TECNOLOGÍA (rich) ============ -->
+      <section class="view" id="view-dept-tech">
+        <div class="page-head"><div><div class="eyebrow" style="margin-bottom:10px">Departamento</div><h1>Tecnolog&iacute;a</h1><p>CRM interno construido in-house con IA, integraciones del Hub, infraestructura cloud, automatizaciones. Equipo que sostiene la operativa cross-sede.</p></div><div class="page-actions"><button class="btn btn-outline">Roadmap</button><button class="btn btn-primary">+ Issue</button></div></div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="eyebrow">Uptime 30d</div><div class="v">99,97%</div><div class="delta up">SLA 99,9%</div></div>
+          <div class="kpi"><div class="eyebrow">CRM Interno</div><div class="v">v2.4.1</div><div class="sub">Deploy ayer</div></div>
+          <div class="kpi"><div class="eyebrow">Integraciones</div><div class="v">9</div><div class="sub">9 conectadas &middot; 0 ca&iacute;das</div></div>
+          <div class="kpi"><div class="eyebrow">Tickets backlog</div><div class="v">14</div><div class="delta up">&minus;6 vs sem. ant.</div></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:32px">
+          <div class="panel-head"><h3>Uptime &middot; &uacute;ltimos 30 d&iacute;as</h3><div class="time-tabs"><button>7d</button><button class="active">30d</button><button>90d</button></div></div>
+          <div class="heatmap">
+            <div class="hm-grid">
+              <div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div>
+              <div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell err"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div><div class="hm-cell l4"></div>
+            </div>
+            <div class="hm-legend">
+              <span>22 abr &mdash; 21 may &middot; 1 incidente menor (18 min)</span>
+              <div class="scale"><span>down</span><i style="background:var(--error)"></i><i style="background:#dfe8d6"></i><i style="background:#aebd9c"></i><i style="background:var(--sage)"></i><i style="background:#6e7860"></i><span>100%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-head"><h3>Salud integraciones</h3><a href="#" class="link">9 conectadas</a></div>
+            <div class="panel-body">
+              <table>
+                <thead><tr><th>Sistema</th><th>Lat.</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr><td>QuickBooks</td><td>184 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>Stripe</td><td>92 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>CRM Interno</td><td>42 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>Sentry</td><td>96 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>Google WS</td><td>138 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>Slack</td><td>78 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>DocuSign</td><td>240 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>Square (Flag.)</td><td>112 ms</td><td><span class="pill ok">OK</span></td></tr>
+                  <tr><td>Canva</td><td>320 ms</td><td><span class="pill ok">OK</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Coste tech mensual por componente</h3><a href="#" class="link">/ mes</a></div>
+            <div class="vbar-chart">
+              <div class="vbar"><div class="v-val">&#8364; 2.4k</div><div class="bar" style="height:100%"></div><div class="v-lbl">Cloud<br>hosting</div></div>
+              <div class="vbar"><div class="v-val">&#8364; 1.8k</div><div class="bar oak" style="height:75%"></div><div class="v-lbl">AI APIs</div></div>
+              <div class="vbar"><div class="v-val">&#8364; 1.2k</div><div class="bar mid" style="height:50%"></div><div class="v-lbl">Integraciones</div></div>
+              <div class="vbar"><div class="v-val">&#8364; 0.9k</div><div class="bar sage" style="height:38%"></div><div class="v-lbl">Dev tools</div></div>
+              <div class="vbar"><div class="v-val">&#8364; 0.6k</div><div class="bar dark" style="height:25%"></div><div class="v-lbl">Monitoring</div></div>
+            </div>
+            <div class="vbar-foot"><span>Total &middot; <b style="color:var(--n-900)">&#8364; 6,9k / mes</b></span><span>&minus;8% vs Q1</span></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Response time &amp; errores</h3><div style="display:flex;gap:6px"><button class="filter active">Resp.</button><button class="filter">Error</button></div></div>
+            <div class="multi-line">
+              <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+                <g class="grid"><line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="80" x2="600" y2="80"/><line x1="0" y1="120" x2="600" y2="120"/><line x1="0" y1="160" x2="600" y2="160"/></g>
+                <polyline class="ln ln-1" points="0,128 50,124 100,132 150,118 200,114 250,108 300,98 350,90 400,88 450,82 500,78 550,72 600,68"/>
+                <polyline class="ln ln-2" points="0,168 50,170 100,166 150,160 200,162 250,156 300,158 350,154 400,152 450,148 500,146 550,144 600,142"/>
+              </svg>
+              <div class="x-labels" style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--n-500);margin-top:8px;letter-spacing:0.1em;text-transform:uppercase">
+                <span>Sem 1</span><span>Sem 2</span><span>Sem 3</span><span>Sem 4</span>
+              </div>
+              <div class="legend">
+                <span><i style="background:var(--cove)"></i>p95 resp. 142 ms</span>
+                <span><i style="background:var(--oak-mid)"></i>error rate 0,14%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ps-head"><h2>Roadmap Q2</h2><div class="time-tabs"><button>Tech</button><button class="active">Todos</button><button>Producto</button></div></div>
+        <div class="roadmap">
+          <div class="rm-col"><h4>Backlog</h4>
+            <div class="rm-item">Cach&eacute; warehouse para BI<div class="meta">Datos &middot; reducci&oacute;n queries 40%</div></div>
+            <div class="rm-item oak">SSO Google Workspace<div class="meta">Seguridad &middot; Q2</div></div>
+            <div class="rm-item">App m&oacute;vil para instaladores<div class="meta">Operations</div></div>
+            <div class="rm-item">Forecast IA pipeline<div class="meta">Ventas &middot; Q3</div></div>
+          </div>
+          <div class="rm-col"><h4>En curso</h4>
+            <div class="rm-item sage">Conector Square + Flagship<div class="meta">Cierre caja diario &middot; 80%</div></div>
+            <div class="rm-item oak">Multi-currency QB<div class="meta">Accounting &middot; 60%</div></div>
+            <div class="rm-item">Dashboard partners<div class="meta">Ventas &middot; 40%</div></div>
+          </div>
+          <div class="rm-col"><h4>Review</h4>
+            <div class="rm-item oak">Alertas stock Slack<div class="meta">Supply Chain</div></div>
+            <div class="rm-item sage">Plantillas email partners<div class="meta">Marketing</div></div>
+          </div>
+          <div class="rm-col"><h4>Done &middot; mayo</h4>
+            <div class="rm-item sage">CRM v2.4.1 deploy<div class="meta">Ayer</div></div>
+            <div class="rm-item sage">Webhook QB &harr; Stripe<div class="meta">12 may</div></div>
+            <div class="rm-item sage">Ticket auto 2&#9733; rese&ntilde;as<div class="meta">8 may</div></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <footer>
+      <div>The RIVA Company &middot; Hub demo &middot; v0.3</div>
+      <div>Madrid &middot; New York</div>
+    </footer>
+  </main>
+</div>
+
+<script>
+  function go(view){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    var el = document.getElementById('view-'+view);
+    if(el){el.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});}
+    document.querySelectorAll('nav a').forEach(function(a){a.classList.toggle('active', a.dataset.view===view);});
+    var labels = {
+      'dashboard':'Dashboard','automations':'Automatizaciones','integrations':'Integraciones',
+      'partners':'Partners','flagship':'Flagship Miami',
+      'dept-ops':'Operations','dept-sales':'Ventas','dept-mkt':'Marketing',
+      'dept-acc':'Accounting','dept-supply':'Supply Chain','dept-post':'Postventa','dept-tech':'Tecnología'
+    };
+    document.getElementById('crumb').textContent = labels[view] || 'Dashboard';
+  }
+  document.querySelectorAll('nav a').forEach(function(a){
+    a.addEventListener('click',function(e){e.preventDefault();go(a.dataset.view);});
+  });
+  // Sede tabs (single global group)
+  document.querySelectorAll('.sede-tabs button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.sede-tabs button').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+    });
+  });
+
+  // Generic toggle: any button inside .filters, .time-tabs, or any
+  // <div> wrapping .filter buttons. Active swaps within the immediate parent.
+  function bindToggle(group){
+    var btns = group.querySelectorAll(':scope > button');
+    btns.forEach(function(b){
+      b.addEventListener('click', function(e){
+        e.preventDefault();
+        btns.forEach(function(x){x.classList.remove('active');});
+        b.classList.add('active');
+      });
+    });
+  }
+  document.querySelectorAll('.filters, .time-tabs').forEach(bindToggle);
+  // Loose .filter button groups (no .filters wrapper): bind by parent
+  var bound = new Set();
+  document.querySelectorAll('button.filter').forEach(function(b){
+    var p = b.parentElement;
+    if(p.classList.contains('filters')) return;
+    if(bound.has(p)) return;
+    bound.add(p);
+    var siblings = p.querySelectorAll(':scope > button.filter, :scope > button');
+    siblings.forEach(function(s){
+      s.addEventListener('click', function(e){
+        e.preventDefault();
+        siblings.forEach(function(x){x.classList.remove('active');});
+        s.classList.add('active');
+      });
+    });
+  });
+
+  // Tiny UX niceties: collapse the notif dot when bell clicked, clear new badge.
+  var bell = document.querySelector('.bell');
+  if(bell){bell.addEventListener('click', function(){var d=bell.querySelector('.dot');if(d)d.style.display='none';});}
+
+  // Make table headers visually clickable on the leaderboard tables (sort cue).
+  document.querySelectorAll('table thead th').forEach(function(th){
+    th.style.cursor='pointer';
+    th.addEventListener('click', function(){
+      var tbl = th.closest('table');
+      tbl.querySelectorAll('thead th').forEach(function(x){x.style.color='';});
+      th.style.color='var(--cove)';
+    });
+  });
+</script>
+</body>
+</html>

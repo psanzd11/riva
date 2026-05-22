@@ -1,0 +1,30 @@
+# Node
+node_modules/
+dist/
+.cache/
+.vite/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# TS build info
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# Claude Code local state
+.claude/

@@ -1,0 +1,26 @@
+:root {
+  --riva-black: #0a0a0a;
+  --riva-ivory: #f4f1ec;
+  --riva-white: #ffffff;
+  --n-900: #1a1a1a;
+  --n-700: #4a4a4a;
+  --n-500: #8c8780;
+  --n-300: #d8d4cd;
+  --n-100: #edeae4;
+  --oak-light: #d9c4a3;
+  --oak-mid: #b08a5c;
+  --cove: #5c3a20;
+  --cove-dark: #3f2616;
+  --cove-deepest: #2a1a0e;
+  --cove-mid: #7a5230;
+  --sage: #9aa08a;
+  --sage-dark: #6e7860;
+  --sage-light: #aebd9c;
+  --sage-soft: #dfe8d6;
+  --stone: #c9c2b8;
+  --success: #5a7a4f;
+  --warning: #b07a2c;
+  --error: #8c3a2e;
+  --sidebar-w: 260px;
+  --topbar-h: 64px;
+}

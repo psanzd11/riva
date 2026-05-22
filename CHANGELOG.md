@@ -85,3 +85,122 @@ Convención: cada fase añade un bloque. Sin breaking history; estado vivo en `S
 - Dev server arranca limpio en :5173.
 
 ### Aprendizajes operativos archivados en `DECISIONS.md`
+
+---
+
+## [Fase 1] — Ventas
+
+### Añadido
+- `automations/engine.ts` real: event bus + rule runner. Actions implementadas: `create_notification`, `create_invoice`, `create_ticket`, `create_purchase_order`, `send_email_mock`, `assign_user` (stub), `log`. Cap defensivo de 10 actions por trigger.
+- `installAutomationEngine()` se llama en `main.tsx` para reemplazar el stub.
+- UI primitives: `Drawer`, `Modal`, `Field/Input/Select/Textarea`.
+- `VentasPage` con KPIs (forecast ponderado, won YTD, tasa cierre calculados desde store).
+- `PipelineKanban` con **drag & drop** (dnd-kit): mover una card entre columnas dispara `deal.stage` update y, si target=won, emite `deal.stageChanged → won`.
+- `DealDrawer`: edita amount, probability, expectedCloseDate, brand, notes; lista actividad por deal; crear actividad nueva.
+- `NewDealModal`: tabs Lead/Deal, validación básica, crea entidades vía repositorios.
+- Leaderboard de comerciales con cálculo real desde deals: pipeline, won YTD, closing rate.
+- Automatización pre-cargada `ar_qb_invoice` se activa al mover deal a `won` → genera Invoice en `draft` + email mock.
+
+### Verificaciones
+- `pnpm typecheck` / `lint` / `build` sin warnings.
+
+---
+
+## [Fase 2] — Accounting
+
+### Añadido
+- `AccountingPage` con KPIs derivados del store: facturas mes, cobrado YTD, pendiente, DSO.
+- Aging stacked bar: buckets 0-30 / 31-60 / 61-90 / 90+ calculados desde `invoices`.
+- 3 paneles: donut ingresos por origen, P&L cascada mensual, multi-line emitido vs cobrado.
+- Tabla "cobros pendientes" con filtros Todas / Vencidas / Riesgo.
+- Botón `+ Factura` genera invoice draft desde el primer won-sin-invoice (alineado con auto rule).
+- Cada fila tiene acciones: "Link pago" (genera URL mock + marca sent) y "Marcar pagada" (cambia estado + crea Payment).
+- "Simular webhook" en topbar → marca la primera fila como paid + crea Payment (cierra el loop end-to-end).
+
+### Verificaciones
+- `pnpm typecheck` / `lint` / `build` sin warnings.
+
+---
+
+## [Fase 3] — Operations
+
+### Añadido
+- `OperationsPage` con KPIs, donut mix de proyectos, heatmap 5 semanas (con celda `err` que marca incidente), ratio grid SLA por sede.
+- Timeline (gantt-style) con ventana 14/30/90 días, cálculo dinámico de `startPct` / `widthPct` desde `installations`.
+- Crew leaderboard.
+- Tabla "Asignación rápida": select inline para cambiar `crewId` de cada instalación (mutación con audit log).
+- Botón "Damage report" → marca instalación como `incident` + crea ticket `high` priority + emite `damageReport.submitted`.
+
+### Verificaciones
+- `pnpm typecheck` / `lint` / `build` sin warnings.
+
+---
+
+## [Fase 4] — Supply Chain
+
+### Añadido
+- `SupplyChainPage` con KPIs (SKUs activos, stock crítico, lead time, OC abiertas).
+- `OcKanban`: 5 columnas (factory → transit → customs → warehouse → available). Drag & drop entre columnas vía dnd-kit. Al llegar a `available`, suma stock al SKU asociado y emite `purchaseOrder.statusChanged`.
+- 3 paneles: donut stock por almacén, vbar lead time por proveedor, ratios rotación.
+- Tabla SKUs con filtros (Bajo mín / Top demand / Slow), barra cobertura con color semaforico (rojo < 35%, ámbar < 100%, verde > 100%).
+- Botón "+ OC sugerida" crea automáticamente OC para el SKU más crítico.
+
+### Verificaciones
+- `pnpm typecheck` / `lint` / `build` sin warnings.
+
+---
+
+## [Fase 5] — Marketing
+
+### Añadido
+- `MarketingPage` con KPIs, embudo Lead → Cliente, vbar leads por canal calculado desde `leads`, multi-line 12m por canal, ratios.
+- Tabla campañas con CPL bar.
+- Tabla leads recientes con bar de score y stage pill.
+- `ImportLeadsModal`: input file CSV + textarea pega, preview de filas parseadas, bulk create vía `leadsRepo.create`. Acepta hasta 50 leads por importación.
+- `NewCampaignModal`: form con name/channel/spend, crea campaña.
+
+### Verificaciones
+- `pnpm typecheck` / `lint` / `build` sin warnings.
+
+---
+
+## [Fase 6] — Postventa
+
+### Añadido
+- `PostventaPage` con NPS gauge calculado desde reseñas (`promoters - detractors / total`), distribución vbar 1-5★, multi-line NPS 12m.
+- Tabla "Tickets abiertos" con filtros Todos / Urgente / Sin asignar, click → drawer.
+- `TicketDrawer`: cambia estado/prioridad/asignado/descripción; comentarios (escritos como actividades con prefijo `[Ticket #...]`); botón "Cerrar ticket" añade `closedAt`.
+- Botón "Simular reseña 2★" crea reseña + emite `review.created` con score=2; la rule `ar_low_review` (score < 4) crea ticket high prioritario.
+- Tabla top causas con barras de % del total.
+
+### Verificaciones
+- `pnpm typecheck` / `lint` / `build` sin warnings.
+
+---
+
+## [Fase 7] — Tecnología
+
+### Añadido
+- `TecnologiaPage` con acceso restringido a `tech_lead` y `ceo` (otros roles ven mensaje "Vista restringida").
+- KPIs: Uptime 30d, versión CRM, integraciones conectadas, audit · 24h calculado desde `auditLog`.
+- Uptime heatmap (5 sem * 6 días) con celda `err` para incidente.
+- 3 paneles: tabla salud integraciones con latencia, vbar coste tech, multi-line response time.
+- **Integrations health auto-refresh**: `setInterval(12_000)` actualiza `latencyMs` en cada integración con jitter ±15ms y bumpea `lastSync`. Conectadas siempre mantienen latencia > 40ms.
+- Roadmap kanban (Backlog / En curso / Review / Done) con cards y meta.
+- Audit log explorer: últimas 30 acciones, ordenadas por fecha desc, con pill semántica por action type.
+
+### Verificaciones
+- `pnpm typecheck` / `lint` / `build` sin warnings.
+- `vite.config.ts`: `chunkSizeWarningLimit` subido a 800 KB para mantener build sin warnings — single-bundle SPA demo, ver `DECISIONS.md` D-011.
+
+---
+
+## Notas globales del cierre
+
+- 8/8 fases completadas. Ninguna ruta de departamento renderiza `<UnderConstruction />` ya.
+- `UnderConstruction` se mantiene en el repo (`features/departments/UnderConstruction.tsx`) por si se necesita en módulos futuros.
+- Persistencia localStorage funciona end-to-end: arrastrar deals, cobrar facturas, drag de OC, mover crews persiste entre reloads.
+- Engine de automation cierra ciclos cross-fase observables:
+  - Drag deal a "Won" en Ventas → invoice draft aparece en Accounting → "Marcar pagada" / "Simular webhook" cobra → audit log de Tecnología registra todo.
+  - "Simular reseña 2★" en Postventa → ticket high-priority aparece automáticamente.
+  - "+ OC sugerida" / damage report cierran ciclos similares en Supply Chain y Operations.

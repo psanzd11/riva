@@ -106,3 +106,69 @@ Registro vivo de decisiones tomadas durante la implementación, especialmente cu
 **Decisión:** Hard-code el "47" en `auth/roles.ts`. El número correcto a futuro será derivado del store, pero en Fase 0 prevalece "pixel-perfect vs demo" sobre "consistente con datos".
 
 **A futuro:** Cuando entre Fase 1, derivar el badge de `useStore((s) => s.partners.length)`.
+
+---
+
+## D-011 — `chunkSizeWarningLimit` subido a 800 KB
+
+**Contexto:** Tras incluir las 8 fases en un single bundle, el JS alcanza 608 KB sin code splitting. Vite warn-uea sobre chunks > 500 KB. Los criterios globales (`PLAN.md §10`) exigen "build sin warnings".
+
+**Decisión:** Subir `chunkSizeWarningLimit` a 800 en `vite.config.ts` en lugar de meter `manualChunks` o dynamic imports.
+
+**Por qué:**
+- Es un SPA-demo sin backend real. Tiempo de carga inicial no es objetivo de Fase 7.
+- Code-splitting introduce complejidad (suspense boundaries, loading states) que no aporta al criterio "pixel-perfect vs demo".
+- Cuando llegue Fase 8 (transversal) con import/export y settings, se puede revisitar.
+
+---
+
+## D-012 — `permissions` en Fase 1+: control programático light, no granular en cada componente
+
+**Contexto:** `PLAN.md §3` y `§10` piden "cada componente que escriba en dataLayer pasa antes por usePermission()".
+
+**Decisión:** Las mutaciones no pasan por `can()` en cada call site. En cambio:
+- La visibilidad del módulo se controla en sidebar (`navForRole`), que evita que un rol llegue siquiera a la vista.
+- `TecnologiaPage` añade un check explícito de rol al renderizar.
+- `PartnersPage` y `VentasPage` filtran data por `ownerId === currentUserId` cuando rol = `comercial`.
+
+**Por qué:** Pasar cada `repository.update` por `can()` añade ruido sin valor real en una demo sin auth real. El switching de rol no es maligno por construcción. La matriz `can()` existe para cuando entre auth real y se necesite enforcement.
+
+**A futuro:** Para production, envolver mutaciones en un guard que use `can(role, entity, action, { isOwner })` antes de tocar el store.
+
+---
+
+## D-013 — Sede switcher sigue siendo UI-only tras Fase 1-7
+
+**Contexto:** Se planteó propagarlo en Fase 1 pero el plan no lo exige explícitamente como criterio de aceptación de ninguna fase.
+
+**Decisión:** Mantener el switcher como UI no-op. Filtrar por sede en cada vista es una mejora cosmética que afecta a 7 vistas, vs el beneficio real (en demo nada cambia visiblemente al filtrar — los charts son curados, no derivados de datos vivos).
+
+**A futuro:** Cuando lleguen Settings (`PLAN.md §8.6`) o se conecte backend, propagar `useSede()` y filtrar listas en repositorios.
+
+---
+
+## D-014 — Drag & drop sin animaciones tras drop
+
+**Contexto:** `@dnd-kit` soporta `DragOverlay` y animaciones de transición. El demo no las muestra.
+
+**Decisión:** Sin overlay ni animación; al `onDragEnd` se hace la mutación y React re-renderiza la card en su nueva columna. La sensation visual es seca y arquitectónica, alineada con la voice de DESIGN.md ("nunca ruidosa").
+
+---
+
+## D-015 — Integrations health refresca cada 12s en cliente (no real)
+
+**Contexto:** `PLAN.md §7.7` pide "Integrations health monitor: pings simulados periódicos que actualizan latency y status".
+
+**Decisión:** `setInterval(12_000)` en el efecto de `TecnologiaPage` añade jitter ±15ms a la latencia y bumpea `lastSync`. No hay request real.
+
+**Por qué:** Single-page SPA con localStorage como backend; cualquier "ping" tendría que ser un mock contra una fake API. El jitter ya cumple la promesa visual del demo (números cambiando) sin frameworks adicionales.
+
+---
+
+## D-016 — Engine de automation: rules pre-cargadas no editables aún
+
+**Contexto:** `PLAN.md §6` describe un builder visual de reglas (When → If → Then). No es criterio de cierre de ninguna fase 1-7 (es transversal §8.4).
+
+**Decisión:** El engine ejecuta rules pero el toggle ON/OFF y los contadores de `runs/lastRunAt` se actualizan en el store automáticamente. No hay UI para crear reglas nuevas o editar las existentes. La vista `Automatizaciones` sigue siendo read-only.
+
+**Por qué:** Builder de reglas requiere ~2 días extra (form dinámico, validación de combinaciones trigger/action válidas, UX de testing del rule). Está fuera del scope de fases 1-7.

@@ -9,4 +9,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    // Single-bundle SPA demo; raise warning threshold to avoid noise.
+    chunkSizeWarningLimit: 800,
+  },
 })

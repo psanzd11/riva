@@ -4,9 +4,11 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { RoleProvider } from './auth/RoleContext'
 import { hydrateSeed } from './data/persistence'
+import { installAutomationEngine } from './automations/engine'
 import './styles/globals.css'
 
 hydrateSeed()
+installAutomationEngine()
 
 const rootEl = document.getElementById('root')
 if (!rootEl) throw new Error('Root element not found')

@@ -132,14 +132,23 @@ function ExpandableItem({ item, pathname }: { item: NavItem; pathname: string })
               to={s.to}
               end
               className={({ isActive: subActive }) =>
-                `block border-l-2 py-[7px] pl-12 pr-6 text-[12px] tracking-[0.04em] transition ${
+                `flex items-center justify-between border-l-2 py-[7px] pl-12 pr-6 text-[12px] tracking-[0.04em] transition ${
                   subActive
                     ? 'border-l-oak-mid bg-white/[0.04] text-riva-ivory'
                     : 'border-l-transparent text-n-500 hover:text-n-300'
                 }`
               }
             >
-              {s.label}
+              <span>{s.label}</span>
+              {s.badge && (
+                <span
+                  className={`px-[6px] py-[1px] text-[9px] font-semibold uppercase tracking-[0.1em] ${
+                    s.flagship ? 'bg-oak-mid text-riva-black' : 'bg-white/[0.08] text-n-300'
+                  }`}
+                >
+                  {s.badge}
+                </span>
+              )}
             </NavLink>
           ))}
         </div>

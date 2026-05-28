@@ -4450,6 +4450,46 @@
   ],
   "activities": [
     {
+      "id": "act_cm_t1",
+      "partnerId": "prt_studio_rota",
+      "type": "visit",
+      "userId": "usr_cm",
+      "at": "2026-05-26T00:00:00.000Z",
+      "dueAt": "2026-05-28T00:00:00.000Z",
+      "content": "Presentar colección Cove en showroom",
+      "done": false
+    },
+    {
+      "id": "act_cm_t2",
+      "partnerId": "prt_casa_mendel",
+      "type": "call",
+      "userId": "usr_cm",
+      "at": "2026-05-26T00:00:00.000Z",
+      "dueAt": "2026-05-28T00:00:00.000Z",
+      "content": "Confirmar pedido de reposición Q2",
+      "done": false
+    },
+    {
+      "id": "act_cm_t3",
+      "partnerId": "prt_casa_mendel",
+      "type": "task",
+      "userId": "usr_cm",
+      "at": "2026-05-22T00:00:00.000Z",
+      "dueAt": "2026-05-26T00:00:00.000Z",
+      "content": "Enviar presupuesto actualizado (vencido)",
+      "done": false
+    },
+    {
+      "id": "act_cm_t4",
+      "partnerId": "prt_studio_rota",
+      "type": "visit",
+      "userId": "usr_cm",
+      "at": "2026-05-27T00:00:00.000Z",
+      "dueAt": "2026-05-30T00:00:00.000Z",
+      "content": "Medición in situ proyecto residencial",
+      "done": false
+    },
+    {
       "id": "act_0",
       "dealId": "dl_0213",
       "partnerId": "prt_mcgee_slc",

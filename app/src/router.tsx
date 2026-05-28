@@ -15,6 +15,10 @@ import {
   VentasForecast,
   VentasActividad,
 } from './features/departments/ventas/sections'
+import { VentasTpv } from './features/departments/ventas/Tpv'
+import { VentasCatalogo } from './features/departments/ventas/Catalogo'
+import { VentasAgenda } from './features/departments/ventas/Agenda'
+import { VentasComisiones } from './features/departments/ventas/Comisiones'
 import {
   AccountingResumen,
   AccountingFacturas,
@@ -73,7 +77,11 @@ export const router = createBrowserRouter([
 
       { path: 'dept/ventas', element: <VentasResumen /> },
       { path: 'dept/ventas/pipeline', element: <VentasPipeline /> },
+      { path: 'dept/ventas/tpv', element: <VentasTpv /> },
+      { path: 'dept/ventas/catalogo', element: <VentasCatalogo /> },
+      { path: 'dept/ventas/agenda', element: <VentasAgenda /> },
       { path: 'dept/ventas/leads', element: <VentasLeads /> },
+      { path: 'dept/ventas/comisiones', element: <VentasComisiones /> },
       { path: 'dept/ventas/equipo', element: <VentasEquipo /> },
       { path: 'dept/ventas/forecast', element: <VentasForecast /> },
       { path: 'dept/ventas/actividad', element: <VentasActividad /> },

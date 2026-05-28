@@ -70,10 +70,14 @@ export const activitySchema = z.object({
   id: z.string(),
   dealId: z.string().optional(),
   partnerId: z.string().optional(),
-  type: z.enum(['call', 'email', 'visit', 'note']),
+  type: z.enum(['call', 'email', 'visit', 'note', 'task']),
   userId: z.string(),
   at: isoDate,
   content: z.string(),
+  /** Optional due date — turns an activity into a scheduled visit / follow-up / task (Agenda). */
+  dueAt: isoDate.optional(),
+  /** Whether a scheduled visit/task has been completed. */
+  done: z.boolean().optional(),
 })
 export type Activity = z.infer<typeof activitySchema>
 

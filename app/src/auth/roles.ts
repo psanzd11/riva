@@ -15,6 +15,8 @@ export interface NavSubItem {
   id: string
   label: string
   to: string
+  badge?: string
+  flagship?: boolean
 }
 
 export interface NavItem {
@@ -37,9 +39,13 @@ const DEPT_SUBNAV: Record<string, NavSubItem[]> = {
   ventas: [
     { id: 'ventas-resumen', label: 'Resumen', to: '/dept/ventas' },
     { id: 'ventas-pipeline', label: 'Pipeline', to: '/dept/ventas/pipeline' },
+    { id: 'ventas-tpv', label: 'TPV · Pedido', to: '/dept/ventas/tpv', badge: 'NEW', flagship: true },
+    { id: 'ventas-catalogo', label: 'Catálogo', to: '/dept/ventas/catalogo' },
+    { id: 'ventas-agenda', label: 'Agenda', to: '/dept/ventas/agenda' },
     { id: 'ventas-leads', label: 'Leads', to: '/dept/ventas/leads' },
-    { id: 'ventas-equipo', label: 'Equipo', to: '/dept/ventas/equipo' },
+    { id: 'ventas-comisiones', label: 'Comisiones', to: '/dept/ventas/comisiones' },
     { id: 'ventas-forecast', label: 'Forecast', to: '/dept/ventas/forecast' },
+    { id: 'ventas-equipo', label: 'Equipo', to: '/dept/ventas/equipo' },
     { id: 'ventas-actividad', label: 'Actividad', to: '/dept/ventas/actividad' },
   ],
   accounting: [
@@ -87,12 +93,23 @@ const DEPT_SUBNAV: Record<string, NavSubItem[]> = {
   ],
 }
 
-function deptItem(id: string, label: string): NavItem {
+/**
+ * Builds a dept nav item. When `only` is passed, the subItems are restricted to
+ * (and ordered by) those ids — this is how each role sees just the subsections it
+ * actually uses day-to-day. The landing route (`to`) is the first visible subitem.
+ */
+function deptItem(id: string, label: string, only?: string[]): NavItem {
+  const all = DEPT_SUBNAV[id]
+  const subItems = only
+    ? only
+        .map((sid) => all.find((s) => s.id === sid))
+        .filter((s): s is NavSubItem => Boolean(s))
+    : all
   return {
     id,
     label,
-    to: DEPT_SUBNAV[id][0].to,
-    subItems: DEPT_SUBNAV[id],
+    to: subItems[0]?.to ?? all[0].to,
+    subItems,
   }
 }
 
@@ -129,34 +146,106 @@ export function navForRole(role: RoleId): NavSection[] {
     ],
   }
 
+  // Comercial works partner-by-partner: their own book + their daily tools.
+  const onlyPartnersList = (label = 'Todos los partners') => ({
+    ...partners,
+    items: partners.items
+      .filter((i) => i.id === 'partners-list')
+      .map((i) => ({ ...i, label, badge: undefined })),
+  })
+
   switch (role) {
     case 'ceo':
       return [overview, partners, depts]
-    case 'director_comercial':
-      return [overview, partners, { ...depts, items: depts.items.filter((i) => i.id === 'ventas') }]
-    case 'comercial':
-      return [{ ...overview, items: overview.items.filter((i) => i.id === 'dashboard') }, partners]
-    case 'director_accounting':
-      return [overview, { ...depts, items: depts.items.filter((i) => i.id === 'accounting') }]
-    case 'operations_manager':
-      return [
-        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
-        { ...depts, items: depts.items.filter((i) => i.id === 'operations' || i.id === 'supply-chain') },
-      ]
-    case 'marketing_lead':
-      return [
-        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
-        { ...partners, items: partners.items.filter((i) => i.id === 'partners-list') },
-        { ...depts, items: depts.items.filter((i) => i.id === 'marketing') },
-      ]
-    case 'customer_success':
-      return [
-        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
-        { ...partners, items: partners.items.filter((i) => i.id === 'partners-list') },
-        { ...depts, items: depts.items.filter((i) => i.id === 'postventa') },
-      ]
     case 'tech_lead':
       return [overview, partners, depts]
+
+    case 'director_comercial':
+      // Todo Ventas + stock de Supply Chain (lectura) para comprometer fechas/cerrar deals.
+      return [
+        overview,
+        partners,
+        {
+          ...depts,
+          items: [
+            deptItem('ventas', 'Ventas'),
+            deptItem('supply-chain', 'Supply Chain', ['sc-inventario']),
+          ],
+        },
+      ]
+
+    case 'comercial':
+      // Su día a día: pipeline propio, TPV, agenda de visitas, catálogo, leads, comisiones, forecast.
+      return [
+        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
+        {
+          ...partners,
+          items: [
+            { id: 'partners-list', label: 'Mis partners', to: '/partners' },
+            ...partners.items.filter((i) => i.id === 'flagship'),
+          ],
+        },
+        {
+          id: 'depts',
+          label: 'Mi trabajo',
+          items: [
+            deptItem('ventas', 'Ventas', [
+              'ventas-pipeline',
+              'ventas-tpv',
+              'ventas-agenda',
+              'ventas-catalogo',
+              'ventas-leads',
+              'ventas-comisiones',
+              'ventas-forecast',
+            ]),
+          ],
+        },
+      ]
+
+    case 'director_accounting':
+      // Accounting completo + visibilidad de pipeline/forecast para anticipar cobros.
+      return [
+        overview,
+        onlyPartnersList(),
+        {
+          ...depts,
+          items: [
+            deptItem('accounting', 'Accounting'),
+            deptItem('ventas', 'Ventas', ['ventas-pipeline', 'ventas-forecast']),
+          ],
+        },
+      ]
+
+    case 'operations_manager':
+      return [
+        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard' || i.id === 'automations') },
+        {
+          ...depts,
+          items: [deptItem('operations', 'Operations'), deptItem('supply-chain', 'Supply Chain')],
+        },
+      ]
+
+    case 'marketing_lead':
+      // Marketing completo + los leads que entrega a Ventas (handoff).
+      return [
+        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard' || i.id === 'automations') },
+        onlyPartnersList(),
+        {
+          ...depts,
+          items: [deptItem('marketing', 'Marketing'), deptItem('ventas', 'Ventas', ['ventas-leads'])],
+        },
+      ]
+
+    case 'customer_success':
+      // Postventa completo + actividad comercial del cliente para tener contexto.
+      return [
+        { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
+        onlyPartnersList(),
+        {
+          ...depts,
+          items: [deptItem('postventa', 'Postventa'), deptItem('ventas', 'Ventas', ['ventas-actividad'])],
+        },
+      ]
   }
 }
 

@@ -58,6 +58,7 @@ const DEPT_SUBNAV: Record<string, NavSubItem[]> = {
   ],
   operations: [
     { id: 'ops-resumen', label: 'Resumen', to: '/dept/operations' },
+    { id: 'ops-dia', label: 'Mi día', to: '/dept/operations/dia' },
     { id: 'ops-instalaciones', label: 'Instalaciones', to: '/dept/operations/instalaciones' },
     { id: 'ops-equipos', label: 'Crews', to: '/dept/operations/equipos' },
     { id: 'ops-sla', label: 'SLA & capacidad', to: '/dept/operations/sla' },
@@ -72,12 +73,14 @@ const DEPT_SUBNAV: Record<string, NavSubItem[]> = {
   ],
   marketing: [
     { id: 'mkt-resumen', label: 'Resumen', to: '/dept/marketing' },
+    { id: 'mkt-handoff', label: 'Handoff a Ventas', to: '/dept/marketing/handoff' },
     { id: 'mkt-campanas', label: 'Campañas', to: '/dept/marketing/campanas' },
     { id: 'mkt-embudo', label: 'Embudo & ratios', to: '/dept/marketing/embudo' },
     { id: 'mkt-equipo', label: 'Equipo', to: '/dept/marketing/equipo' },
   ],
   postventa: [
     { id: 'pv-resumen', label: 'Resumen', to: '/dept/postventa' },
+    { id: 'pv-dia', label: 'Mi día', to: '/dept/postventa/dia' },
     { id: 'pv-tickets', label: 'Tickets', to: '/dept/postventa/tickets' },
     { id: 'pv-resenas', label: 'Reseñas', to: '/dept/postventa/resenas' },
     { id: 'pv-nps', label: 'NPS & causas', to: '/dept/postventa/nps' },
@@ -217,33 +220,63 @@ export function navForRole(role: RoleId): NavSection[] {
       ]
 
     case 'operations_manager':
+      // Aterriza en "Mi día" operativo; luego el resto del dept + Supply Chain.
       return [
         { ...overview, items: overview.items.filter((i) => i.id === 'dashboard' || i.id === 'automations') },
         {
           ...depts,
-          items: [deptItem('operations', 'Operations'), deptItem('supply-chain', 'Supply Chain')],
+          items: [
+            deptItem('operations', 'Operations', [
+              'ops-dia',
+              'ops-resumen',
+              'ops-instalaciones',
+              'ops-equipos',
+              'ops-sla',
+              'ops-equipo',
+            ]),
+            deptItem('supply-chain', 'Supply Chain'),
+          ],
         },
       ]
 
     case 'marketing_lead':
-      // Marketing completo + los leads que entrega a Ventas (handoff).
+      // Marketing completo (con handoff a Ventas) + los leads que entrega.
       return [
         { ...overview, items: overview.items.filter((i) => i.id === 'dashboard' || i.id === 'automations') },
         onlyPartnersList(),
         {
           ...depts,
-          items: [deptItem('marketing', 'Marketing'), deptItem('ventas', 'Ventas', ['ventas-leads'])],
+          items: [
+            deptItem('marketing', 'Marketing', [
+              'mkt-resumen',
+              'mkt-handoff',
+              'mkt-campanas',
+              'mkt-embudo',
+              'mkt-equipo',
+            ]),
+            deptItem('ventas', 'Ventas', ['ventas-leads']),
+          ],
         },
       ]
 
     case 'customer_success':
-      // Postventa completo + actividad comercial del cliente para tener contexto.
+      // Aterriza en "Mi día" (cola de tickets) + resto de Postventa + actividad del cliente.
       return [
         { ...overview, items: overview.items.filter((i) => i.id === 'dashboard') },
         onlyPartnersList(),
         {
           ...depts,
-          items: [deptItem('postventa', 'Postventa'), deptItem('ventas', 'Ventas', ['ventas-actividad'])],
+          items: [
+            deptItem('postventa', 'Postventa', [
+              'pv-dia',
+              'pv-resumen',
+              'pv-tickets',
+              'pv-resenas',
+              'pv-nps',
+              'pv-equipo',
+            ]),
+            deptItem('ventas', 'Ventas', ['ventas-actividad']),
+          ],
         },
       ]
   }

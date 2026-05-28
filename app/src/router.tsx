@@ -34,6 +34,7 @@ import {
   OperationsSla,
   OperationsEquipo,
 } from './features/departments/operations/sections'
+import { OperationsDia } from './features/departments/operations/MiDia'
 import {
   ScResumen,
   ScInventario,
@@ -47,6 +48,7 @@ import {
   MktEmbudo,
   MktEquipo,
 } from './features/departments/marketing/sections'
+import { MktHandoff } from './features/departments/marketing/Handoff'
 import {
   PvResumen,
   PvTickets,
@@ -54,6 +56,7 @@ import {
   PvNps,
   PvEquipo,
 } from './features/departments/postventa/sections'
+import { PvDia } from './features/departments/postventa/MiDia'
 import {
   TechResumen,
   TechRoadmap,
@@ -94,6 +97,7 @@ export const router = createBrowserRouter([
       { path: 'dept/accounting/equipo', element: <AccountingEquipo /> },
 
       { path: 'dept/operations', element: <OperationsResumen /> },
+      { path: 'dept/operations/dia', element: <OperationsDia /> },
       { path: 'dept/operations/instalaciones', element: <OperationsInstalaciones /> },
       { path: 'dept/operations/equipos', element: <OperationsEquipos /> },
       { path: 'dept/operations/sla', element: <OperationsSla /> },
@@ -106,11 +110,13 @@ export const router = createBrowserRouter([
       { path: 'dept/supply-chain/equipo', element: <ScEquipo /> },
 
       { path: 'dept/marketing', element: <MktResumen /> },
+      { path: 'dept/marketing/handoff', element: <MktHandoff /> },
       { path: 'dept/marketing/campanas', element: <MktCampanas /> },
       { path: 'dept/marketing/embudo', element: <MktEmbudo /> },
       { path: 'dept/marketing/equipo', element: <MktEquipo /> },
 
       { path: 'dept/postventa', element: <PvResumen /> },
+      { path: 'dept/postventa/dia', element: <PvDia /> },
       { path: 'dept/postventa/tickets', element: <PvTickets /> },
       { path: 'dept/postventa/resenas', element: <PvResenas /> },
       { path: 'dept/postventa/nps', element: <PvNps /> },

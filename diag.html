@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>The RIVA Company — Roadmap 15 meses</title>
+<style>
+  @page { size: 210mm 700mm; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0A0A0A;
+    --ivory: #F4F1EC;
+    --n900: #1A1A1A;
+    --n700: #4A4A4A;
+    --n500: #8C8780;
+    --n300: #D8D4CD;
+    --n100: #EDEAE4;
+    --oak-mid: #B08A5C;
+    --cove: #5C3A20;
+  }
+  html, body { background: var(--ivory); color: var(--n900); }
+  body {
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10pt; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .display {
+    font-family: "Jost", "Avenir Next", "Futura", "Century Gothic", "Quicksand", sans-serif;
+    font-weight: 300;
+  }
+  .label {
+    font-family: "Bebas Neue", "Oswald", "Impact", sans-serif;
+    text-transform: uppercase; letter-spacing: 0.15em;
+  }
+  .page {
+    width: 210mm; min-height: auto; position: relative;
+    padding: 10mm 16mm 8mm;
+  }
+
+  /* ============ HEADER ============ */
+  .head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 6mm;
+    border-bottom: 1px solid var(--n300);
+  }
+  .wordmark { display: flex; flex-direction: column; gap: 2px; }
+  .wordmark .l1, .wordmark .l3 {
+    font-size: 7.5pt; font-weight: 300; letter-spacing: 0.45em; color: var(--n900);
+  }
+  .wordmark .l2 {
+    font-size: 22pt; font-weight: 300; letter-spacing: 0.32em; color: var(--n900);
+    line-height: 1; margin: 1mm 0;
+  }
+  .badge {
+    border: 1px solid var(--n900);
+    padding: 3mm 5mm;
+    font-size: 7.5pt; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--n900);
+  }
+
+  /* ============ HERO ============ */
+  .hero { padding: 5mm 0 3mm; }
+  .hero .eyebrow {
+    font-size: 8pt; font-weight: 700; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--oak-mid);
+    margin-bottom: 4mm;
+  }
+  .hero h1 {
+    font-size: 23pt; font-weight: 300; letter-spacing: -0.005em;
+    line-height: 1.1; color: var(--n900);
+    max-width: 170mm;
+  }
+  .hero h1 .alt { color: var(--oak-mid); font-weight: 300; }
+  .hero .sub {
+    margin-top: 4mm;
+    font-size: 10pt; color: var(--n700); max-width: 155mm; line-height: 1.5;
+  }
+
+  /* ============ THREE PILLARS ============ */
+  .pillars {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--n300);
+    border-bottom: 1px solid var(--n300);
+    margin-top: 4mm;
+  }
+  .pillar {
+    padding: 5mm 4mm 5mm 0;
+    border-right: 1px solid var(--n300);
+  }
+  .pillar:last-child { border-right: none; padding-right: 0; }
+  .pillar + .pillar { padding-left: 4mm; }
+  .pillar .num {
+    font-size: 7.5pt; font-weight: 700; letter-spacing: 0.25em;
+    color: var(--n500); text-transform: uppercase;
+  }
+  .pillar h3 {
+    font-size: 11.5pt; font-weight: 400; letter-spacing: 0.04em;
+    color: var(--n900); margin-top: 2.5mm; text-transform: uppercase;
+    font-family: "Jost", "Avenir Next", sans-serif;
+  }
+  .pillar p {
+    margin-top: 2.5mm; font-size: 9pt; color: var(--n700); line-height: 1.5;
+  }
+
+  /* ============ ROADMAP ============ */
+  .roadmap-head {
+    margin: 4mm 0 2mm;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .roadmap-head .title {
+    font-size: 12.5pt; font-weight: 400; letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-family: "Jost", "Avenir Next", sans-serif;
+  }
+  .roadmap-head .meta {
+    font-size: 7.5pt; font-weight: 700; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--n500);
+  }
+
+  .phase {
+    display: grid;
+    grid-template-columns: 24mm 48mm 1fr;
+    gap: 4mm;
+    padding: 2.2mm 0;
+    border-top: 1px solid var(--n300);
+    align-items: baseline;
+  }
+  .phase:last-of-type { border-bottom: 1px solid var(--n300); }
+  .phase .months {
+    font-size: 8pt; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--oak-mid);
+  }
+  .phase .dept {
+    font-size: 11pt; font-weight: 400; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--n900);
+    font-family: "Jost", "Avenir Next", sans-serif;
+  }
+  .phase .scope {
+    font-size: 8.8pt; color: var(--n700); line-height: 1.45;
+  }
+
+  /* ============ FORMATION + CTA ============ */
+  .strip {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 4mm;
+    border-top: 1px solid var(--n900);
+    border-bottom: 1px solid var(--n900);
+  }
+  .strip .cell {
+    padding: 3mm 5mm 3mm 0;
+  }
+  .strip .cell + .cell {
+    padding-left: 6mm;
+    border-left: 1px solid var(--n300);
+  }
+  .strip .cell .eye {
+    font-size: 7.5pt; font-weight: 700; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--oak-mid);
+    margin-bottom: 2.5mm;
+  }
+  .strip .cell .head2 {
+    font-size: 11pt; font-weight: 400; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--n900);
+    font-family: "Jost", "Avenir Next", sans-serif;
+    margin-bottom: 2mm;
+  }
+  .strip .cell p {
+    font-size: 9pt; color: var(--n700); line-height: 1.5;
+  }
+  .strip .cell .dark {
+    color: var(--n900); font-weight: 500;
+  }
+
+  /* ============ FOOTER ============ */
+  .foot {
+    margin-top: 3mm;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 7pt; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--n500);
+  }
+  .foot b { color: var(--n900); font-weight: 600; letter-spacing: 0.3em; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="head">
+    <div class="wordmark">
+      <div class="l1">THE</div>
+      <div class="l2">RIVA</div>
+      <div class="l3">COMPANY</div>
+    </div>
+    <div class="badge">Roadmap 2026 · 27 · 15 meses</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="eyebrow">Un sistema operativo para el grupo</div>
+    <h1 class="display">
+      Departamento a departamento.<br/>
+      <span class="alt">Sin parar la operación.</span>
+    </h1>
+    <p class="sub">
+      Quince meses para llevar holding y sedes a una operación medible, automatizada
+      y trazable. Un departamento cada dos o tres meses. El equipo recibe formación
+      mientras se construye, no después.
+    </p>
+  </div>
+
+  <!-- THREE PILLARS -->
+  <div class="pillars">
+    <div class="pillar">
+      <div class="num">01 · Automatizaciones</div>
+      <h3>Procesos que se ejecutan solos</h3>
+      <p>Reglas claras conectan ventas, facturación, instalación y postventa.
+         Menos manual, menos errores, más tiempo para criterio humano.</p>
+    </div>
+    <div class="pillar">
+      <div class="num">02 · Hub</div>
+      <h3>Una sola vista del negocio</h3>
+      <p>Cuadro de mando único cross-sede. España y USA, holding y flagship,
+         con los mismos indicadores y la misma definición.</p>
+    </div>
+    <div class="pillar">
+      <div class="num">03 · CRM</div>
+      <h3>Relación comercial trazable</h3>
+      <p>Cada partner, cada deal, cada actividad registrada. El equipo lo usa
+         desde el primer mes. Se forma con él, no contra él.</p>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="roadmap-head">
+    <div class="title">Roadmap por fases</div>
+    <div class="meta">6 departamentos · 15 meses</div>
+  </div>
+
+  <div class="phase">
+    <div class="months">Mes 01 · 02</div>
+    <div class="dept">Holding</div>
+    <div class="scope">Cuadro de mando ejecutivo cross-sede. Integraciones base.
+      Núcleo de automatizaciones y permisos por rol. Punto de partida sobre el
+      que se apoya todo lo demás.</div>
+  </div>
+
+  <div class="phase">
+    <div class="months">Mes 03 · 04 · 05</div>
+    <div class="dept">Ventas + CRM</div>
+    <div class="scope">Pipeline kanban, gestión de partners, leads, forecast y
+      comisiones. <b>Formación del equipo comercial en el CRM</b> en paralelo a
+      la implementación. Tres meses para asentar adopción real.</div>
+  </div>
+
+  <div class="phase">
+    <div class="months">Mes 06 · 07</div>
+    <div class="dept">Accounting</div>
+    <div class="scope">Facturación enlazada a deals won, link de pago, conciliación
+      automática, aging y P&amp;L por sede. Cierre de mes guiado paso a paso.</div>
+  </div>
+
+  <div class="phase">
+    <div class="months">Mes 08 · 09 · 10</div>
+    <div class="dept">Operations + Supply Chain</div>
+    <div class="scope">Instalaciones, equipos, SLA, damage reports. Inventario
+      por almacén, OC a fábrica, lead times calculados. Reservas de stock
+      vinculadas a instalaciones próximas.</div>
+  </div>
+
+  <div class="phase">
+    <div class="months">Mes 11 · 12</div>
+    <div class="dept">Marketing</div>
+    <div class="scope">Campañas, importación de leads, nurture, attribution real
+      lead → deal → won. Calendario de contenido y librería de assets.</div>
+  </div>
+
+  <div class="phase">
+    <div class="months">Mes 13 · 14 · 15</div>
+    <div class="dept">Postventa</div>
+    <div class="scope">Tickets con SLA, reseñas agregadas, NPS rolling, satisfacción
+      de cierre. Cierre del círculo: la voz del cliente vuelve a Ventas y a
+      Operations con datos.</div>
+  </div>
+
+  <!-- FORMATION + CTA -->
+  <div class="strip">
+    <div class="cell">
+      <div class="eye">Formación CRM</div>
+      <div class="head2">Adopción, no licencia</div>
+      <p>
+        Sesiones por rol con casos reales de RIVA. Manual vivo en el Hub.
+        Revisión de uso a 30 y 90 días por fase.
+      </p>
+    </div>
+    <div class="cell">
+      <div class="eye">Siguiente paso</div>
+      <div class="head2">Kick-off del Mes 01</div>
+      <p>
+        Holding primero: cuadro de mando, integraciones base y primeras
+        automatizaciones live en ocho semanas.
+      </p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <div><b>The RIVA Company</b> · Roadmap operativo</div>
+    <div>Automatizaciones · Hub · CRM · Formación</div>
+    <div>2026 · 27</div>
+  </div>
+
+</div>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                                                           

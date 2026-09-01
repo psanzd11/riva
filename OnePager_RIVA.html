@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>Viddix · The RIVA Company — One-Pager</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background:#FFFFFF; color:#1A1A24;
+               font-family:'Helvetica','Arial',sans-serif;
+               font-size:9.5pt; line-height:1.45; }
+
+  :root {
+    --vd-purple:#7C5CFF;
+    --vd-purple-deep:#5C3FE8;
+    --vd-cyan:#22D3EE;
+    --vd-dark:#1A1A24;
+    --vd-card-dark:#2A1F55;
+    --text-2:#555560;
+    --line:#E4E4EA;
+  }
+
+  .page { width:210mm; min-height:297mm; position:relative; }
+
+  /* ===== HEADER (banda purple) ===== */
+  .head { background:var(--vd-purple); color:#fff;
+          padding:3.5mm 14mm 3.5mm; position:relative; overflow:hidden; }
+  .vddx { display:flex; align-items:center; gap:3mm; }
+  .vddx .mark { width:9mm; height:9mm; display:flex;
+                 align-items:center; justify-content:center; }
+  .vddx .mark img { width:100%; height:100%; object-fit:contain; }
+  .vddx .name { font-weight:800; letter-spacing:3px; font-size:14pt; color:#fff; }
+  .clientmark { font-size:7.5pt; font-weight:700; letter-spacing:2.5px;
+                color:rgba(255,255,255,0.85); border-left:1px solid rgba(255,255,255,0.30);
+                padding-left:5mm; margin-left:3mm; text-transform:uppercase; }
+  .brandrow { display:flex; align-items:center; }
+  .head-eyebrow { margin-top:2.5mm; position:relative; z-index:1; }
+  .head::after { content:''; position:absolute; right:-50mm; top:-30mm;
+    width:140mm; height:140mm; border-radius:50%;
+    background:radial-gradient(circle, rgba(34,211,238,0.18), transparent 65%); }
+  .head-top { display:flex; justify-content:space-between; align-items:center;
+              position:relative; z-index:1; }
+  .eyebrow-w { font-size:8.5pt; font-weight:800; letter-spacing:2.5px;
+               text-transform:uppercase; color:#fff; }
+  .badge-w { border:1.5px solid #fff; padding:2.5mm 4mm;
+             font-size:8pt; font-weight:800; letter-spacing:1.8px;
+             color:#fff; text-transform:uppercase; }
+  .head h1 { margin-top:1.5mm; position:relative; z-index:1;
+             font-size:18pt; font-weight:800; letter-spacing:-1.2px;
+             line-height:1.02; color:#fff; }
+  .head .head-sub { margin-top:1.5mm; position:relative; z-index:1;
+             font-size:8.8pt; color:rgba(255,255,255,0.92);
+             line-height:1.45; max-width:160mm; }
+
+  /* ===== BODY ===== */
+  .body { padding:2.5mm 14mm 1.5mm; }
+  .section { margin-top:1.5mm; }
+  .section:first-child { margin-top:0; }
+  .sec-head { font-size:8.5pt; font-weight:800; letter-spacing:2px;
+              text-transform:uppercase; color:var(--vd-purple);
+              padding-bottom:1mm; border-bottom:1.5px solid var(--vd-purple);
+              margin-bottom:2mm; }
+
+  /* ===== 01 RESUMEN ===== */
+  .resumen { display:grid; grid-template-columns:1.35fr 1fr; gap:7mm; }
+  .resumen p { color:var(--vd-dark); margin-bottom:1.5mm; line-height:1.38; font-size:8.5pt; }
+  .resumen p b { color:var(--vd-purple); font-weight:800; }
+  .quote-box { border-left:4px solid var(--vd-purple);
+               padding:1mm 0 1mm 4mm; margin-top:1.5mm;
+               background:linear-gradient(90deg, rgba(124,92,255,0.05), transparent 90%);
+               font-size:8.8pt; font-style:italic; color:var(--vd-purple-deep); font-weight:700; }
+  .mini-grid { display:grid; grid-template-columns:1fr 1fr; gap:3mm; }
+  .mini { display:flex; gap:3mm; align-items:center;
+          border:1px solid var(--line); padding:2mm 2.8mm; }
+  .mini.fill { background:var(--vd-purple); border-color:var(--vd-purple); color:#fff; }
+  .mini-icon { width:7mm; height:7mm; border-radius:50%;
+               background:rgba(124,92,255,0.12); color:var(--vd-purple);
+               display:flex; align-items:center; justify-content:center;
+               font-size:11pt; font-weight:800; flex-shrink:0; }
+  .mini.fill .mini-icon { background:rgba(255,255,255,0.18); color:#fff; }
+  .mini-text { font-size:8.5pt; line-height:1.2; }
+  .mini-text b { font-weight:800; }
+  .mini-text .s { display:block; font-size:7.5pt; color:var(--text-2); font-weight:500; }
+  .mini.fill .mini-text .s { color:rgba(255,255,255,0.85); }
+
+  /* ===== 02 DIAGNÓSTICO ===== */
+  .grid7 { display:grid; grid-template-columns:repeat(7, 1fr); gap:0;
+           border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .brecha { padding:2mm 2mm; text-align:left; border-right:1px solid var(--line); }
+  .brecha:last-child { border-right:none; }
+  .brecha .n { font-size:15pt; font-weight:800; color:var(--vd-purple);
+               line-height:1; letter-spacing:-1px; }
+  .brecha .t { margin-top:1.8mm; font-size:7.8pt; font-weight:800;
+               letter-spacing:0.8px; text-transform:uppercase;
+               color:var(--vd-dark); line-height:1.2; }
+  .brecha .d { margin-top:1mm; font-size:7pt; color:var(--text-2);
+               line-height:1.35; font-style:italic; }
+
+  /* ===== 03 PILARES ===== */
+  .grid4 { display:grid; grid-template-columns:repeat(4, 1fr); gap:3mm; }
+  .pilar { background:var(--vd-card-dark); color:#fff;
+           padding:2.2mm 3mm 2.2mm; position:relative;
+           border-radius:1.5mm; overflow:hidden; }
+  .pilar::after { content:''; position:absolute; right:-15mm; top:-15mm;
+           width:35mm; height:35mm; border-radius:50%;
+           background:radial-gradient(circle, rgba(34,211,238,0.18), transparent 65%); }
+  .pilar .ic { font-size:12pt; font-weight:800; color:#fff;
+               position:relative; z-index:1; line-height:1; }
+  .pilar .pn { margin-top:1.5mm; font-size:8pt; font-weight:800;
+               letter-spacing:1.8px; text-transform:uppercase;
+               color:var(--vd-cyan); position:relative; z-index:1; }
+  .pilar h3 { margin-top:0.5mm; font-size:10.5pt; font-weight:800;
+              color:#fff; letter-spacing:-0.2px; line-height:1.1;
+              position:relative; z-index:1; }
+  .pilar p { margin-top:1mm; font-size:7.8pt; color:rgba(255,255,255,0.85);
+             line-height:1.4; position:relative; z-index:1; }
+
+  /* ===== 04 DEPARTAMENTOS ===== */
+  .grid6 { display:grid; grid-template-columns:repeat(6, 1fr); gap:2mm; }
+  .dpt { border:1px solid var(--line); padding:1.5mm 2.5mm; text-align:left; }
+  .dpt .nn { font-size:8pt; font-weight:800; color:var(--vd-purple); letter-spacing:1.2px; }
+  .dpt .name { margin-top:1mm; font-size:8.5pt; font-weight:800;
+               color:var(--vd-dark); line-height:1.15; }
+  .dpt .when { margin-top:0.5mm; font-size:7pt; color:var(--text-2); line-height:1.25; }
+
+  /* ===== 05 ROADMAP ===== */
+  .grid3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:4mm; }
+  .fase { border:1px solid var(--line); padding:2.2mm 3mm 2.2mm; text-align:center; }
+  .fase .circ { width:6.5mm; height:6.5mm; border-radius:50%;
+                border:2.2px solid var(--vd-purple);
+                background:#fff; color:var(--vd-purple);
+                display:flex; align-items:center; justify-content:center;
+                margin:0 auto 1mm; font-size:8.5pt; font-weight:800; line-height:1; }
+  .fase .meyebrow { font-size:7pt; font-weight:800; letter-spacing:1.5px;
+                    text-transform:uppercase; color:var(--vd-purple); }
+  .fase h4 { margin-top:0.5mm; font-size:9pt; font-weight:800;
+             color:var(--vd-dark); letter-spacing:-0.2px; line-height:1.15; }
+  .fase p { margin-top:1mm; font-size:7.5pt; color:var(--text-2); line-height:1.45; }
+
+  /* ===== FOOTER ===== */
+  .foot { background:var(--vd-dark); color:#fff;
+          padding:3mm 14mm; margin-top:1.5mm;
+          display:flex; align-items:center; justify-content:space-between; gap:8mm; }
+  .foot .quote { flex:1.6; font-size:9pt; font-weight:800; color:#fff;
+                 line-height:1.3; letter-spacing:-0.2px; }
+  .foot .quote b { color:var(--vd-cyan); }
+  .foot .divider { width:1px; align-self:stretch; background:rgba(255,255,255,0.18); }
+  .foot .meta { flex:1; text-align:right; }
+  .foot .meta .brand { display:flex; align-items:center; justify-content:flex-end; gap:3mm;
+                       font-size:10pt; font-weight:800; letter-spacing:2.5px; color:#fff; }
+  .foot .meta .brand img { width:7mm; height:7mm; object-fit:contain; }
+  .foot .meta .sub { margin-top:1.5mm; font-size:7.5pt; letter-spacing:1.4px;
+                     text-transform:uppercase; color:rgba(255,255,255,0.7); line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <div class="head-top">
+      <div class="brandrow">
+        <div class="vddx">
+          <div class="mark"><img src="viddix-logo-trans.png" alt="Viddix"/></div>
+          <div class="name">VIDDIX</div>
+        </div>
+        <div class="clientmark">The&nbsp;RIVA&nbsp;Company</div>
+      </div>
+      <div class="badge-w">Confidencial · 2026</div>
+    </div>
+    <div class="head-eyebrow"><span class="eyebrow-w">Propuesta estratégica · One-Pager</span></div>
+    <h1>Hub, CRM<br/>y Automatizaciones.</h1>
+    <p class="head-sub">
+      Una infraestructura operativa para un holding flooring premium con sedes
+      en España y USA, partners distribuidos y flagship propio. Departamento a
+      departamento, sin parar el negocio.
+    </p>
+  </div>
+
+  <div class="body">
+
+    <div class="section">
+      <div class="sec-head">01 · Resumen ejecutivo</div>
+      <div class="resumen">
+        <div>
+          <p>No es un proyecto puntual. Es una <b>infraestructura operativa</b>
+            que conecta holding, ventas, partners, facturación, instalaciones,
+            inventario y postventa trabajando como un solo sistema medible.</p>
+          <p>El grupo que gane los próximos cinco años en flooring premium será
+            el que combine <b>producto excelente + marca fuerte + sistema
+            operativo que ejecuta todos los días</b>.</p>
+          <div class="quote-box">
+            "El producto ya existe. La oportunidad está en sistematizar la ejecución."
+          </div>
+        </div>
+        <div class="mini-grid">
+          <div class="mini"><div class="mini-icon">◈</div>
+            <div class="mini-text"><b>Hub único</b><span class="s">cross-sede</span></div></div>
+          <div class="mini"><div class="mini-icon">✓</div>
+            <div class="mini-text"><b>CRM trazable</b><span class="s">partner → deal → won</span></div></div>
+          <div class="mini"><div class="mini-icon">⚡</div>
+            <div class="mini-text"><b>Automatizaciones</b><span class="s">deal → factura → cobro</span></div></div>
+          <div class="mini"><div class="mini-icon">◎</div>
+            <div class="mini-text"><b>Forecast real</b><span class="s">sobre datos, no intuición</span></div></div>
+          <div class="mini"><div class="mini-icon">♥</div>
+            <div class="mini-text"><b>Voz cliente</b><span class="s">NPS, tickets, reseñas</span></div></div>
+          <div class="mini fill"><div class="mini-icon">15</div>
+            <div class="mini-text"><b>Meses para 100%</b><span class="s">6 fases, sistema vivo</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">02 · Diagnóstico · 7 brechas, 7 oportunidades</div>
+      <div class="grid7">
+        <div class="brecha"><div class="n">01</div><div class="t">Holding sin vista</div><div class="d">Sedes ES, USA, flagship en silos</div></div>
+        <div class="brecha"><div class="n">02</div><div class="t">CRM no adoptado</div><div class="d">Comercial fuera del sistema</div></div>
+        <div class="brecha"><div class="n">03</div><div class="t">Procesos manuales</div><div class="d">Facturación, cobros, NPS</div></div>
+        <div class="brecha"><div class="n">04</div><div class="t">Inventario fuera</div><div class="d">Stock y OC en hojas</div></div>
+        <div class="brecha"><div class="n">05</div><div class="t">Sin attribution</div><div class="d">Lead → won sin trazar</div></div>
+        <div class="brecha"><div class="n">06</div><div class="t">Postventa reactiva</div><div class="d">NPS y reseñas sueltas</div></div>
+        <div class="brecha"><div class="n">07</div><div class="t">Sin trazabilidad</div><div class="d">Auditoría manual</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">03 · Estrategia · 4 pilares del sistema</div>
+      <div class="grid4">
+        <div class="pilar">
+          <div class="ic">⚡</div><div class="pn">01</div>
+          <h3>Automatizaciones</h3>
+          <p>Reglas que conectan Ventas, Facturación, Instalación y Postventa. El equipo decide, el sistema ejecuta.</p>
+        </div>
+        <div class="pilar">
+          <div class="ic">◈</div><div class="pn">02</div>
+          <h3>Hub</h3>
+          <p>Cuadro de mando único cross-sede con los mismos KPIs y la misma definición — holding, ES, USA y flagship.</p>
+        </div>
+        <div class="pilar">
+          <div class="ic">◎</div><div class="pn">03</div>
+          <h3>CRM</h3>
+          <p>Cada partner, cada deal, cada actividad registrada. Forecast ponderado sobre datos reales.</p>
+        </div>
+        <div class="pilar">
+          <div class="ic">▲</div><div class="pn">04</div>
+          <h3>Formación</h3>
+          <p>Sesiones por rol con casos reales. Manual vivo en el Hub. Revisión de uso a 30 y 90 días por fase.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">04 · 6 departamentos · cada uno con sistema</div>
+      <div class="grid6">
+        <div class="dpt"><div class="nn">01</div><div class="name">Holding</div><div class="when">Mes 01—02</div></div>
+        <div class="dpt"><div class="nn">02</div><div class="name">Ventas + CRM</div><div class="when">Mes 03—05</div></div>
+        <div class="dpt"><div class="nn">03</div><div class="name">Accounting</div><div class="when">Mes 06—07</div></div>
+        <div class="dpt"><div class="nn">04</div><div class="name">Operations + SC</div><div class="when">Mes 08—10</div></div>
+        <div class="dpt"><div class="nn">05</div><div class="name">Marketing</div><div class="when">Mes 11—12</div></div>
+        <div class="dpt"><div class="nn">06</div><div class="name">Postventa</div><div class="when">Mes 13—15</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">05 · Roadmap · 15 meses, 3 fases</div>
+      <div class="grid3">
+        <div class="fase">
+          <div class="circ">1</div>
+          <div class="meyebrow">Mes 01—05 · Fundación</div>
+          <h4>Holding + Ventas y CRM</h4>
+          <p>Cuadro de mando ejecutivo, integraciones base y CRM con formación del equipo comercial en paralelo.</p>
+        </div>
+        <div class="fase">
+          <div class="circ">2</div>
+          <div class="meyebrow">Mes 06—10 · Núcleo operativo</div>
+          <h4>Accounting + Ops + Supply Chain</h4>
+          <p>Facturación, cobros, P&amp;L, instalaciones, inventario y OC pre-rellenadas para instalaciones próximas.</p>
+        </div>
+        <div class="fase">
+          <div class="circ">3</div>
+          <div class="meyebrow">Mes 11—15 · Ciclo cerrado</div>
+          <h4>Marketing + Postventa</h4>
+          <p>Campañas, attribution real, tickets, NPS y reseñas. La voz del cliente vuelve a Ventas y Operations.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <div class="quote">
+      "No venimos a venderles software. Venimos a construirles un
+      <b>sistema operativo</b> que ejecuta cada día en España, USA y flagship."
+    </div>
+    <div class="divider"></div>
+    <div class="meta">
+      <div class="brand">
+        <img src="viddix-logo-trans.png" alt="Viddix"/>
+        VIDDIX
+      </div>
+      <div class="sub">
+        Propuesta estratégica · 2026<br/>
+        Operaciones · CRM · Automatizaciones
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
